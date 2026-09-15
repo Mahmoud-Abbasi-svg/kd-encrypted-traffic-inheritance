@@ -1,0 +1,30 @@
+CESNET-TLS-Year22 service appearance (full-dataset weekly statistics)
+Study period: 2022 weeks 11-52; usable = >= 5000 flows/week (~246 flows in size S, ~98 in XS)
+Weekly totals: median 10,225,136; low-coverage weeks excluded: 2022-W50 (4,580,874), 2022-W52 (1,211,412)
+Services: 180; unmapped to a category: 0
+Services with flows in every study week: 177
+Services with at least one zero week: eset-esa, fio-ib, opera-weather
+Services first seen after week 11 (true mid-year appearance): none
+Services never usable in the study period: uzis-ocko, ctu-kosapi, adobe-search, vscode-update
+
+Training window weeks 11-14: usable 166; emerging afterwards 7; seasonal/temporary dips 0; gone afterwards 1
+    emerging: cesnet-login             Authentication           window avg  4,284/wk; first seen W11; usable (4-wk avg) from W19
+    emerging: gitlab                   File sharing             window avg  4,538/wk; first seen W11; usable (4-wk avg) from W42
+    emerging: cesnet-kalendar          Mail                     window avg  1,774/wk; first seen W11; usable (4-wk avg) from W18
+    emerging: font-awesome             Media                    window avg  4,320/wk; first seen W11; usable (4-wk avg) from W20
+    emerging: amazon-alexa             Virtual assistant        window avg  3,965/wk; first seen W11; usable (4-wk avg) from W19
+    emerging: cesnet-perun             Information systems      window avg    503/wk; first seen W11; usable (4-wk avg) from W34
+    emerging: redmine                  Information systems      window avg     64/wk; first seen W11; usable (4-wk avg) from W42
+    dips: none
+    gone: mcafee-ccs
+Training window weeks 24-27: usable 155; emerging afterwards 2; seasonal/temporary dips 17; gone afterwards 1
+    emerging: cesnet-perun             Information systems      window avg    402/wk; first seen W11; usable (4-wk avg) from W34
+    emerging: redmine                  Information systems      window avg     78/wk; first seen W11; usable (4-wk avg) from W42
+    dips: thunderbird-telemetry, malwarebytes-telemetry, mcafee-ccs, ctu-idp2, cesnet-gerrit, cesnet-nerd, ctu-kos, katastr-nahlizeni, slack, sumava-camdata, aukro-backend, dopravni-info, apple-siri, opera-weather, cesnet-login, gitlab, amazon-alexa
+    gone: docker-authentication
+Training window weeks 37-40: usable 154; emerging afterwards 1; seasonal/temporary dips 20; gone afterwards 0
+    emerging: redmine                  Information systems      window avg  2,678/wk; first seen W11; usable (4-wk avg) from W44
+    dips: alza-bnr, thunderbird-telemetry, bitdefender-gravityzone, mcafee-ccs, adobe-authentication, docker-authentication, cesnet-gerrit, cesnet-nerd, katastr-nahlizeni, nvidiagfe-services, uzis-api, signageos, chrome-remotedesktop, apple-siri, opera-weather, cesnet-login, gitlab, amazon-alexa, kb-ib, cesnet-perun
+    gone: none
+
+Note: counts are after the dataset's sampling, so shares are not true popularity; appearance, growth and disappearance are still meaningful.

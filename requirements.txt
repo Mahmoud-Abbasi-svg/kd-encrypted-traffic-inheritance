@@ -1,0 +1,15 @@
+# Python 3.10+. Versions tested on the development laptop (Windows 11, CPU).
+# On the GPU server, install the CUDA build of torch 2.14.0 first (see SERVER_SETUP.md).
+cesnet-datazoo==0.2.0
+cesnet-models==0.4.1
+numpy==2.2.6
+pandas==2.3.3
+pydantic==2.11.10
+scikit-learn==1.7.2
+scipy
+tables==3.10.1
+torch==2.14.0
+xgboost==3.2.0
+pyarrow
+matplotlib
+pytest

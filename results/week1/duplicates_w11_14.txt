@@ -1,0 +1,22 @@
+Duplicate check: train = random 200,000 flows from weeks 11-14, test = random 100,000 flows from weeks 15-52, size XS. Rates are lower bounds (training sample, not full set).
+
+[ppi30_ipt_dir_size]  test dup rate 1.7%; label-absent floor 0.02%; train internal dup 4.2%; train flows with ambiguous labels 0.48%  (1s)
+    first test week 15: dup 3.2%; last test week 52: dup 1.5%
+    PPI_LEN   1-4: n=  5,002  dup 21.4%  label-absent 0.20%
+    PPI_LEN 10-29: n= 47,368  dup 0.0%  label-absent 0.00%
+    PPI_LEN    30: n= 15,929  dup 0.0%  label-absent 0.00%
+    PPI_LEN   5-9: n= 31,701  dup 1.9%  label-absent 0.03%
+
+[ppi30_dir_size]  test dup rate 12.1%; label-absent floor 0.18%; train internal dup 24.8%; train flows with ambiguous labels 2.36%  (1s)
+    first test week 15: dup 23.8%; last test week 52: dup 6.0%
+    PPI_LEN   1-4: n=  5,002  dup 49.8%  label-absent 1.70%
+    PPI_LEN 10-29: n= 47,368  dup 5.9%  label-absent 0.02%
+    PPI_LEN    30: n= 15,929  dup 0.3%  label-absent 0.00%
+    PPI_LEN   5-9: n= 31,701  dup 21.5%  label-absent 0.28%
+
+[ppi10_dir_size]  test dup rate 14.7%; label-absent floor 0.21%; train internal dup 31.8%; train flows with ambiguous labels 2.95%  (1s)
+    first test week 15: dup 29.9%; last test week 52: dup 6.6%
+    PPI_LEN   1-4: n=  5,002  dup 49.8%  label-absent 1.70%
+    PPI_LEN 10-29: n= 47,368  dup 10.4%  label-absent 0.05%
+    PPI_LEN    30: n= 15,929  dup 2.6%  label-absent 0.06%
+    PPI_LEN   5-9: n= 31,701  dup 21.5%  label-absent 0.28%

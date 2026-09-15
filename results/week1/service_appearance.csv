@@ -1,0 +1,181 @@
+service,name,category,total_flows_study,median_weekly_share,first_week_seen,first_usable_week,last_usable_week,weeks_present,weeks_usable,zero_weeks,window_avg_w11_14,usable_w11_14,emerging_w11_14,dip_w11_14,gone_w11_14,first_usable_after_w11_14,window_avg_w24_27,usable_w24_27,emerging_w24_27,dip_w24_27,gone_w24_27,first_usable_after_w24_27,window_avg_w37_40,usable_w37_40,emerging_w37_40,dip_w37_40,gone_w37_40,first_usable_after_w37_40
+adobe-ads,Adobe Ads,Advertising,1275602,0.003177571475316549,11.0,11.0,51.0,40,40,0,37927,True,False,False,False,18.0,31461,True,False,False,False,31.0,25774,True,False,False,False,44.0
+alza-bnr,Alza Banners,Advertising,331520,0.0008261928967283863,11.0,11.0,51.0,40,36,0,12066,True,False,False,False,18.0,8702,True,False,False,False,31.0,4849,False,False,True,False,44.0
+amazon-advertising,Amazon Advertising,Advertising,1686427,0.003965028645446041,11.0,11.0,51.0,40,40,0,48154,True,False,False,False,18.0,33879,True,False,False,False,31.0,42140,True,False,False,False,44.0
+appnexus,AppNexus,Advertising,9468988,0.0231682251448145,11.0,11.0,51.0,40,40,0,279948,True,False,False,False,18.0,217368,True,False,False,False,31.0,229568,True,False,False,False,44.0
+google-ads,Google Analytics & Ads,Advertising,19775395,0.04946183912286073,11.0,11.0,51.0,40,40,0,812841,True,False,False,False,18.0,577428,True,False,False,False,31.0,320702,True,False,False,False,44.0
+pubmatic,Pubmatic,Advertising,5322974,0.01305842074451212,11.0,11.0,51.0,40,40,0,155146,True,False,False,False,18.0,124883,True,False,False,False,31.0,114585,True,False,False,False,44.0
+r2d2,R2D2,Advertising,719887,0.0018149779806724618,11.0,11.0,51.0,40,40,0,22590,True,False,False,False,18.0,17286,True,False,False,False,31.0,19920,True,False,False,False,44.0
+rubiconproject,Rubicon Project,Advertising,6275862,0.014978749315145054,11.0,11.0,51.0,40,40,0,241628,True,False,False,False,18.0,119579,True,False,False,False,31.0,139874,True,False,False,False,44.0
+seznam-ssp,Seznam SSP,Advertising,3800319,0.0089657841118829,11.0,11.0,51.0,40,40,0,120131,True,False,False,False,18.0,86317,True,False,False,False,31.0,91170,True,False,False,False,44.0
+adobe-analytics,Adobe Analytics,Analytics & Telemetry,244581,0.0006014410488492828,11.0,11.0,49.0,40,28,0,7694,True,False,False,False,18.0,5049,True,False,False,False,38.0,5567,True,False,False,False,44.0
+alza-logapi,Alza LogAPI,Analytics & Telemetry,499969,0.001246968392520002,11.0,11.0,48.0,40,38,0,16189,True,False,False,False,18.0,12478,True,False,False,False,31.0,17799,True,False,False,False,44.0
+firefox-settings,Firefox Remote Settings,Analytics & Telemetry,810843,0.0019422890359486083,11.0,11.0,51.0,40,40,0,27172,True,False,False,False,18.0,21240,True,False,False,False,31.0,18635,True,False,False,False,44.0
+google-conncheck,Google Connectivity Check,Analytics & Telemetry,3867101,0.009264859436406741,11.0,11.0,51.0,40,40,0,163228,True,False,False,False,18.0,111452,True,False,False,False,31.0,65848,True,False,False,False,44.0
+hicloud-conncheck,Huawei Cloud Connectivity Check,Analytics & Telemetry,367259,0.000828181653516787,11.0,11.0,49.0,40,32,0,12880,True,False,False,False,18.0,6285,True,False,False,False,31.0,12611,True,False,False,False,44.0
+hicloud-logservice,Huawei Cloud Logservice,Analytics & Telemetry,290364,0.0006516899941224252,11.0,11.0,48.0,40,29,0,11790,True,False,False,False,18.0,10530,True,False,False,False,31.0,5041,True,False,False,False,44.0
+loggly,Loggly,Analytics & Telemetry,712962,0.001719741367790421,11.0,11.0,51.0,40,40,0,21826,True,False,False,False,18.0,16047,True,False,False,False,31.0,19024,True,False,False,False,44.0
+microsoft-diagnostic,MS Diagnostic Data,Analytics & Telemetry,11420983,0.0287988014275121,11.0,11.0,51.0,40,40,0,305442,True,False,False,False,18.0,268679,True,False,False,False,31.0,290872,True,False,False,False,44.0
+microsoft-settings,MS Windows Settings API,Analytics & Telemetry,10619908,0.026373985143029917,11.0,11.0,51.0,40,40,0,285100,True,False,False,False,18.0,244904,True,False,False,False,31.0,263836,True,False,False,False,44.0
+mozilla-telemetry,Mozilla Telemetry,Analytics & Telemetry,1689822,0.004489242822251601,11.0,11.0,51.0,40,40,0,61616,True,False,False,False,18.0,50209,True,False,False,False,31.0,26242,True,False,False,False,44.0
+nvidiagfe-events,Nvidia GFE Events,Analytics & Telemetry,713686,0.0016446636706426592,11.0,11.0,51.0,40,39,0,20729,True,False,False,False,18.0,12016,True,False,False,False,31.0,15217,True,False,False,False,44.0
+thunderbird-telemetry,Thunderbird Telemetry,Analytics & Telemetry,162274,0.0003225064698865234,11.0,11.0,49.0,40,11,0,7767,True,False,False,False,18.0,2936,False,False,True,False,,2479,False,False,True,False,
+visualstudio-insights,Visual Studio Application Insights,Analytics & Telemetry,462927,0.0011172380832572947,11.0,11.0,51.0,40,40,0,15916,True,False,False,False,18.0,9928,True,False,False,False,31.0,10234,True,False,False,False,44.0
+xiaomi-tracking,Xiaomi Tracking,Analytics & Telemetry,528157,0.0014100294129656343,11.0,11.0,51.0,40,39,0,20353,True,False,False,False,18.0,9991,True,False,False,False,31.0,7990,True,False,False,False,44.0
+avast,Avast,Antivirus,2593015,0.006149154098124128,11.0,11.0,51.0,40,40,0,83110,True,False,False,False,18.0,69936,True,False,False,False,31.0,55620,True,False,False,False,44.0
+bitdefender-gravityzone,Bitdefender GravityZone,Antivirus,846371,0.0025395378187458373,11.0,11.0,51.0,40,30,0,33597,True,False,False,False,18.0,36530,True,False,False,False,31.0,4960,False,False,True,False,
+bitdefender-nimbus,Bitdefender Nimbus,Antivirus,1067737,0.003012367835868523,11.0,11.0,49.0,40,38,0,41271,True,False,False,False,18.0,39514,True,False,False,False,31.0,10946,True,False,False,False,44.0
+eset-edf,"ESET Data Framework (Anti-Theft, ESET License Administrator, Parental control, Web control)",Antivirus,1315065,0.003095267461841102,11.0,11.0,51.0,40,40,0,44950,True,False,False,False,18.0,37594,True,False,False,False,31.0,25292,True,False,False,False,44.0
+eset-edtd,ESET Dynamic Threat Defense,Antivirus,2023704,0.005188160988699767,11.0,11.0,51.0,40,40,0,45906,True,False,False,False,18.0,37186,True,False,False,False,31.0,51085,True,False,False,False,44.0
+eset-ts,ESET Submit suspicious files and anonymous statistical information,Antivirus,1597112,0.0037487681571950196,11.0,11.0,51.0,40,40,0,43828,True,False,False,False,18.0,37602,True,False,False,False,31.0,31683,True,False,False,False,44.0
+google-safebrowsing,Google Safe Browsing API,Antivirus,6525487,0.01826431095037073,11.0,11.0,51.0,40,40,0,252292,True,False,False,False,18.0,207685,True,False,False,False,31.0,95237,True,False,False,False,44.0
+kaspersky,Kaspersky,Antivirus,1722411,0.00419620451249163,11.0,11.0,51.0,40,40,0,58763,True,False,False,False,18.0,49238,True,False,False,False,31.0,35640,True,False,False,False,44.0
+malwarebytes-telemetry,Malwarebytes Telemetry,Antivirus,299314,0.0007403117291502938,11.0,11.0,49.0,40,25,0,10626,True,False,False,False,18.0,3458,False,False,True,False,37.0,7999,True,False,False,False,44.0
+mcafee-ccs,McAfee CCS (Canadian Common Criteria Evaluation and Certification Scheme),Antivirus,119616,0.0001661835537514429,11.0,11.0,51.0,40,6,0,12131,True,False,False,True,,815,False,False,True,False,,2076,False,False,True,False,
+mcafee-gti,McAfee Global Threat Intelligence,Antivirus,6860489,0.01989709711097589,11.0,11.0,51.0,40,40,0,261305,True,False,False,False,18.0,274950,True,False,False,False,31.0,71890,True,False,False,False,44.0
+microsoft-defender,MS Windows Defender,Antivirus,7760766,0.020325592092371766,11.0,11.0,51.0,40,40,0,207749,True,False,False,False,18.0,172059,True,False,False,False,31.0,216539,True,False,False,False,44.0
+opera-sitecheck,Opera Sitecheck,Antivirus,460234,0.0010793967223938327,11.0,11.0,51.0,40,38,0,15171,True,False,False,False,18.0,6627,True,False,False,False,31.0,16958,True,False,False,False,44.0
+adobe-authentication,Adobe Authentication Services,Authentication,393585,0.0007021282454928316,11.0,11.0,49.0,40,27,0,18973,True,False,False,False,18.0,11013,True,False,False,False,31.0,4900,False,False,True,False,47.0
+apple-ocsp,Apple OCSP,Authentication,350715,0.0008802745818984076,11.0,11.0,51.0,40,36,0,11945,True,False,False,False,18.0,5961,True,False,False,False,31.0,11261,True,False,False,False,44.0
+ctu-idp2,CTU IDP2,Authentication,289367,0.0005808272581301983,11.0,11.0,51.0,40,25,0,9280,True,False,False,False,18.0,3869,False,False,True,False,38.0,9506,True,False,False,False,44.0
+docker-authentication,Docker Auth,Authentication,282439,7.174947130518574e-05,11.0,11.0,51.0,40,17,0,16443,True,False,False,False,18.0,11546,True,False,False,True,,75,False,False,True,False,
+eset-esa,ESET Secure Authentication Provisioning Server (two-factor authentication),Authentication,327736,0.0008341266510484678,11.0,11.0,44.0,35,34,5,10845,True,False,False,False,18.0,10654,True,False,False,False,31.0,9890,True,False,False,False,44.0
+firefox-accounts,Firefox Accounts,Authentication,583508,0.001433860977312271,11.0,11.0,51.0,40,40,0,15656,True,False,False,False,18.0,12238,True,False,False,False,31.0,15662,True,False,False,False,44.0
+google-authentication,Google Authentication,Authentication,2469824,0.005555369683206147,11.0,11.0,51.0,40,40,0,96381,True,False,False,False,18.0,64878,True,False,False,False,31.0,50065,True,False,False,False,44.0
+microsoft-authentication,MS Authentication,Authentication,10422930,0.026459805855797148,11.0,11.0,51.0,40,40,0,294333,True,False,False,False,18.0,210638,True,False,False,False,31.0,275711,True,False,False,False,44.0
+mozilla-token,Mozilla Token Service,Authentication,312332,0.000795534866420167,11.0,11.0,46.0,40,36,0,9307,True,False,False,False,18.0,7308,True,False,False,False,31.0,9201,True,False,False,False,44.0
+seznam-authentication,Seznam Login,Authentication,5822367,0.01349736727015518,11.0,11.0,51.0,40,40,0,171498,True,False,False,False,18.0,157127,True,False,False,False,31.0,127405,True,False,False,False,44.0
+sukl-authentication,SUKL Auth,Authentication,335797,0.0008289225798300678,11.0,11.0,51.0,40,39,0,12196,True,False,False,False,18.0,6591,True,False,False,False,31.0,7610,True,False,False,False,44.0
+vsb-sso,SSO VSB,Authentication,542589,0.0012346025215006703,11.0,11.0,51.0,40,40,0,13596,True,False,False,False,18.0,8553,True,False,False,False,31.0,24249,True,False,False,False,44.0
+xiaomi-accounts,Xiaomi Account API,Authentication,545570,0.0013604495451729312,11.0,11.0,49.0,40,38,0,22746,True,False,False,False,18.0,11811,True,False,False,False,31.0,13563,True,False,False,False,44.0
+adobe-cloud,Adobe Document Cloud,File sharing,402774,0.0008851154314529552,11.0,11.0,49.0,40,37,0,10980,True,False,False,False,18.0,6771,True,False,False,False,31.0,14826,True,False,False,False,44.0
+apple-icloud,Apple iCloud,File sharing,2058901,0.0052987306727332786,11.0,11.0,51.0,40,40,0,45759,True,False,False,False,18.0,50134,True,False,False,False,31.0,52266,True,False,False,False,44.0
+dropbox,Dropbox,File sharing,3527316,0.008571377904735524,11.0,11.0,51.0,40,40,0,111846,True,False,False,False,18.0,85736,True,False,False,False,31.0,82690,True,False,False,False,44.0
+github,Github,File sharing,944701,0.002127537959118741,11.0,11.0,51.0,40,40,0,25367,True,False,False,False,18.0,19064,True,False,False,False,31.0,21706,True,False,False,False,44.0
+google-drive,Google Drive,File sharing,1060083,0.0023028793812159545,11.0,11.0,51.0,40,40,0,47299,True,False,False,False,18.0,23562,True,False,False,False,31.0,15706,True,False,False,False,44.0
+microsoft-onedrive,MS OneDrive,File sharing,4521189,0.011650438581006197,11.0,11.0,51.0,40,40,0,106655,True,False,False,False,18.0,101738,True,False,False,False,31.0,123078,True,False,False,False,44.0
+owncloud,"ownCloud (CESNET, MUNI)",File sharing,923226,0.001712714165546522,11.0,11.0,51.0,40,36,0,10297,True,False,False,False,18.0,6389,True,False,False,False,31.0,50392,True,False,False,False,44.0
+ulozto,Ulozto,File sharing,338319,0.0007708285325519586,11.0,11.0,49.0,40,35,0,11385,True,False,False,False,18.0,5148,True,False,False,False,31.0,13212,True,False,False,False,44.0
+uschovna,Uschovna,File sharing,338693,0.0007683127839592438,11.0,11.0,49.0,40,39,0,8681,True,False,False,False,18.0,9416,True,False,False,False,31.0,10956,True,False,False,False,44.0
+ea-games,EA Games,Games,1608919,0.003714126828547924,11.0,11.0,51.0,40,40,0,57384,True,False,False,False,18.0,31850,True,False,False,False,31.0,43701,True,False,False,False,44.0
+king-games,King Games,Games,1104127,0.002690178932628434,11.0,11.0,51.0,40,40,0,38665,True,False,False,False,18.0,22432,True,False,False,False,31.0,26872,True,False,False,False,44.0
+riot-games,Riot Games,Games,986176,0.0021035863843807913,11.0,11.0,51.0,40,40,0,20312,True,False,False,False,18.0,18840,True,False,False,False,31.0,35565,True,False,False,False,44.0
+steam,Steam,Games,804872,0.0018743999447833246,11.0,11.0,51.0,40,40,0,26274,True,False,False,False,18.0,18198,True,False,False,False,31.0,19427,True,False,False,False,44.0
+unity-games,Unity Games,Games,2052619,0.005112781061226071,11.0,11.0,51.0,40,40,0,67744,True,False,False,False,18.0,54676,True,False,False,False,31.0,47583,True,False,False,False,44.0
+xbox-live,Xbox Live,Games,1489476,0.0038204161333829176,11.0,11.0,51.0,40,40,0,40484,True,False,False,False,18.0,26384,True,False,False,False,31.0,48826,True,False,False,False,44.0
+cesnet-gerrit,CESNET Gerrit,Information systems,191133,0.0003805844374675048,11.0,11.0,51.0,40,16,0,5542,True,False,False,False,41.0,4083,False,False,True,False,41.0,3958,False,False,True,False,44.0
+cesnet-nerd,CESNET Nerd,Information systems,199237,0.00047087332829213264,11.0,11.0,49.0,40,20,0,6034,True,False,False,False,18.0,4993,False,False,True,False,43.0,2748,False,False,True,False,44.0
+ctu-kos,CTU KOS,Information systems,479556,0.0010603961158499216,11.0,11.0,51.0,40,38,0,8101,True,False,False,False,18.0,4892,False,False,True,False,31.0,19040,True,False,False,False,44.0
+datova-schranka,Datova Schranka,Information systems,417240,0.0010659675725902431,11.0,11.0,51.0,40,39,0,15408,True,False,False,False,18.0,11823,True,False,False,False,31.0,7364,True,False,False,False,44.0
+katastr-nahlizeni,Katastr Nahlizeni,Information systems,62389,0.00012869779622463027,11.0,11.0,44.0,40,2,0,3324,False,False,False,False,,1314,False,False,True,False,,1121,False,False,True,False,
+moodle,"Moodle (CTU, CZU, VUTBR)",Information systems,671125,0.0015376202662758338,11.0,11.0,51.0,40,38,0,20641,True,False,False,False,18.0,5542,True,False,False,False,31.0,29464,True,False,False,False,44.0
+ndk,National Digital Library,Information systems,1435567,0.0035248930442493345,11.0,11.0,51.0,40,40,0,44372,True,False,False,False,18.0,34623,True,False,False,False,31.0,23384,True,False,False,False,44.0
+vse-insis,INSIS VSE,Information systems,851454,0.0020558866674280666,11.0,11.0,51.0,40,40,0,18773,True,False,False,False,18.0,19571,True,False,False,False,31.0,28417,True,False,False,False,44.0
+ctu-matrix,CTU Matrix Server,Instant messaging,393643,0.0009379264930596537,11.0,11.0,51.0,40,40,0,14596,True,False,False,False,18.0,15388,True,False,False,False,31.0,6385,True,False,False,False,44.0
+discord,Discord,Instant messaging,1720025,0.0036915018663682703,11.0,11.0,51.0,40,40,0,49215,True,False,False,False,18.0,24482,True,False,False,False,31.0,62956,True,False,False,False,44.0
+facebook-messenger,Facebook Messenger,Instant messaging,3244421,0.006890472828300832,11.0,11.0,51.0,40,40,0,121638,True,False,False,False,18.0,63907,True,False,False,False,31.0,100418,True,False,False,False,44.0
+slack,Slack,Instant messaging,364767,0.0009142620762257821,11.0,11.0,49.0,40,37,0,15512,True,False,False,False,18.0,4617,False,False,True,False,31.0,8600,True,False,False,False,44.0
+whatsapp,WhatsApp,Instant messaging,1386813,0.0037713298071687046,11.0,11.0,51.0,40,40,0,52746,True,False,False,False,18.0,32301,True,False,False,False,31.0,39932,True,False,False,False,44.0
+3dsecure,3-D Secure (3 providers),Internet banking,255045,0.0005743282780929021,11.0,11.0,49.0,40,29,0,7242,True,False,False,False,18.0,5140,True,False,False,False,37.0,8094,True,False,False,False,44.0
+airbank-ib,Airbank IB,Internet banking,282782,0.0007225057448601332,11.0,11.0,51.0,40,38,0,7477,True,False,False,False,18.0,6658,True,False,False,False,31.0,6586,True,False,False,False,44.0
+fio-ib,Fio IB,Internet banking,464875,0.0009379729073531997,11.0,11.0,49.0,37,30,3,11284,True,False,False,False,18.0,13846,True,False,False,False,32.0,22032,True,False,False,False,44.0
+rb-ib,RB IB,Internet banking,392034,0.0008272834694208443,11.0,11.0,51.0,40,33,0,10460,True,False,False,False,18.0,6718,True,False,False,False,31.0,7532,True,False,False,False,45.0
+apple-location,Apple Location Services,Location,3974697,0.008433615564784199,11.0,11.0,51.0,40,40,0,71680,True,False,False,False,18.0,76590,True,False,False,False,31.0,119774,True,False,False,False,44.0
+google-userlocation,Google User Location API,Location,963365,0.002001488698449466,11.0,11.0,51.0,40,40,0,39388,True,False,False,False,18.0,27671,True,False,False,False,31.0,17704,True,False,False,False,44.0
+maps-cz,Mapy.cz,Location,6129574,0.014605548672050484,11.0,11.0,51.0,40,40,0,179000,True,False,False,False,18.0,138038,True,False,False,False,31.0,164904,True,False,False,False,44.0
+mozilla-location,Mozilla Location Service,Location,583662,0.0014275614480690456,11.0,11.0,51.0,40,40,0,20287,True,False,False,False,18.0,10636,True,False,False,False,31.0,13582,True,False,False,False,44.0
+ctu-felmail,CTU FEL Mail,Mail,445460,0.0011208617242482002,11.0,11.0,51.0,40,40,0,10843,True,False,False,False,18.0,11373,True,False,False,False,31.0,13044,True,False,False,False,44.0
+gmail,Gmail,Mail,375085,0.0008800131065634759,11.0,11.0,49.0,40,34,0,14337,True,False,False,False,18.0,9266,True,False,False,False,34.0,7844,True,False,False,False,44.0
+outlook,MS Outlook,Mail,10795313,0.027470028967929647,11.0,11.0,51.0,40,40,0,321467,True,False,False,False,18.0,238747,True,False,False,False,31.0,281208,True,False,False,False,44.0
+seznam-email,Seznam Email,Mail,3431504,0.007958146669651802,11.0,11.0,51.0,40,40,0,121666,True,False,False,False,18.0,67362,True,False,False,False,31.0,83935,True,False,False,False,44.0
+alza-cdn,Alza CDN,Media,372584,0.0008877892249468848,11.0,11.0,51.0,40,39,0,9520,True,False,False,False,18.0,6586,True,False,False,False,31.0,9738,True,False,False,False,44.0
+amazon-prime,Amazon Prime Video,Media,320518,0.0007150284727478391,11.0,11.0,49.0,40,30,0,8698,True,False,False,False,18.0,6005,True,False,False,False,37.0,10002,True,False,False,False,44.0
+facebook-media,Facebook Media,Media,3615997,0.008424518863158956,11.0,11.0,51.0,40,40,0,156312,True,False,False,False,18.0,71820,True,False,False,False,31.0,99070,True,False,False,False,44.0
+google-fonts,Google Fonts,Media,3736395,0.010398034471043762,11.0,11.0,51.0,40,40,0,150607,True,False,False,False,18.0,105036,True,False,False,False,31.0,58166,True,False,False,False,44.0
+netflix,Netflix,Media,399532,0.00086927390536602,11.0,11.0,49.0,40,34,0,12898,True,False,False,False,18.0,12669,True,False,False,False,31.0,10815,True,False,False,False,44.0
+o2tv,O2 TV,Media,3925320,0.009415970585238553,11.0,11.0,51.0,40,40,0,129042,True,False,False,False,18.0,74862,True,False,False,False,31.0,94602,True,False,False,False,44.0
+seznam-media,Seznam Media,Media,9565870,0.023337797476204875,11.0,11.0,51.0,40,40,0,316845,True,False,False,False,18.0,204499,True,False,False,False,31.0,232636,True,False,False,False,44.0
+sumava-camdata,Sumava Camdata,Media,259767,0.00020862512092733598,11.0,11.0,51.0,40,15,0,12909,True,False,False,False,18.0,116,False,False,True,False,37.0,6668,True,False,False,False,44.0
+super-media,Super.cz Media,Media,1146834,0.0027232561950760103,11.0,11.0,51.0,40,40,0,37128,True,False,False,False,18.0,27732,True,False,False,False,31.0,27266,True,False,False,False,44.0
+twitch,Twitch,Media,1686914,0.003925664023652152,11.0,11.0,51.0,40,40,0,65844,True,False,False,False,18.0,32516,True,False,False,False,31.0,42880,True,False,False,False,44.0
+vimeo,Vimeo,Media,440515,0.0009921215148891325,11.0,11.0,51.0,40,39,0,15256,True,False,False,False,18.0,7520,True,False,False,False,31.0,7711,True,False,False,False,44.0
+youtube,Youtube,Media,8227879,0.019396974448706025,11.0,11.0,51.0,40,40,0,277822,True,False,False,False,18.0,180389,True,False,False,False,31.0,169978,True,False,False,False,44.0
+apple-itunes,Apple iTunes,Music,5405654,0.010854340870851222,11.0,11.0,51.0,40,40,0,111064,True,False,False,False,18.0,114546,True,False,False,False,31.0,171126,True,False,False,False,44.0
+soundcloud,SoundCloud,Music,340926,0.0008294367351182775,11.0,11.0,49.0,40,37,0,10825,True,False,False,False,18.0,8816,True,False,False,False,31.0,7732,True,False,False,False,44.0
+spotify,Spotify,Music,7666842,0.01476179476007508,11.0,11.0,51.0,40,40,0,382748,True,False,False,False,18.0,198306,True,False,False,False,31.0,134565,True,False,False,False,44.0
+adobe-notifications,Adobe Notifications,Notifications,435225,0.0010233061675896655,11.0,11.0,51.0,40,40,0,13760,True,False,False,False,18.0,10468,True,False,False,False,31.0,10194,True,False,False,False,44.0
+eset-epns,ESET Push Notification Service,Notifications,515462,0.0012666990620137167,11.0,11.0,51.0,40,40,0,13578,True,False,False,False,18.0,14699,True,False,False,False,31.0,9583,True,False,False,False,44.0
+microsoft-push,MS Windows Push Notification Services,Notifications,4328373,0.010697267274627907,11.0,11.0,51.0,40,40,0,122858,True,False,False,False,18.0,68917,True,False,False,False,31.0,145540,True,False,False,False,44.0
+mozilla-push,Mozilla Push Service,Notifications,634074,0.0015500304149392717,11.0,11.0,51.0,40,40,0,18822,True,False,False,False,18.0,10212,True,False,False,False,31.0,15824,True,False,False,False,44.0
+seznam-notifications,Seznam Push Notifications,Notifications,1776387,0.004128853949586868,11.0,11.0,51.0,40,40,0,66154,True,False,False,False,18.0,37908,True,False,False,False,31.0,39939,True,False,False,False,44.0
+alza-webapi,Alza WebAPI,Other APIs,355594,0.000830136492811212,11.0,11.0,49.0,40,38,0,12704,True,False,False,False,18.0,7886,True,False,False,False,31.0,7605,True,False,False,False,44.0
+apple-pancake,Apple Pancake,Other APIs,511294,0.0010131455931705641,11.0,11.0,51.0,40,40,0,13952,True,False,False,False,18.0,8720,True,False,False,False,31.0,16388,True,False,False,False,44.0
+aukro-backend,Aukro Backend,Other APIs,339310,0.0007434594858517655,11.0,11.0,51.0,40,32,0,10395,True,False,False,False,18.0,4201,False,False,True,False,31.0,6162,True,False,False,False,44.0
+autodesk,Autodesk API,Other APIs,2300293,0.004842395851029888,11.0,11.0,51.0,40,40,0,65885,True,False,False,False,18.0,91388,True,False,False,False,31.0,38047,True,False,False,False,44.0
+doh,DoH (5 providers),Other APIs,6672503,0.015926562269526347,11.0,11.0,51.0,40,40,0,229394,True,False,False,False,18.0,113359,True,False,False,False,31.0,180436,True,False,False,False,44.0
+edge-ntp,MS Edge New Tab Page,Other APIs,1177539,0.002780837897799811,11.0,11.0,51.0,40,40,0,31329,True,False,False,False,18.0,26328,True,False,False,False,31.0,27066,True,False,False,False,44.0
+facebook-graph,Facebook Graph API,Other APIs,8207907,0.017946237745525957,11.0,11.0,51.0,40,40,0,362578,True,False,False,False,18.0,128635,True,False,False,False,31.0,243120,True,False,False,False,44.0
+google-services,Google Backend Services,Other APIs,3212448,0.006633740140296949,11.0,11.0,51.0,40,40,0,133555,True,False,False,False,18.0,84256,True,False,False,False,31.0,54528,True,False,False,False,44.0
+nvidiagfe-services,Nvidia GFE Services,Other APIs,425516,0.0012212408472617058,11.0,11.0,51.0,40,32,0,17253,True,False,False,False,18.0,10098,True,False,False,False,31.0,4130,False,False,True,False,46.0
+obalky-knih,Obalky Knih,Other APIs,745929,0.0018461150720509166,11.0,11.0,51.0,40,40,0,20625,True,False,False,False,18.0,18569,True,False,False,False,31.0,18003,True,False,False,False,44.0
+opera-speeddial,Opera Speed Dial,Other APIs,434945,0.0010434076681734579,11.0,11.0,51.0,40,38,0,15308,True,False,False,False,18.0,6827,True,False,False,False,31.0,14149,True,False,False,False,44.0
+rozhlas-api,Rozhlas API,Other APIs,654865,0.0015082527560222269,11.0,11.0,51.0,40,40,0,13056,True,False,False,False,18.0,15346,True,False,False,False,31.0,21771,True,False,False,False,44.0
+sukl-api,SUKL API,Other APIs,627036,0.0015343057229010057,11.0,11.0,51.0,40,40,0,18056,True,False,False,False,18.0,15888,True,False,False,False,31.0,12645,True,False,False,False,44.0
+sukl-erecept,SUKL eRecept,Other APIs,1080856,0.002736764627856208,11.0,11.0,51.0,40,40,0,24263,True,False,False,False,18.0,26509,True,False,False,False,31.0,27519,True,False,False,False,44.0
+uzis-api,UZIS API,Other APIs,338610,0.0008751797331395595,11.0,11.0,46.0,40,25,0,15557,True,False,False,False,18.0,9140,True,False,False,False,31.0,4872,False,False,True,False,
+vzp-api,VZP B2B API,Other APIs,470276,0.0011355060780858356,11.0,11.0,51.0,40,40,0,16353,True,False,False,False,18.0,12797,True,False,False,False,31.0,10463,True,False,False,False,44.0
+zotero,Zotero API,Other APIs,307185,0.0007518581895036085,11.0,11.0,49.0,40,38,0,7968,True,False,False,False,18.0,7065,True,False,False,False,31.0,7046,True,False,False,False,44.0
+booking-com,Booking.com,Other services,414577,0.00095549384230642,11.0,11.0,51.0,40,40,0,11147,True,False,False,False,18.0,12172,True,False,False,False,31.0,8765,True,False,False,False,44.0
+dopravni-info,Dopravni Info,Other services,857641,0.001515768305892816,11.0,11.0,51.0,40,36,0,21801,True,False,False,False,18.0,3539,False,False,True,False,31.0,39316,True,False,False,False,44.0
+google-play,Google Play,Other services,9756290,0.025066587917581686,11.0,11.0,51.0,40,40,0,424386,True,False,False,False,18.0,270580,True,False,False,False,31.0,145361,True,False,False,False,44.0
+google-translate,Google Translate,Other services,579675,0.001264269597167406,11.0,11.0,49.0,40,37,0,38284,True,False,False,False,18.0,12486,True,False,False,False,31.0,6833,True,False,False,False,44.0
+grammarly,Grammarly,Other services,5018294,0.013114932942525189,11.0,11.0,51.0,40,40,0,108026,True,False,False,False,18.0,105050,True,False,False,False,31.0,141169,True,False,False,False,44.0
+office365,MS Office 365,Other services,14720568,0.03379855265840204,11.0,11.0,51.0,40,40,0,426211,True,False,False,False,18.0,292419,True,False,False,False,31.0,366072,True,False,False,False,44.0
+salesforce,Salesforce,Other services,1197998,0.002979903123317016,11.0,11.0,51.0,40,40,0,31609,True,False,False,False,18.0,26602,True,False,False,False,31.0,26236,True,False,False,False,44.0
+signageos,Signageos,Other services,397366,0.0008434787750643239,11.0,11.0,51.0,40,31,0,21230,True,False,False,False,18.0,8550,True,False,False,False,31.0,2369,False,False,True,False,44.0
+vmware-vcsa,VMware VCSA,Other services,1118570,0.0028046147351258777,11.0,11.0,51.0,40,40,0,24454,True,False,False,False,18.0,27380,True,False,False,False,31.0,34691,True,False,False,False,44.0
+chrome-remotedesktop,Chrome Remote Desktop API,Remote desktop,277329,0.0006765483309783657,11.0,11.0,49.0,40,31,0,11584,True,False,False,False,18.0,6548,True,False,False,False,31.0,2954,False,False,True,False,44.0
+teamviewer-client,TeamViewer Client,Remote desktop,326697,0.0008020200629420369,11.0,11.0,51.0,40,40,0,11260,True,False,False,False,18.0,9492,True,False,False,False,31.0,6212,True,False,False,False,44.0
+bing,Bing,Search,5921897,0.013831938806061973,11.0,11.0,51.0,40,40,0,152711,True,False,False,False,18.0,121777,True,False,False,False,31.0,149303,True,False,False,False,44.0
+duckduckgo,DuckDuckGo,Search,361605,0.0008243892870105461,11.0,11.0,49.0,40,36,0,11198,True,False,False,False,18.0,6559,True,False,False,False,31.0,9571,True,False,False,False,44.0
+google-www,Google Search & Maps,Search,10410447,0.02416965544294224,11.0,11.0,51.0,40,40,0,430144,True,False,False,False,18.0,278797,True,False,False,False,31.0,147273,True,False,False,False,44.0
+mlp-search,MLP Search,Search,454133,0.0010779860211599852,11.0,11.0,51.0,40,40,0,14898,True,False,False,False,18.0,9954,True,False,False,False,31.0,10195,True,False,False,False,44.0
+seznam-search,Seznam Search,Search,537968,0.0013083133749688131,11.0,11.0,51.0,40,40,0,16163,True,False,False,False,18.0,12766,True,False,False,False,31.0,15702,True,False,False,False,44.0
+facebook-web,Facebook Web,Social,2169152,0.005579987487544986,11.0,11.0,51.0,40,40,0,82896,True,False,False,False,18.0,56839,True,False,False,False,31.0,54289,True,False,False,False,44.0
+instagram,Instagram,Social,6285558,0.013739035575123314,11.0,11.0,51.0,40,40,0,207420,True,False,False,False,18.0,119848,True,False,False,False,31.0,226186,True,False,False,False,44.0
+snapchat,Snapchat,Social,8978026,0.019540867865229385,11.0,11.0,51.0,40,40,0,418185,True,False,False,False,18.0,249639,True,False,False,False,31.0,220217,True,False,False,False,44.0
+tiktok,TikTok,Social,13754255,0.02969753673644855,11.0,11.0,51.0,40,40,0,365795,True,False,False,False,18.0,271481,True,False,False,False,31.0,390150,True,False,False,False,44.0
+tinder,Tinder,Social,487682,0.0011237193187955737,11.0,11.0,51.0,40,40,0,16719,True,False,False,False,18.0,8062,True,False,False,False,31.0,13368,True,False,False,False,44.0
+twitter,Twitter,Social,5211102,0.012659893424944111,11.0,11.0,51.0,40,40,0,180398,True,False,False,False,18.0,118509,True,False,False,False,31.0,124600,True,False,False,False,44.0
+adobe-updater,Adobe Updater,Software updates,350796,0.0008073254008598184,11.0,11.0,51.0,40,40,0,9812,True,False,False,False,18.0,7526,True,False,False,False,31.0,9011,True,False,False,False,44.0
+apple-updates,Apple Updates,Software updates,1848996,0.004306217932762306,11.0,11.0,51.0,40,40,0,63439,True,False,False,False,18.0,50383,True,False,False,False,31.0,44704,True,False,False,False,44.0
+docker-registry,Docker Registry,Software updates,781143,0.0017946085256470546,11.0,11.0,51.0,40,40,0,22227,True,False,False,False,18.0,19551,True,False,False,False,31.0,12644,True,False,False,False,44.0
+microsoft-update,MS Windows Update,Software updates,10937883,0.02624645326556694,11.0,11.0,51.0,40,40,0,394236,True,False,False,False,18.0,308044,True,False,False,False,31.0,221478,True,False,False,False,44.0
+npm-registry,NPM Registry,Software updates,463025,0.000995337581890232,11.0,11.0,49.0,40,36,0,17472,True,False,False,False,18.0,14859,True,False,False,False,31.0,7061,True,False,False,False,44.0
+opera-autoupdate,Opera Autoupdate,Software updates,580495,0.0014273548139955212,11.0,11.0,51.0,40,37,0,18506,True,False,False,False,18.0,11053,True,False,False,False,31.0,12514,True,False,False,False,44.0
+unpkg,Unpkg,Software updates,464818,0.001098265047986453,11.0,11.0,51.0,40,40,0,14408,True,False,False,False,18.0,9432,True,False,False,False,31.0,10806,True,False,False,False,44.0
+google-hangouts,Google Hangouts/Meets,Videoconferencing,1335205,0.0027496269054194844,11.0,11.0,51.0,40,40,0,56645,True,False,False,False,18.0,40022,True,False,False,False,31.0,21974,True,False,False,False,44.0
+skype,Skype,Videoconferencing,5928904,0.01610331475777846,11.0,11.0,51.0,40,40,0,239140,True,False,False,False,18.0,179982,True,False,False,False,31.0,92148,True,False,False,False,44.0
+teams,MS Teams,Videoconferencing,10372061,0.023867348673394947,11.0,11.0,51.0,40,40,0,389692,True,False,False,False,18.0,213904,True,False,False,False,31.0,290172,True,False,False,False,44.0
+webex,Webex,Videoconferencing,573061,0.0014135254940731581,11.0,11.0,51.0,40,40,0,16536,True,False,False,False,18.0,11507,True,False,False,False,31.0,15162,True,False,False,False,44.0
+zoom,Zoom,Videoconferencing,608846,0.0015225576650808805,11.0,11.0,51.0,40,40,0,22390,True,False,False,False,18.0,11103,True,False,False,False,31.0,15222,True,False,False,False,44.0
+apple-siri,Apple Siri,Virtual assistant,294928,0.00041432670572385275,11.0,11.0,49.0,40,13,0,26632,True,False,False,False,18.0,3191,False,False,True,False,41.0,4714,False,False,True,False,44.0
+accuweather,AccuWeather,Weather,1370490,0.003320508969473191,11.0,11.0,51.0,40,40,0,45083,True,False,False,False,18.0,37311,True,False,False,False,31.0,19573,True,False,False,False,44.0
+apple-weather,Apple Weather,Weather,1487045,0.0032631310931070384,11.0,11.0,51.0,40,40,0,55209,True,False,False,False,18.0,30288,True,False,False,False,31.0,62440,True,False,False,False,44.0
+chmi,CHMI,Weather,1160420,0.002932064534469207,11.0,11.0,51.0,40,40,0,27114,True,False,False,False,18.0,34843,True,False,False,False,31.0,24573,True,False,False,False,44.0
+microsoft-weather,MS Weather,Weather,424528,0.0010272814683944945,11.0,11.0,51.0,40,38,0,13235,True,False,False,False,18.0,9632,True,False,False,False,31.0,9684,True,False,False,False,44.0
+opera-weather,Opera Weather,Weather,186925,8.142315625698758e-05,11.0,11.0,25.0,39,15,1,13037,True,False,False,False,18.0,4735,False,False,True,False,,1311,False,False,True,False,
+the-weather-channel,The Weather Channel,Weather,379270,0.0009555670766303475,11.0,11.0,49.0,40,39,0,13096,True,False,False,False,18.0,9372,True,False,False,False,31.0,10764,True,False,False,False,44.0
+cesnet-login,CESNET Login,Authentication,188809,0.00026264917894529304,11.0,13.0,46.0,40,13,0,4284,False,True,False,False,19.0,3775,False,False,True,False,31.0,1660,False,False,True,False,44.0
+gitlab,Gitlab (3 providers),File sharing,193270,0.00036621399911242886,11.0,13.0,51.0,40,14,0,4538,False,True,False,False,42.0,2822,False,False,True,False,42.0,3032,False,False,True,False,44.0
+cesnet-kalendar,CESNET Kalendar,Mail,355668,0.0008213059285595555,11.0,16.0,49.0,40,30,0,1774,False,True,False,False,18.0,26046,True,False,False,False,31.0,11519,True,False,False,False,44.0
+font-awesome,Font Awesome,Media,384432,0.0008181608237778972,11.0,17.0,49.0,40,31,0,4320,False,True,False,False,20.0,7933,True,False,False,False,31.0,17274,True,False,False,False,44.0
+amazon-alexa,Amazon Alexa,Virtual assistant,157705,0.00036217363311354946,11.0,18.0,49.0,40,5,0,3965,False,True,False,False,19.0,3284,False,False,True,False,,3692,False,False,True,False,
+kb-ib,KB IB,Internet banking,128277,0.00032812816051250825,11.0,24.0,24.0,40,1,0,3444,False,False,False,False,,3613,False,False,False,False,,3073,False,False,True,False,
+cesnet-perun,CESNET Perun,Information systems,40309,4.771735994283845e-05,11.0,34.0,34.0,40,1,0,503,False,True,False,False,34.0,402,False,True,False,False,34.0,557,False,False,True,False,
+cesnet-filesender,CESNET Filesender,File sharing,56243,8.005556734493859e-05,11.0,39.0,48.0,40,2,0,1098,False,False,False,False,,1150,False,False,False,False,,2274,False,False,False,False,
+redmine,"Redmine (CESNET, MFF UK, KIV ZCU)",Information systems,66079,9.696020575936984e-06,11.0,40.0,49.0,40,5,0,64,False,True,False,False,42.0,78,False,True,False,False,42.0,2678,False,True,False,False,44.0
+uzis-ocko,UZIS OCKO,Information systems,57556,0.0001329317308218429,11.0,,,40,0,0,3208,False,False,False,False,,1117,False,False,False,False,,1100,False,False,False,False,
+ctu-kosapi,CTU KOS API,Other APIs,15568,2.400135852697281e-05,11.0,,,40,0,0,514,False,False,False,False,,137,False,False,False,False,,661,False,False,False,False,
+adobe-search,Adobe Universal Search,Search,7995,1.4743478250089776e-05,11.0,,,40,0,0,241,False,False,False,False,,88,False,False,False,False,,178,False,False,False,False,
+vscode-update,VS Code Update,Software updates,47566,3.511126349332073e-05,11.0,,,40,0,0,3348,False,False,False,False,,630,False,False,False,False,,299,False,False,False,False,
