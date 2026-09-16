@@ -55,6 +55,15 @@ from kdtraffic.splits import load_splits  # noqa: E402
 from kdtraffic.train import TrainConfig, predict_logits, resolve_device, train_classifier  # noqa: E402
 
 CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA")
+HPARAMS_FILE = PROJECT_ROOT / "configs" / "student_hparams.json"  # written by scripts/09_tune_students.py
+
+
+def student_hparams() -> dict:
+    """Tuned student settings (decision D2), or the planned defaults if tuning has not been run."""
+    planned = {"kd_temperature": 4.0, "kd_alpha": 0.9, "label_smoothing": 0.1}
+    if HPARAMS_FILE.exists():
+        planned.update(json.loads(HPARAMS_FILE.read_text(encoding="utf-8"))["selected"])
+    return planned
 SUMMARY_METRICS = ["macro_f1", "auroc_energy", "auroc_msp", "fpr95_energy", "ece", "ece_ts", "aurc"]
 
 
@@ -99,9 +108,13 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--student-width", type=int, default=48)
-    parser.add_argument("--label-smoothing", type=float, default=0.1)
-    parser.add_argument("--kd-temperature", type=float, default=4.0)
-    parser.add_argument("--kd-alpha", type=float, default=0.9)
+    hp = student_hparams()
+    parser.add_argument("--label-smoothing", type=float, default=hp["label_smoothing"],
+                        help=f"default from {HPARAMS_FILE.name} if present")
+    parser.add_argument("--kd-temperature", type=float, default=hp["kd_temperature"])
+    parser.add_argument("--kd-alpha", type=float, default=hp["kd_alpha"])
+    parser.add_argument("--teacher-b-from", type=Path, default=None,
+                        help="teacherB_wide.pt from an earlier run with the same data settings")
     parser.add_argument("--endd-max-precision", type=float, default=1e4,
                         help="upper bound on the proxy Dirichlet precision")
     parser.add_argument("--window-known-size", default="100000")
@@ -133,6 +146,8 @@ def main() -> None:
     device = resolve_device(args.device)
     amp = not args.no_amp
     log(f"Run directory: {run_dir}; device {device}; start week {args.start}")
+    log(f"Student settings: KD T={args.kd_temperature:g}, alpha={args.kd_alpha:g}; "
+        f"label smoothing {args.label_smoothing:g}" + (f" (from {HPARAMS_FILE.name})" if HPARAMS_FILE.exists() else ""))
     splits = load_splits(args.splits)
     bundle = build_bundle(spec, splits, args.data_root, args.cache_dir, args.workers, log)
     num_classes, flow_dim = bundle.num_classes, bundle.flowstats_dim
@@ -206,7 +221,17 @@ def main() -> None:
         else:
             model = train(name, "mm_cesnet_v2", args.seed + i, base)
         members.append(model)
-    teacher_b = train("teacherB_wide", "wide_teacher", args.seed + 500, base)
+    b_source = args.teacher_b_from
+    if b_source is not None and reusable_teachers(b_source.parent.parent, bundle.cache_dir, log) and b_source.exists():
+        teacher_b = build_model("wide_teacher", num_classes, flow_dim)
+        teacher_b.load_state_dict(torch.load(b_source, map_location="cpu"))
+        teacher_b.to(device)
+        training["teacherB_wide"] = {"loaded_from": str(b_source)}
+        log(f"Loaded teacherB_wide from {b_source}")
+    else:
+        if b_source is not None:
+            log(f"WARNING: cannot reuse {b_source}; Teacher B will be retrained")
+        teacher_b = train("teacherB_wide", "wide_teacher", args.seed + 500, base)
 
     log("Teacher targets on the training set")
     targets_a = np.zeros((len(bundle.train), num_classes), dtype=np.float32)

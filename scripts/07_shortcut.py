@@ -22,6 +22,7 @@ Examples:
 """
 
 import argparse
+import json
 import sys
 from dataclasses import asdict, replace
 from pathlib import Path
@@ -55,8 +56,10 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--student-width", type=int, default=48)
-    parser.add_argument("--kd-temperature", type=float, default=4.0)
-    parser.add_argument("--kd-alpha", type=float, default=0.9)
+    hparams_file = PROJECT_ROOT / "configs" / "student_hparams.json"  # tuned settings (decision D2)
+    hp = json.loads(hparams_file.read_text(encoding="utf-8"))["selected"] if hparams_file.exists() else {}
+    parser.add_argument("--kd-temperature", type=float, default=hp.get("kd_temperature", 4.0))
+    parser.add_argument("--kd-alpha", type=float, default=hp.get("kd_alpha", 0.9))
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--no-amp", action="store_true")
@@ -72,6 +75,7 @@ def main() -> None:
     log = RunLogger(run_dir / "log.txt")
     device = resolve_device(args.device)
     amp = not args.no_amp
+    log(f"KD settings: T={args.kd_temperature:g}, alpha={args.kd_alpha:g}")
     splits = load_splits(args.splits)
     bundle = build_bundle(spec, splits, args.data_root, args.cache_dir, args.workers, log)
     write_json(run_dir / "config.json", {"args": vars(args), "spec": asdict(spec), "cache_dir": bundle.cache_dir})

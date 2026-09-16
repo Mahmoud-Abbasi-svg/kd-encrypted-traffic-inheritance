@@ -26,6 +26,7 @@ from scipy.stats import rankdata
 
 N_BINS = 15
 CONDITIONS = ("direct", "directTS", "ls", "kdA", "kdB", "enddA")
+SCORES = ("energy", "msp")  # co-primary unknown-scores (decision D6)
 
 
 # Weighted metrics ------------------------------------------------------------------------------
@@ -149,8 +150,9 @@ def build_unit(data, start: int, split: str, weeks_since: float, num_classes: in
         return data[f"{model}__{what}"][mask].astype(np.float64 if what != "pred" else np.int64)
 
     detection_models = ["teacherA"] + [student(c, s) for c in ("kdA", "ls", "directTS", "enddA") for s in seeds]
-    for model in detection_models:
-        unit.detect[model] = RankedScore(get(model, "energy"), known)
+    for score in SCORES:  # co-primary unknown-scores (decision D6)
+        for model in detection_models:
+            unit.detect[f"{score}:{model}"] = RankedScore(get(model, score), known)
     for c in ("kdA", "ls", "directTS"):
         for s in seeds:
             model = student(c, s)
@@ -161,7 +163,7 @@ def build_unit(data, start: int, split: str, weeks_since: float, num_classes: in
             confidence = get(model, what)[known]
             unit.calib[model] = (confidence, (pred == unit.y_known).astype(np.float64), confidence_bins(confidence))
             unit.nll[model] = get(model, "nll_ts")[known]  # post-hoc NLL (decision D7)
-    for model in ["teacherA", "teacherB"] + [student(c, s) for c in ("kdA", "kdB") for s in seeds]:
+    for model in ["teacherA", "teacherB"] + [student(c, s) for c in ("kdA", "kdB", "direct") for s in seeds]:
         unit.rank[model] = ranks(get(model, "energy"))
     return unit
 
@@ -187,15 +189,18 @@ def unit_statistics(unit: Unit, weights: np.ndarray, seed_counts: np.ndarray) ->
     def seed_mean(fn) -> float:
         return float(sum(p * fn(s) for p, s in zip(share, unit.seeds) if p > 0))
 
-    out = {"auroc_teacherA": unit.detect["teacherA"].auroc(weights)}
-    for c in ("kdA", "ls", "directTS", "enddA"):
-        out[f"auroc_{c}"] = seed_mean(lambda s, c=c: unit.detect[student(c, s)].auroc(weights))
+    out = {}
+    for score in SCORES:
+        out[f"auroc_{score}_teacherA"] = unit.detect[f"{score}:teacherA"].auroc(weights)
+        for c in ("kdA", "ls", "directTS", "enddA"):
+            out[f"auroc_{score}_{c}"] = seed_mean(
+                lambda s, c=c, score=score: unit.detect[f"{score}:{student(c, s)}"].auroc(weights))
     for c in ("kdA", "ls", "directTS"):
         out[f"f1_{c}"] = seed_mean(lambda s, c=c: weighted_macro_f1(unit.y_known, unit.preds[student(c, s)], wk,
                                                                     unit.num_classes))
         out[f"ece_{c}"] = seed_mean(lambda s, c=c: weighted_ece(*unit.calib[student(c, s)], wk))
         out[f"nll_{c}"] = seed_mean(lambda s, c=c: weighted_mean(unit.nll[student(c, s)], wk))
-    for c in ("kdA", "kdB"):
+    for c in ("kdA", "kdB", "direct"):
         for teacher in ("A", "B"):
             out[f"rho_{c}_{teacher}"] = seed_mean(
                 lambda s, c=c, t=teacher: weighted_pearson(unit.rank[student(c, s)], unit.rank[f"teacher{t}"], weights))
@@ -213,23 +218,35 @@ def fixed_effects_slope(x: np.ndarray, y: np.ndarray, group: np.ndarray) -> floa
 def hypothesis_components(table: pd.DataFrame) -> dict[str, float]:
     """Pooled components (all oriented so that > 0 supports the hypothesis) from per-unit statistics."""
     m = table.mean(numeric_only=True)
-    gap = table.auroc_teacherA - table.auroc_kdA
-    return {
-        "H1:kdA_own_minus_other": m.rho_kdA_A - m.rho_kdA_B,
-        "H1:kdB_own_minus_other": m.rho_kdB_B - m.rho_kdB_A,
-        "H2:auroc_kdA_minus_ls": m.auroc_kdA - m.auroc_ls,
-        "H2:auroc_kdA_minus_directTS": m.auroc_kdA - m.auroc_directTS,
-        "H2:nll_ls_minus_kdA": m.nll_ls - m.nll_kdA,
-        "H2:nll_directTS_minus_kdA": m.nll_directTS - m.nll_kdA,
-        "H3:gap_slope_per_week": fixed_effects_slope(table.weeks_since.to_numpy(), gap.to_numpy(), table.start.to_numpy()),
-        "H5:auroc_enddA_minus_kdA": m.auroc_enddA - m.auroc_kdA,
-        # reported, not tested: the accuracy match behind H2 (decision D3)
-        "info:f1_kdA_minus_ls": m.f1_kdA - m.f1_ls,
+    direct_a_minus_b = m.rho_direct_A - m.rho_direct_B  # how much more any student follows A than B
+    out = {
+        # H1: shift toward the own teacher, relative to the directly trained student (difference in differences)
+        "H1:kdA_shift_to_A": (m.rho_kdA_A - m.rho_kdA_B) - direct_a_minus_b,
+        "H1:kdB_shift_to_B": (m.rho_kdB_B - m.rho_kdB_A) + direct_a_minus_b,
+    }
+    for score in SCORES:
+        a = lambda c: m[f"auroc_{score}_{c}"]  # noqa: E731
+        gap = table[f"auroc_{score}_teacherA"] - table[f"auroc_{score}_kdA"]
+        out.update({
+            f"H2[{score}]:auroc_kdA_minus_ls": a("kdA") - a("ls"),
+            f"H2[{score}]:auroc_kdA_minus_directTS": a("kdA") - a("directTS"),
+            f"H2[{score}]:nll_ls_minus_kdA": m.nll_ls - m.nll_kdA,
+            f"H2[{score}]:nll_directTS_minus_kdA": m.nll_directTS - m.nll_kdA,
+            f"H3[{score}]:gap_slope_per_week": fixed_effects_slope(
+                table.weeks_since.to_numpy(), gap.to_numpy(), table.start.to_numpy()),
+            f"H5[{score}]:auroc_enddA_minus_kdA": a("enddA") - a("kdA"),
+            f"info:mean_gap_teacherA_minus_kdA_{score}": float(gap.mean()),
+        })
+    out.update({
+        # reported, not tested
+        "info:raw_kdA_own_minus_other": m.rho_kdA_A - m.rho_kdA_B,
+        "info:raw_kdB_own_minus_other": m.rho_kdB_B - m.rho_kdB_A,
+        "info:f1_kdA_minus_ls": m.f1_kdA - m.f1_ls,  # the accuracy match behind H2 (decision D3)
         "info:f1_kdA_minus_directTS": m.f1_kdA - m.f1_directTS,
         "info:ece_ls_minus_kdA": m.ece_ls - m.ece_kdA,
         "info:ece_directTS_minus_kdA": m.ece_directTS - m.ece_kdA,
-        "info:mean_gap_teacherA_minus_kdA": float(gap.mean()),
-    }
+    })
+    return out
 
 
 def _table(units: list[Unit], weights_of, seed_counts_of) -> pd.DataFrame:

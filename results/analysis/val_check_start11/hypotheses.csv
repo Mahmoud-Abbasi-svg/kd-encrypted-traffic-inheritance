@@ -1,0 +1,8 @@
+hypothesis,p_iut,p_holm,supported,note
+H1,0.047619047619047616,0.23809523809523808,False,
+H2[energy],1.0,1.0,False,
+H2[msp],1.0,1.0,False,
+H3[energy],,,False,undefined: one time point
+H3[msp],,,False,undefined: one time point
+H5[energy],0.047619047619047616,0.23809523809523808,False,
+H5[msp],0.047619047619047616,0.23809523809523808,False,

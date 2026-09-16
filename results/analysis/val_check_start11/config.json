@@ -1,0 +1,15 @@
+{
+  "args": {
+    "runs": [
+      "results\\track_a\\20260916-140053_S_train11-14"
+    ],
+    "shortcut": null,
+    "windows": "val",
+    "n_boot": 20,
+    "seed": 2022,
+    "analyses": "primary",
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\analysis",
+    "name": "val_check_start11",
+    "preregistration": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\docs\\preregistration.md"
+  }
+}

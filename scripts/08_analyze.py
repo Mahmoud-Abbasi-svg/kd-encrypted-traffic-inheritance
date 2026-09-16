@@ -229,7 +229,7 @@ def main() -> None:
     primary = components[components.analysis == "primary"]
     hypotheses = summarise_hypotheses(primary)
     if args.windows == "val":
-        hypotheses.loc[hypotheses.hypothesis == "H3", "note"] = "undefined: one time point"
+        hypotheses.loc[hypotheses.hypothesis.str.startswith("H3"), "note"] = "undefined: one time point"
     components.to_csv(out / "components.csv", index=False)
     hypotheses.to_csv(out / "hypotheses.csv", index=False)
     pd.concat(unit_tables, ignore_index=True).to_csv(out / "units.csv", index=False)

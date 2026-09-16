@@ -94,6 +94,7 @@ def synthetic_scores(rng, n=3000, classes=5, seeds=(0, 1, 2), drift=0.0):
     add("teacherA", 3.0, base_a, 0.2, 0.9)
     add("teacherB", 3.0, base_b, 0.2, 0.9)
     for s in seeds:
+        add(f"student_direct_s{s}", 1.0, 0.0, 1.0, 0.85)
         add(f"student_kdA_s{s}", 2.5 - drift, base_a, 0.5, 0.85)
         add(f"student_kdB_s{s}", 2.5, base_b, 0.5, 0.85)
         add(f"student_enddA_s{s}", 2.6 - drift, base_a, 0.5, 0.85)
@@ -114,16 +115,35 @@ def test_pooled_bootstrap_detects_planted_effects(rng):
     n_clusters = assign_clusters(units, days, apps)
     components, table = pooled_bootstrap(units, n_clusters, n_boot=200, seed=1)  # p >= 1/(B+1)
     assert len(table) == 6
-    comp = components.set_index("component")
-    assert comp.loc["kdA_own_minus_other", "estimate"] > 0.3
-    assert comp.loc["kdB_own_minus_other", "p_one_sided"] < 0.05
-    assert comp.loc["auroc_kdA_minus_ls", "p_one_sided"] < 0.05
-    assert comp.loc["gap_slope_per_week", "estimate"] > 0
+    comp = components.set_index(["hypothesis", "component"])
+    assert comp.loc[("H1", "kdA_shift_to_A"), "estimate"] > 0.3
+    assert comp.loc[("H1", "kdB_shift_to_B"), "p_one_sided"] < 0.05
+    assert comp.loc[("H2[energy]", "auroc_kdA_minus_ls"), "p_one_sided"] < 0.05
+    assert comp.loc[("H3[energy]", "gap_slope_per_week"), "estimate"] > 0
+    # the planted MSP scores carry no unknown signal, so the MSP versions are null
+    assert abs(comp.loc[("H2[msp]", "auroc_kdA_minus_ls"), "estimate"]) < 0.05
     hypotheses = summarise_hypotheses(components).set_index("hypothesis")
+    assert set(hypotheses.index) == {"H1", "H2[energy]", "H2[msp]", "H3[energy]", "H3[msp]", "H5[energy]", "H5[msp]"}
     assert hypotheses.loc["H1", "supported"]
-    assert not hypotheses.loc["H2", "supported"]  # the planted NLL components are null
-    h2 = set(components[components.hypothesis == "H2"].component)
+    assert not hypotheses.loc["H2[energy]", "supported"]  # the planted NLL components are null
+    h2 = set(components[components.hypothesis == "H2[energy]"].component)
     assert h2 == {"auroc_kdA_minus_ls", "auroc_kdA_minus_directTS", "nll_ls_minus_kdA", "nll_directTS_minus_kdA"}
+
+
+def test_h1_is_relative_to_the_direct_student(rng):
+    """Every student follows teacher A more (A is 'central'); only the shift beyond the direct student counts."""
+    data = synthetic_scores(rng)
+    known = data["y"] >= 0
+    central = data["teacherA__energy"]
+    for s in (0, 1, 2):
+        for c in ("direct", "kdB"):
+            data[f"student_{c}_s{s}__energy"] = data[f"student_{c}_s{s}__energy"] + 2.0 * central * (c == "direct")
+    unit = build_unit(data, 11, "test_0", 3.0, 5, np.ones(len(known), dtype=bool))
+    assign_clusters([unit], [data["day"]], [data["app"]])
+    components, _ = pooled_bootstrap([unit], int(unit.cluster.max()) + 1, n_boot=20, seed=0)
+    comp = components.set_index(["hypothesis", "component"])
+    assert comp.loc[("info", "raw_kdB_own_minus_other"), "estimate"] > 0
+    assert comp.loc[("H1", "kdB_shift_to_B"), "estimate"] > comp.loc[("info", "raw_kdB_own_minus_other"), "estimate"]
 
 
 def test_shortcut_components():
