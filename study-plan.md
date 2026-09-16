@@ -215,7 +215,7 @@ Table 1 summarises the datasets, splits and known/unknown service lists.
 
 To be fixed **before any test-window unknown results are computed**:
 1. **Hypotheses H1–H5** as worded in Section 3, with the direction of each effect.
-2. **Primary outcome:** the teacher-minus-student energy-AUROC gap against weeks since training. The analysis is the slope of that gap from a mixed-effects model with start date as a random effect.
+2. **Primary outcome:** the teacher-minus-student energy-AUROC gap against weeks since training. The analysis is the slope of that gap from a regression with one intercept per start date. The plan first said a mixed-effects model with start date as a random effect; that was changed on 16 Sep 2026, before any results, because 3 start dates cannot support a random-effect variance. See `docs/preregistration.md` §6.
 3. **Confirmatory tests and correction:** one test per hypothesis, Holm-corrected, α = 0.05.
 4. **Splits:** exact week ranges, known/unknown/near/far service lists, and the deduplication rule.
 5. **Tuning budget:** the number of hyperparameter trials per model, chosen on validation data only.

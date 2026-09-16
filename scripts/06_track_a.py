@@ -19,7 +19,9 @@ and never touches the test unknowns.
 Outputs (results/track_a/<run>/):
     metrics.csv         metric rows per model, split, flow group (all / >=5 packets) and unknown group
     inheritance.csv     student-teacher agreement: rank correlation of unknown-scores, error overlap
-    scores_<split>.npz  per-flow energy, msp and prediction of every model, with labels, services, days
+    scores_<split>.npz  per-flow energy, msp (and temperature-scaled msp_ts) and prediction of every model,
+                        with labels, services, days, packet counts and an exact-duplicate-of-training flag
+                        (input of scripts/08_analyze.py)
     training.json, config.json, log.txt, models/*.pt
 
 Examples:
@@ -42,7 +44,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from kdtraffic.cli import RunLogger, add_data_args, make_run_dir, spec_from_args, write_json  # noqa: E402
-from kdtraffic.data import build_bundle, evaluation_windows, load_window  # noqa: E402
+from kdtraffic.data import build_bundle, evaluation_windows, load_window, sequence_keys  # noqa: E402
 from kdtraffic.distill import DirichletProxyAccumulator, HintonKD, ProxyDirichletKL, softmax_chunked  # noqa: E402
 from kdtraffic.evaluation import Outputs, ensemble_log_probs, from_ensemble, from_logits, report_rows  # noqa: E402
 from kdtraffic.inheritance import inheritance_row  # noqa: E402
@@ -171,6 +173,8 @@ def main() -> None:
         rows.extend({**r, **extra} for r in report_rows(model, split, eval_sets[split], *groups[split], outputs))
         scores[split][f"{model}__energy"] = outputs.scores["energy"].astype(np.float16)
         scores[split][f"{model}__msp"] = outputs.scores["msp"].astype(np.float16)
+        if outputs.probs_ts is not None:
+            scores[split][f"{model}__msp_ts"] = outputs.probs_ts.max(axis=1).astype(np.float16)
         scores[split][f"{model}__pred"] = outputs.probs.argmax(axis=1).astype(np.int16)
 
     def train(name: str, architecture: str, seed: int, cfg: TrainConfig, objective=None):
@@ -267,9 +271,13 @@ def main() -> None:
     df.to_csv(run_dir / "metrics.csv", index=False)
     inh = pd.DataFrame(inheritance)
     inh.to_csv(run_dir / "inheritance.csv", index=False)
+    train_keys = sequence_keys(bundle.train.ppi)
     for split, arrays in eval_sets.items():
         extra = {} if arrays.day is None else {"day": arrays.day}
-        np.savez(run_dir / f"scores_{split}.npz", y=arrays.y, app=arrays.app, **extra, **scores[split])
+        duplicate = np.isin(sequence_keys(arrays.ppi), train_keys)
+        log(f"{split}: {duplicate.mean():.1%} of flows have an exact packet-sequence duplicate in the training window")
+        np.savez(run_dir / f"scores_{split}.npz", y=arrays.y, app=arrays.app, ppi_len=arrays.ppi_len.astype(np.int8),
+                 duplicate=duplicate, **extra, **scores[split])
 
     val = df[(df.split == "val") & (df.flows == "all") & (df.unknown == "all")]
     log("Validation week, mean over seeds / members:\n"

@@ -100,12 +100,27 @@ python scripts/07_shortcut.py --size S --workers 8
 Settle the open decisions in `docs/preregistration.md`, set its status line to `**Status:** FROZEN`, commit, and register it on OSF. Only then:
 ```bash
 python scripts/06_track_a.py --size S --start 11 --teachers-from results/pilot/<run> --with-test --workers 8
+python scripts/06_track_a.py --size S --start 24 --with-test --workers 8
+python scripts/06_track_a.py --size S --start 37 --with-test --workers 8
 ```
+These are new runs: they retrain the students with the same seeds and evaluate the validation week and the test windows. Use these runs, not the validation-only runs of §10, for the analysis.
 `--with-test` refuses to run while the file is not frozen. Test windows are 4-week blocks after the validation week up to week 52, without weeks 50 and 52, and are cached separately.
+
+Then run the confirmatory analysis over the three start dates and the shortcut run:
+```bash
+python scripts/08_analyze.py --windows test \
+    --runs results/track_a/<run11> results/track_a/<run24> results/track_a/<run37> \
+    --shortcut results/shortcut/<run>
+```
+- **Time and memory:** about 2 hours on one CPU core, about 2 GB of RAM. It runs three analyses of 1,000 bootstrap resamples each: primary, without duplicates, and ≥5 packets.
+- **Output** (`results/analysis/<name>/`): `report.md`, `hypotheses.csv`, `components.csv`, the per-window tables and figures.
+- **Before the test run:** check that the script works on the validation-only runs with `--windows val --n-boot 50`. H3 is undefined there, because there is only one time point.
 
 ## 13. What to send back
 - From the pilot: `results/pilot/<run>/gate.json`, `metrics.csv` and `log.txt`.
 - From the other runs: `results/baselines/<run>/metrics.csv`, `results/track_a/<run>/{metrics,inheritance}.csv` and `results/shortcut/<run>/{reliance,shortcut}.csv`, with their `log.txt`.
+
+- From the analysis: the whole `results/analysis/<name>/` folder. It is small.
 
 Models, logits and `scores_*.npz` can stay on the server.
 

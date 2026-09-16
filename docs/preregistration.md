@@ -59,13 +59,29 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
 - **Reporting groups:** all flows and flows with ≥5 packets; all, near and far unknown services.
 
 ## 6. Hypotheses and confirmatory tests
-All tests are one-sided at α = 0.05, Holm-corrected across H1–H5. Confidence intervals come from bootstraps that resample day × service clusters (1,000 resamples), pooled over test windows and start dates.
+All tests are one-sided at α = 0.05, Holm-corrected across H1–H5 (H4a and H4b count separately if D4 is accepted). The analysis code is `scripts/08_analyze.py` with `kdtraffic/analysis.py`, and it is frozen together with this file.
+
+**Unit and pooling.** The unit is one start date × one test window. Pooled estimates are unweighted means over units of the seed-averaged statistic.
+
+**Bootstrap.** 1,000 resamples. Each resample does two things:
+- It redraws day × service clusters with replacement, **globally**: a cluster that appears in windows of several start dates gets the same multiplicity everywhere.
+- It redraws the 3 student seeds with replacement, separately per start date.
+
+Resampled clusters enter the metrics as flow weights. The reported interval is the 95% percentile interval.
+
+**p-values.** The one-sided p-value of a component is (1 + #{resampled estimate ≤ 0}) / (B + 1).
+
+**Several components.** A hypothesis with several components is supported only if every component is (intersection–union test). Its p-value is therefore the largest component p-value.
+
+**Sensitivity analyses** (same code, not in the Holm family):
+- (a) test flows with an exact packet-sequence duplicate in the training window removed (see D5);
+- (b) flows with ≥5 packets only.
 
 | # | Hypothesis | Test |
 |---|---|---|
-| H1 | Teacher-specific inheritance: the `kdA` student's energy scores correlate more with Teacher A than with Teacher B, and the `kdB` student's more with B than with A | Mean over seeds and start dates of (own − other) Spearman correlation > 0, for both students |
-| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on energy AUROC and on post-hoc ECE at matched macro-F1 | Difference in AUROC (and ECE) between `kdA` and each control > 0 (< 0 for ECE); matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
-| H3 | Decay: the Teacher A − `kdA` energy-AUROC gap grows with weeks since training | Slope > 0 in a mixed-effects model: gap ~ weeks_since + (1 \| start date) + (1 \| seed) |
+| H1 | Teacher-specific inheritance: the `kdA` student's energy scores correlate more with Teacher A than with Teacher B, and the `kdB` student's more with B than with A | Pooled (own − other) Spearman correlation over all test flows > 0, for both students (2 components) |
+| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on energy AUROC and on post-hoc ECE at matched macro-F1 | Energy AUROC of `kdA` minus each control > 0, and post-hoc ECE of each control minus `kdA` > 0 (4 components). Post-hoc ECE uses temperature-scaled confidences; for `directTS` the scaled model itself. Matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
+| H3 | Decay: the Teacher A − `kdA` energy-AUROC gap grows with weeks since training | Slope > 0 in an OLS regression of the per-unit gap (seed-averaged) on weeks since the end of training, with one intercept per start date. Three start dates are too few to estimate a random-effect variance, so start date enters as a fixed effect; seed variation enters through the bootstrap |
 | H4 | Shortcut transfer (see D4) | See D4 |
 | H5 | EnDD keeps more of A's unknown detection than Hinton KD | Energy AUROC of `enddA` minus `kdA` > 0 |
 
@@ -73,10 +89,12 @@ All tests are one-sided at α = 0.05, Holm-corrected across H1–H5. Confidence 
 - **H4a (both see the feature):** at ρ ∈ {0.9, 1.0}, the flip-test reliance (macro-F1 aligned − flipped) of the `kd` student exceeds that of the `direct` student.
 - **H4b (teacher only):** a KD student distilled from a shortcut-reliant teacher (ρ ∈ {0.9, 1.0}) has higher ECE and lower energy AUROC than one distilled from the ρ = 0 teacher.
 
-Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 seeds.
+Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 seeds. Test: a paired one-sided t-test over the 6 (ρ, seed) pairs.
+- **H4a:** one component.
+- **H4b:** two components, each compared with the ρ = 0 teacher of the same seed: ECE higher; energy AUROC lower.
 
 ## 7. Exclusions and data rules
-- **Deduplication:** test flows whose exact PPI-30 sequence (timing, direction, size) occurs in the training window are reported separately (sensitivity analysis). The primary analysis keeps them. *Open decision D5:* keep (proposal) or drop in the primary analysis.
+- **Deduplication:** test flows whose exact PPI-30 sequence (timing, direction, size) occurs in the training window are reported separately (sensitivity analysis). They are flagged by a 64-bit hash of the scaled sequence (`duplicate` in `scores_<split>.npz`). The primary analysis keeps them. *Open decision D5:* keep (proposal) or drop in the primary analysis.
 - **Minimum training flows:** a known service with fewer than 100 training flows in a window stops the run (none expected under the split rules).
 - **No data from after the end of a training window** is used for training, early stopping or temperature fitting.
 
@@ -97,6 +115,7 @@ Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 see
 - Code: this repository.
 - Splits: `configs/splits.json`.
 - Per-flow scores: `scores_<split>.npz` from `scripts/06_track_a.py`.
+- Confirmatory analysis: `scripts/08_analyze.py --windows test`, which refuses to run until this file is frozen.
 
 Everything is released with the paper.
 

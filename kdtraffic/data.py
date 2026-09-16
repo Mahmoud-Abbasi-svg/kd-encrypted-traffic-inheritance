@@ -142,6 +142,20 @@ def evaluation_windows(val_weeks: tuple[int, int], length: int = 4, last_week: i
     return windows
 
 
+def sequence_keys(ppi: np.ndarray) -> np.ndarray:
+    """64-bit hash of each flow's whole packet sequence (all channels), for exact-duplicate checks.
+
+    Works on scaled arrays; the scaling is the same for all sets of a bundle, so equal raw sequences
+    get equal keys (values clipped by the scaler can also collide, which only merges extreme values).
+    """
+    flat = np.ascontiguousarray(ppi.reshape(len(ppi), -1))
+    keys = np.zeros(len(flat), dtype=np.uint64)
+    with np.errstate(over="ignore"):
+        for j in range(flat.shape[1]):
+            keys = keys * np.uint64(1099511628211) + pd.util.hash_array(flat[:, j])
+    return keys
+
+
 def _to_numpy(x) -> np.ndarray:
     return x.numpy() if hasattr(x, "numpy") else np.asarray(x)
 

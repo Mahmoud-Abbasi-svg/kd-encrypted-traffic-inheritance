@@ -14,8 +14,9 @@
 | Track A grid code (teachers A/B, 5 student conditions, test windows, inheritance, per-flow scores) | Written, smoke-tested on laptop (validation unknowns only) | `scripts/06_track_a.py`, `kdtraffic/distill.py`, `kdtraffic/inheritance.py` |
 | Shortcut experiment code (RQ3) | Written, smoke-tested on laptop | `scripts/07_shortcut.py` |
 | Cluster bootstrap (day × service) | Written and tested | `kdtraffic/stats.py` |
-| Pre-registration | **Draft with 5 open decisions** | `docs/preregistration.md` |
-| Unit tests | 36 pass | `tests/` |
+| Confirmatory analysis (pooled cluster + seed bootstrap, Holm, sensitivity analyses, figures, report) | Written, tested, smoke-run on laptop | `scripts/08_analyze.py`, `kdtraffic/analysis.py` |
+| Pre-registration | **Draft with 5 open decisions**; analysis section now matches the code | `docs/preregistration.md` |
+| Unit tests | 44 pass | `tests/` |
 | **Pilot on size S (week-3 gate)** | **Not run yet: needs the GPU server** | `SERVER_SETUP.md` §7 |
 
 ## Next steps
@@ -31,12 +32,14 @@
 3. **Before freezing:**
    - run the manual Google Scholar / IEEE Xplore novelty search;
    - check for new work from the ResAware group.
-4. **Freeze the pre-registration:** set the status line to `**Status:** FROZEN`, commit, and post it on OSF. Only then run `--with-test` (§12).
-5. **Still to write:** the analysis script (mixed-effects slope for H3, bootstrap CIs for H1–H5, figures); Track B (netFound on UNSW-IoTraffic); CPU deployment measurements.
+4. **Freeze the pre-registration** together with the analysis code: set the status line to `**Status:** FROZEN`, commit, and post it on OSF. Only then run `--with-test` and `08_analyze.py --windows test` (§12).
+5. **Still to write:** Track B (netFound on UNSW-IoTraffic); CPU deployment measurements (ONNX Runtime); conformal recalibration (exploratory).
 
 ## Watch items
 - **`enddA` training:** its loss is large because proxy-Dirichlet precisions go up to 10⁴. If the student trains poorly on S, lower `--endd-max-precision` and record why.
 - **Teacher B accuracy:** it must land close to Teacher A's (D1); in the one-epoch smoke run it was slightly higher. Check this on S before interpreting the teacher swap.
+- **H3 analysis changed before any results:** the slope uses start-date fixed effects instead of a mixed model (3 start dates cannot support a random-effect variance). Recorded in `study-plan.md` and the pre-registration draft.
+- **Validation-only grid runs (§10) lack test windows;** the analysis needs the `--with-test` runs of §12.
 - **Laptop smoke results** (`results/*/…_smoke`) are meaningless and are not tracked by git.
 
 ## This laptop
@@ -73,6 +76,7 @@ scripts/04                 XGBoost and k-NN baselines
 scripts/05                 week-3 pilot (Teacher A vs direct student)
 scripts/06                 Track A grid for one start date
 scripts/07                 synthetic-shortcut experiment (RQ3)
+scripts/08                 confirmatory analysis (H1–H5), report and figures
 tests/                     unit tests (pytest)
 results/week1/             week-1 outputs
 ```
