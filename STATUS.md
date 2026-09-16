@@ -17,7 +17,8 @@
 | Confirmatory analysis (pooled cluster + seed bootstrap, Holm, sensitivity analyses, figures, report) | Written, tested, smoke-run on laptop | `scripts/08_analyze.py`, `kdtraffic/analysis.py` |
 | Pre-registration | **Draft with 5 open decisions**; analysis section now matches the code | `docs/preregistration.md` |
 | Unit tests | 44 pass | `tests/` |
-| **Pilot on size S (week-3 gate)** | **Not run yet: needs the GPU server** | `SERVER_SETUP.md` §7 |
+| **Pilot on size S (week-3 gate)** | **Running on the laptop GPU** (the cluster is not reachable yet) | `run_pilot_laptop.cmd`, `logs/pilot_laptop.log` |
+| BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
 ## Next steps
 1. **On the GPU server:**
@@ -45,10 +46,10 @@
 ## This laptop
 | Item | Value |
 |---|---|
-| Python environment | `C:\venvs\kd-traffic` (Python 3.10, torch CPU, cesnet-datazoo 0.2.0, cesnet-models 0.4.1) |
-| Data | `C:\datasets\CESNET-TLS-Year22\` (XS subset, full-year stats JSON, servicemap) |
+| Python environment | `C:\venvs\kd-traffic` (Python 3.10, torch 2.14.0+cu130, cesnet-datazoo 0.2.0, cesnet-models 0.4.1) |
+| Data | `C:\datasets\CESNET-TLS-Year22\` (XS and S, full-year stats JSON, servicemap) |
 | Array cache | `C:\datasets\cache\` (version 3) |
-| Limits | 4 GB GPU, 15 GB RAM: CPU checks and smoke runs only |
+| Limits | RTX 3050 Ti 4 GB, 15 GB RAM: the size-S pilot fits (teacher ~23k flows/s, ~1 GB of arrays); the full grid belongs on the cluster. Close Chrome, VS Code, PostgreSQL and Notion before long runs |
 | Run a script | `C:\venvs\kd-traffic\Scripts\python.exe scripts\<name>.py` |
 | Run the tests | `C:\venvs\kd-traffic\Scripts\python.exe -m pytest tests -q` |
 

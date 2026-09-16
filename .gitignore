@@ -7,6 +7,8 @@ __pycache__/
 # Laptop smoke runs (meaningless numbers)
 results/**/*_smoke/
 results/analysis/*smoke*/
+logs/*
+!logs/.gitkeep
 
 # Large run artefacts (kept on disk, not in git)
 results/**/models/
