@@ -1,0 +1,28 @@
+{
+  "split": "val",
+  "thresholds": {
+    "macro_f1_points": 2.0,
+    "auroc_energy": 0.02
+  },
+  "all": {
+    "teacher_macro_f1": 0.9638540619028597,
+    "student_macro_f1": 0.9021585865773141,
+    "macro_f1_gap_points": 6.169547532554565,
+    "teacher_auroc_energy": 0.837440381050224,
+    "student_auroc_energy": 0.8192105618828911,
+    "auroc_energy_gap": 0.018229819167332906
+  },
+  "ge5": {
+    "teacher_macro_f1": 0.9715278430581625,
+    "student_macro_f1": 0.9137975638894574,
+    "macro_f1_gap_points": 5.77302791687051,
+    "teacher_auroc_energy": 0.8492320345136544,
+    "student_auroc_energy": 0.8362953038417477,
+    "auroc_energy_gap": 0.012936730671906704
+  },
+  "teacher_members_mean": {
+    "macro_f1": 0.9581072385736075,
+    "auroc_energy": 0.8215104578181075
+  },
+  "passed": true
+}

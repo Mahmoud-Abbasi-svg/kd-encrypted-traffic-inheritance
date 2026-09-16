@@ -88,6 +88,8 @@ def synthetic_scores(rng, n=3000, classes=5, seeds=(0, 1, 2), drift=0.0):
         data[f"{model}__pred"] = pred
         data[f"{model}__msp"] = confidence
         data[f"{model}__msp_ts"] = confidence
+        p_true = np.where(pred == y, confidence, (1 - confidence) / (classes - 1))
+        data[f"{model}__nll_ts"] = np.where(known, -np.log(np.clip(p_true, 1e-12, 1.0)), 0.0)
 
     add("teacherA", 3.0, base_a, 0.2, 0.9)
     add("teacherB", 3.0, base_b, 0.2, 0.9)
@@ -119,7 +121,9 @@ def test_pooled_bootstrap_detects_planted_effects(rng):
     assert comp.loc["gap_slope_per_week", "estimate"] > 0
     hypotheses = summarise_hypotheses(components).set_index("hypothesis")
     assert hypotheses.loc["H1", "supported"]
-    assert not hypotheses.loc["H2", "supported"]  # the planted ECE components are null
+    assert not hypotheses.loc["H2", "supported"]  # the planted NLL components are null
+    h2 = set(components[components.hypothesis == "H2"].component)
+    assert h2 == {"auroc_kdA_minus_ls", "auroc_kdA_minus_directTS", "nll_ls_minus_kdA", "nll_directTS_minus_kdA"}
 
 
 def test_shortcut_components():

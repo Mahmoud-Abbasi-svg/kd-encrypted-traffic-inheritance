@@ -1,0 +1,92 @@
+[12:26:27] Run directory: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\pilot\20260916-122627_S_train11-14
+[12:26:27] torch 2.14.0+cu130, device cuda (NVIDIA GeForce RTX 3050 Ti Laptop GPU)
+[12:26:29] Building arrays with cesnet-datazoo (size S); cache: C:\datasets\cache\tls-year22_S_121012501890
+[12:26:38]   training configuration initialised in 10s
+[12:26:51]   train: kept 1,891,236 of 1,891,236 flows (0 unknown) in 12s
+[12:26:59]   val: kept 253,779 of 253,779 flows (53,779 unknown) in 6s
+[12:27:03]   cached arrays in 34s total
+[12:27:03] Classes 102, flow-statistics features 44; train 1,891,236, val 253,779 flows
+[12:27:03] Training teacher_0 (mm_cesnet_v2, 2,261,878 parameters, seed 0)
+[12:28:34] teacher_0 epoch 1/10: train_loss=0.7395, seconds=84.8, val_loss=0.2968, val_macro_f1=0.8741
+[12:30:00] teacher_0 epoch 2/10: train_loss=0.2353, seconds=83.2, val_loss=0.2049, val_macro_f1=0.9134
+[12:31:26] teacher_0 epoch 3/10: train_loss=0.1784, seconds=83.8, val_loss=0.1722, val_macro_f1=0.925
+[12:32:54] teacher_0 epoch 4/10: train_loss=0.1492, seconds=84.8, val_loss=0.1581, val_macro_f1=0.9323
+[12:34:22] teacher_0 epoch 5/10: train_loss=0.1249, seconds=85.2, val_loss=0.1352, val_macro_f1=0.9426
+[12:35:50] teacher_0 epoch 6/10: train_loss=0.1021, seconds=85.6, val_loss=0.1245, val_macro_f1=0.9464
+[12:37:19] teacher_0 epoch 7/10: train_loss=0.082, seconds=85.9, val_loss=0.1131, val_macro_f1=0.9517
+[12:38:46] teacher_0 epoch 8/10: train_loss=0.06395, seconds=84.2, val_loss=0.1067, val_macro_f1=0.9566
+[12:40:13] teacher_0 epoch 9/10: train_loss=0.05132, seconds=84.5, val_loss=0.1035, val_macro_f1=0.9577
+[12:41:40] teacher_0 epoch 10/10: train_loss=0.04448, seconds=84.2, val_loss=0.1037, val_macro_f1=0.9582
+[12:41:44] Training teacher_1 (mm_cesnet_v2, 2,261,878 parameters, seed 1)
+[12:43:11] teacher_1 epoch 1/10: train_loss=0.7454, seconds=83.2, val_loss=0.3061, val_macro_f1=0.8747
+[12:44:39] teacher_1 epoch 2/10: train_loss=0.2361, seconds=85.6, val_loss=0.2136, val_macro_f1=0.9109
+[12:46:07] teacher_1 epoch 3/10: train_loss=0.1808, seconds=85.2, val_loss=0.1761, val_macro_f1=0.9247
+[12:47:35] teacher_1 epoch 4/10: train_loss=0.1501, seconds=84.6, val_loss=0.1619, val_macro_f1=0.931
+[12:49:02] teacher_1 epoch 5/10: train_loss=0.1264, seconds=85, val_loss=0.1339, val_macro_f1=0.941
+[12:50:29] teacher_1 epoch 6/10: train_loss=0.104, seconds=84.2, val_loss=0.1291, val_macro_f1=0.9464
+[12:51:58] teacher_1 epoch 7/10: train_loss=0.08313, seconds=85.8, val_loss=0.1134, val_macro_f1=0.9521
+[12:53:24] teacher_1 epoch 8/10: train_loss=0.06497, seconds=83, val_loss=0.1089, val_macro_f1=0.9561
+[12:54:49] teacher_1 epoch 9/10: train_loss=0.05176, seconds=82.5, val_loss=0.1057, val_macro_f1=0.9574
+[12:56:14] teacher_1 epoch 10/10: train_loss=0.04515, seconds=82.5, val_loss=0.1054, val_macro_f1=0.9576
+[12:56:18] Training teacher_2 (mm_cesnet_v2, 2,261,878 parameters, seed 2)
+[12:57:46] teacher_2 epoch 1/10: train_loss=0.741, seconds=82.8, val_loss=0.289, val_macro_f1=0.8794
+[12:59:11] teacher_2 epoch 2/10: train_loss=0.2362, seconds=82.7, val_loss=0.2067, val_macro_f1=0.9092
+[13:00:36] teacher_2 epoch 3/10: train_loss=0.18, seconds=82.8, val_loss=0.1736, val_macro_f1=0.9271
+[13:02:02] teacher_2 epoch 4/10: train_loss=0.1501, seconds=82.8, val_loss=0.1643, val_macro_f1=0.9308
+[13:03:28] teacher_2 epoch 5/10: train_loss=0.1251, seconds=82.9, val_loss=0.1447, val_macro_f1=0.9388
+[13:04:53] teacher_2 epoch 6/10: train_loss=0.1029, seconds=82.8, val_loss=0.1207, val_macro_f1=0.9484
+[13:06:19] teacher_2 epoch 7/10: train_loss=0.08229, seconds=82.9, val_loss=0.1152, val_macro_f1=0.9524
+[13:07:44] teacher_2 epoch 8/10: train_loss=0.06457, seconds=82.9, val_loss=0.1064, val_macro_f1=0.9557
+[13:09:10] teacher_2 epoch 9/10: train_loss=0.05143, seconds=82.9, val_loss=0.1044, val_macro_f1=0.9581
+[13:10:37] teacher_2 epoch 10/10: train_loss=0.04482, seconds=84.4, val_loss=0.1041, val_macro_f1=0.9584
+[13:10:40] Training teacher_3 (mm_cesnet_v2, 2,261,878 parameters, seed 3)
+[13:12:08] teacher_3 epoch 1/10: train_loss=0.7421, seconds=84.4, val_loss=0.3117, val_macro_f1=0.8737
+[13:13:37] teacher_3 epoch 2/10: train_loss=0.2361, seconds=86.5, val_loss=0.2107, val_macro_f1=0.9119
+[13:15:06] teacher_3 epoch 3/10: train_loss=0.1799, seconds=86.3, val_loss=0.1767, val_macro_f1=0.9237
+[13:16:35] teacher_3 epoch 4/10: train_loss=0.1506, seconds=86.3, val_loss=0.1572, val_macro_f1=0.9334
+[13:18:04] teacher_3 epoch 5/10: train_loss=0.1256, seconds=85.8, val_loss=0.1383, val_macro_f1=0.9408
+[13:19:31] teacher_3 epoch 6/10: train_loss=0.1035, seconds=84.7, val_loss=0.1243, val_macro_f1=0.9477
+[13:20:58] teacher_3 epoch 7/10: train_loss=0.08261, seconds=83.4, val_loss=0.1126, val_macro_f1=0.9526
+[13:22:25] teacher_3 epoch 8/10: train_loss=0.06475, seconds=84.4, val_loss=0.1071, val_macro_f1=0.9551
+[13:23:53] teacher_3 epoch 9/10: train_loss=0.05144, seconds=85.1, val_loss=0.1055, val_macro_f1=0.9579
+[13:25:20] teacher_3 epoch 10/10: train_loss=0.04481, seconds=84.8, val_loss=0.1046, val_macro_f1=0.9584
+[13:25:24] Training teacher_4 (mm_cesnet_v2, 2,261,878 parameters, seed 4)
+[13:26:59] teacher_4 epoch 1/10: train_loss=0.7428, seconds=88.4, val_loss=0.3018, val_macro_f1=0.8719
+[13:28:27] teacher_4 epoch 2/10: train_loss=0.237, seconds=85.1, val_loss=0.207, val_macro_f1=0.9118
+[13:29:54] teacher_4 epoch 3/10: train_loss=0.1798, seconds=84.5, val_loss=0.1728, val_macro_f1=0.9251
+[13:31:22] teacher_4 epoch 4/10: train_loss=0.1499, seconds=85.1, val_loss=0.1586, val_macro_f1=0.934
+[13:32:51] teacher_4 epoch 5/10: train_loss=0.1249, seconds=86.1, val_loss=0.1349, val_macro_f1=0.94
+[13:34:19] teacher_4 epoch 6/10: train_loss=0.1025, seconds=85.6, val_loss=0.1231, val_macro_f1=0.9481
+[13:35:47] teacher_4 epoch 7/10: train_loss=0.08212, seconds=84.8, val_loss=0.1144, val_macro_f1=0.9524
+[13:37:14] teacher_4 epoch 8/10: train_loss=0.06382, seconds=84.4, val_loss=0.1061, val_macro_f1=0.9569
+[13:38:44] teacher_4 epoch 9/10: train_loss=0.05091, seconds=86.8, val_loss=0.1048, val_macro_f1=0.9579
+[13:40:19] teacher_4 epoch 10/10: train_loss=0.04427, seconds=91.8, val_loss=0.1042, val_macro_f1=0.9585
+[13:40:23] Training student_direct (student, 101,190 parameters, seed 1000)
+[13:40:42] student_direct epoch 1/10: train_loss=1.533, seconds=15, val_loss=0.5355, val_macro_f1=0.7813
+[13:40:57] student_direct epoch 2/10: train_loss=0.4634, seconds=14.7, val_loss=0.396, val_macro_f1=0.8385
+[13:41:11] student_direct epoch 3/10: train_loss=0.3711, seconds=13.5, val_loss=0.3376, val_macro_f1=0.861
+[13:41:25] student_direct epoch 4/10: train_loss=0.3264, seconds=13.2, val_loss=0.3115, val_macro_f1=0.8732
+[13:41:39] student_direct epoch 5/10: train_loss=0.2958, seconds=13.3, val_loss=0.2899, val_macro_f1=0.8838
+[13:41:53] student_direct epoch 6/10: train_loss=0.2715, seconds=14, val_loss=0.2684, val_macro_f1=0.8902
+[13:42:09] student_direct epoch 7/10: train_loss=0.2525, seconds=15.7, val_loss=0.2574, val_macro_f1=0.8952
+[13:42:25] student_direct epoch 8/10: train_loss=0.2375, seconds=15.3, val_loss=0.2449, val_macro_f1=0.9011
+[13:42:41] student_direct epoch 9/10: train_loss=0.2264, seconds=15, val_loss=0.2413, val_macro_f1=0.9018
+[13:42:55] student_direct epoch 10/10: train_loss=0.221, seconds=14.4, val_loss=0.2389, val_macro_f1=0.9022
+[13:42:56] Evaluating
+[13:43:44] Validation results (unknown = all validation unknown services):
+            model flows unknown  n_known  n_unknown  macro_f1  auroc_energy  auroc_msp  fpr95_energy  oscr_energy    ece  ece_ts   aurc
+        teacher_0   all     all   200000      53779    0.9577        0.8206     0.9000        0.6072       0.8104 0.0069  0.0016 0.0011
+        teacher_0   ge5     all   191366      52270    0.9659        0.8311     0.9111        0.5509       0.8221 0.0056  0.0013 0.0008
+        teacher_1   all     all   200000      53779    0.9576        0.8423     0.9038        0.5936       0.8317 0.0075  0.0019 0.0011
+        teacher_1   ge5     all   191366      52270    0.9656        0.8535     0.9148        0.5343       0.8442 0.0062  0.0014 0.0008
+        teacher_2   all     all   200000      53779    0.9584        0.8388     0.9013        0.6127       0.8287 0.0070  0.0019 0.0011
+        teacher_2   ge5     all   191366      52270    0.9658        0.8501     0.9126        0.5482       0.8412 0.0059  0.0011 0.0008
+        teacher_3   all     all   200000      53779    0.9584        0.7978     0.8796        0.6261       0.7882 0.0070  0.0018 0.0011
+        teacher_3   ge5     all   191366      52270    0.9661        0.8076     0.8906        0.5667       0.7991 0.0059  0.0011 0.0008
+        teacher_4   all     all   200000      53779    0.9585        0.8081     0.8922        0.6182       0.7982 0.0076  0.0015 0.0011
+        teacher_4   ge5     all   191366      52270    0.9663        0.8186     0.9030        0.5694       0.8100 0.0064  0.0008 0.0008
+   student_direct   all     all   200000      53779    0.9022        0.8192     0.8508        0.7648       0.7932 0.0054  0.0064 0.0051
+   student_direct   ge5     all   191366      52270    0.9138        0.8363     0.8632        0.7065       0.8125 0.0048  0.0058 0.0039
+teacherA_ensemble   all     all   200000      53779    0.9639        0.8374     0.9158        0.6012       0.8285 0.0014  0.0023 0.0009
+teacherA_ensemble   ge5     all   191366      52270    0.9715        0.8492     0.9254        0.5338       0.8414 0.0014  0.0024 0.0006
+[13:43:44] GATE PASSED: macro-F1 gap 6.17 points (threshold 2.0), energy-AUROC gap 0.0182 (threshold 0.02)

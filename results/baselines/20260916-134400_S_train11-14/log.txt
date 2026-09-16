@@ -1,0 +1,12 @@
+[13:44:00] Run directory: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\baselines\20260916-134400_S_train11-14; device cuda
+[13:44:00] Loading cached arrays from C:\datasets\cache\tls-year22_S_121012501890
+[13:50:06] XGBoost trained on 500,000 flows (102 classes) in 363s; best iteration 299
+[13:50:08] k-NN reference set: 300,000 flows, k=10, query chunk 166
+[13:50:22] xgboost_flowstats evaluated on val (253,779 flows) in 14s
+[13:51:03] knn_ppi evaluated on val (253,779 flows) in 41s
+[13:51:04] Validation results (unknown = all validation unknown services):
+            model flows  n_known  n_unknown  macro_f1  auroc_msp  auroc_energy  auroc_neg_kth_distance    ece   aurc
+xgboost_flowstats   all   200000      53779    0.8828     0.8437        0.8551                     NaN 0.0040 0.0081
+xgboost_flowstats   ge5   191366      52270    0.8888     0.8496        0.8596                     NaN 0.0034 0.0072
+          knn_ppi   all   200000      53779    0.7117     0.7779           NaN                  0.7454 0.0388 0.0459
+          knn_ppi   ge5   191366      52270    0.7115     0.7797           NaN                  0.7469 0.0373 0.0443

@@ -15,21 +15,25 @@
 | Shortcut experiment code (RQ3) | Written, smoke-tested on laptop | `scripts/07_shortcut.py` |
 | Cluster bootstrap (day × service) | Written and tested | `kdtraffic/stats.py` |
 | Confirmatory analysis (pooled cluster + seed bootstrap, Holm, sensitivity analyses, figures, report) | Written, tested, smoke-run on laptop | `scripts/08_analyze.py`, `kdtraffic/analysis.py` |
-| Pre-registration | **Draft with 5 open decisions**; analysis section now matches the code | `docs/preregistration.md` |
+| Pre-registration | **Draft.** Settled: D7 (H2 tests post-hoc NLL; ECE reported only). Open: D1–D6. Analysis section matches the code | `docs/preregistration.md` |
 | Unit tests | 44 pass | `tests/` |
-| **Pilot on size S (week-3 gate)** | **Running on the laptop GPU** (the cluster is not reachable yet) | `run_pilot_laptop.cmd`, `logs/pilot_laptop.log` |
+| **Pilot on size S (week-3 gate)** | **PASSED** on the laptop GPU (16 Sep): macro-F1 gap 6.2 points; energy-AUROC gap 0.018 (MSP gap 0.065) | `results/pilot/20260916-122627_S_train11-14` |
+| Baselines on size S | Done: XGBoost macro-F1 0.883, energy AUROC 0.855 (beats the teacher's 0.837); k-NN 0.712 / 0.745 | `results/baselines/20260916-134400_S_train11-14` |
 | BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
 ## Next steps
-1. **On the GPU server:**
-   - pilot and baselines (`SERVER_SETUP.md` §5–9);
-   - if the gate passes: Track A for the three start dates (§10) and the shortcut experiment (§11). All of these use the validation week only.
+1. **Validation-only runs** (on the laptop while the cluster is blocked; about 8–10 h in total):
+   - Track A for the three start dates (§10). Start 11 reuses the pilot teachers: `--teachers-from results\pilot\20260916-122627_S_train11-14 --workers 0`;
+   - the shortcut experiment (§11).
+   - Score files written before 16 Sep 14:00 lack post-hoc NLL; re-run them with the current code.
 2. **Settle the open pre-registration decisions** (`docs/preregistration.md`):
    - **D1:** how close Teacher B's accuracy must be to Teacher A's (proposal: within 2 macro-F1 points).
    - **D2:** hyperparameter tuning budget (proposal: none).
    - **D3:** how to compare at matched accuracy for H2.
    - **D4:** split H4 into H4a (flip-test reliance) and H4b (over-confidence transfer).
    - **D5:** keep or drop exact-duplicate test flows in the primary analysis (proposal: keep, drop in a sensitivity analysis).
+   - **D6:** primary unknown-score: energy, MSP, or both co-primary (proposal: co-primary). This came from the pilot: the energy score shrinks the teacher–student gap.
+   - **D7:** settled. H2 tests post-hoc NLL.
 3. **Before freezing:**
    - run the manual Google Scholar / IEEE Xplore novelty search;
    - check for new work from the ResAware group.

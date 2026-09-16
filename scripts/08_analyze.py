@@ -51,7 +51,8 @@ ANALYSES = {
     "drop_duplicates": lambda d: ~d["duplicate"],
     "ge5_packets": lambda d: d["ppi_len"] >= 5,
 }
-DESCRIPTIVE = ["macro_f1", "auroc_energy", "auroc_msp", "fpr95_energy", "oscr_energy", "ece", "ece_ts", "nll", "aurc"]
+DESCRIPTIVE = ["macro_f1", "auroc_energy", "auroc_msp", "fpr95_energy", "oscr_energy", "ece", "ece_ts", "nll", "nll_ts",
+               "aurc"]
 
 
 def preregistration_frozen(path: Path) -> bool:
@@ -99,6 +100,8 @@ def build_units(loaded, mask_fn):
             for needed in ("day", "duplicate", "ppi_len"):
                 if needed not in data:
                     raise SystemExit(f"{path} lacks '{needed}': re-run scripts/06_track_a.py with the current code")
+            if not any(k.endswith("__nll_ts") for k in data):
+                raise SystemExit(f"{path} lacks post-hoc NLL: re-run scripts/06_track_a.py with the current code")
             mask = mask_fn(data)
             num_classes = r["num_classes"] or int(data["y"].max()) + 1
             units.append(build_unit(data, r["start"], split, float(r["weeks_since"][split]), num_classes, mask))
@@ -237,7 +240,7 @@ def main() -> None:
 
     cols = ["analysis", "hypothesis", "component", "estimate", "ci_low", "ci_high", "p_one_sided"]
     headline = per_window[(per_window.flows == "all") & (per_window.unknown == "all")] \
-        .groupby("condition")[["macro_f1_mean", "auroc_energy_mean", "ece_mean", "ece_ts_mean"]].mean().reset_index()
+        .groupby("condition")[["macro_f1_mean", "auroc_energy_mean", "auroc_msp_mean", "nll_mean", "ece_mean", "ece_ts_mean"]].mean().reset_index()
     report = [
         f"# Analysis: {name}",
         "",

@@ -1,0 +1,262 @@
+{
+  "args": {
+    "data_root": "C:\\datasets",
+    "cache_dir": null,
+    "splits": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\configs\\splits.json",
+    "size": "S",
+    "train_weeks": "11-14",
+    "val_weeks": "15",
+    "test_weeks": "16-19",
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": "200000",
+    "val_unknown_size": "all",
+    "test_known_size": "400000",
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "data_seed": 420,
+    "workers": 0,
+    "smoke": false,
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\pilot",
+    "ensemble": 5,
+    "epochs": 10,
+    "batch_size": 1024,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "student_width": 48,
+    "seed": 0,
+    "device": "auto",
+    "no_amp": false,
+    "no_save_logits": true
+  },
+  "spec": {
+    "size": "S",
+    "train_weeks": [
+      11,
+      14
+    ],
+    "val_weeks": [
+      15,
+      15
+    ],
+    "test_weeks": [
+      16,
+      19
+    ],
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": 200000,
+    "val_unknown_size": "all",
+    "test_known_size": 400000,
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "seed": 420
+  },
+  "cache_dir": "C:\\datasets\\cache\\tls-year22_S_121012501890",
+  "data_meta": {
+    "spec": {
+      "size": "S",
+      "train_weeks": [
+        11,
+        14
+      ],
+      "val_weeks": [
+        15,
+        15
+      ],
+      "test_weeks": [
+        16,
+        19
+      ],
+      "with_test": false,
+      "train_size": "all",
+      "val_known_size": 200000,
+      "val_unknown_size": "all",
+      "test_known_size": 400000,
+      "test_unknown_size": "all",
+      "min_train_samples": 100,
+      "seed": 420
+    },
+    "cache_version": 3,
+    "splits_digest": "305ac8d0ea2a",
+    "known": [
+      "accuweather",
+      "adobe-ads",
+      "adobe-cloud",
+      "adobe-notifications",
+      "adobe-updater",
+      "airbank-ib",
+      "alza-cdn",
+      "alza-webapi",
+      "amazon-advertising",
+      "apple-icloud",
+      "apple-location",
+      "apple-ocsp",
+      "apple-pancake",
+      "apple-updates",
+      "apple-weather",
+      "appnexus",
+      "autodesk",
+      "avast",
+      "bitdefender-nimbus",
+      "chmi",
+      "ctu-felmail",
+      "datova-schranka",
+      "discord",
+      "docker-registry",
+      "doh",
+      "dropbox",
+      "ea-games",
+      "edge-ntp",
+      "eset-edf",
+      "eset-edtd",
+      "eset-epns",
+      "eset-ts",
+      "facebook-graph",
+      "facebook-media",
+      "facebook-messenger",
+      "firefox-accounts",
+      "firefox-settings",
+      "github",
+      "google-ads",
+      "google-authentication",
+      "google-conncheck",
+      "google-fonts",
+      "google-play",
+      "google-safebrowsing",
+      "google-services",
+      "google-translate",
+      "google-userlocation",
+      "grammarly",
+      "kaspersky",
+      "loggly",
+      "maps-cz",
+      "mcafee-gti",
+      "microsoft-authentication",
+      "microsoft-defender",
+      "microsoft-diagnostic",
+      "microsoft-onedrive",
+      "microsoft-push",
+      "microsoft-settings",
+      "microsoft-update",
+      "moodle",
+      "mozilla-location",
+      "mozilla-telemetry",
+      "ndk",
+      "npm-registry",
+      "nvidiagfe-events",
+      "o2tv",
+      "obalky-knih",
+      "office365",
+      "opera-autoupdate",
+      "opera-speeddial",
+      "outlook",
+      "owncloud",
+      "pubmatic",
+      "r2d2",
+      "riot-games",
+      "rubiconproject",
+      "salesforce",
+      "seznam-authentication",
+      "seznam-email",
+      "seznam-media",
+      "seznam-notifications",
+      "steam",
+      "sukl-api",
+      "sukl-authentication",
+      "sukl-erecept",
+      "super-media",
+      "teamviewer-client",
+      "the-weather-channel",
+      "twitch",
+      "unity-games",
+      "uschovna",
+      "vimeo",
+      "visualstudio-insights",
+      "vmware-vcsa",
+      "vsb-sso",
+      "vse-insis",
+      "vzp-api",
+      "whatsapp",
+      "xbox-live",
+      "xiaomi-accounts",
+      "xiaomi-tracking",
+      "zotero"
+    ],
+    "flowstats_dim": 44,
+    "counts": {
+      "train": {
+        "flows": 1891236,
+        "unknown_flows": 0,
+        "services": 102
+      },
+      "val": {
+        "flows": 253779,
+        "unknown_flows": 53779,
+        "services": 115
+      }
+    },
+    "ppi_transform": {
+      "psizes_scaler_enum": "standard",
+      "psizes_scaler_attrs": {
+        "mean_": [
+          578.5833915493399
+        ],
+        "scale_": [
+          542.8984448962744
+        ]
+      },
+      "psizes_min": 1,
+      "psizes_max": 1500,
+      "ipt_scaler_enum": "standard",
+      "ipt_scaler_attrs": {
+        "mean_": [
+          799.1079490627509
+        ],
+        "scale_": [
+          5712.717667570509
+        ]
+      },
+      "ipt_min": 0,
+      "ipt_max": 65000
+    },
+    "flowstats_transform": {
+      "flowstats_scaler_enum": "robust",
+      "flowstats_scaler_attrs": {
+        "center_": [
+          2155.0,
+          6062.0,
+          12.0,
+          12.0,
+          0.6980000138282776,
+          11.0,
+          3.0,
+          0.2070000022649765
+        ],
+        "scale_": [
+          2295.0,
+          3844.0,
+          7.0,
+          9.0,
+          10.596113175153732,
+          7.0,
+          2.0,
+          2.3519999757409096
+        ]
+      },
+      "flowstats_quantiles": [
+        57432.47999999969,
+        654215.9599999994,
+        265.0,
+        549.0,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity
+      ],
+      "quantile_clip": 0.99
+    },
+    "build_seconds": 31
+  },
+  "splits_digest": "305ac8d0ea2a"
+}

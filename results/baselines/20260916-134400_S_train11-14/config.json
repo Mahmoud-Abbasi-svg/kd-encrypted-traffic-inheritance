@@ -1,0 +1,57 @@
+{
+  "args": {
+    "data_root": "C:\\datasets",
+    "cache_dir": null,
+    "splits": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\configs\\splits.json",
+    "size": "S",
+    "train_weeks": "11-14",
+    "val_weeks": "15",
+    "test_weeks": "16-19",
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": "200000",
+    "val_unknown_size": "all",
+    "test_known_size": "400000",
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "data_seed": 420,
+    "workers": 0,
+    "smoke": false,
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\baselines",
+    "xgb_train_size": 500000,
+    "xgb_estimators": 300,
+    "xgb_depth": 8,
+    "xgb_lr": 0.1,
+    "knn_ref_size": 300000,
+    "knn_k": 10,
+    "skip_xgb": false,
+    "skip_knn": false,
+    "seed": 0,
+    "device": "auto"
+  },
+  "spec": {
+    "size": "S",
+    "train_weeks": [
+      11,
+      14
+    ],
+    "val_weeks": [
+      15,
+      15
+    ],
+    "test_weeks": [
+      16,
+      19
+    ],
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": 200000,
+    "val_unknown_size": "all",
+    "test_known_size": 400000,
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "seed": 420
+  },
+  "cache_dir": "C:\\datasets\\cache\\tls-year22_S_121012501890",
+  "splits_digest": "305ac8d0ea2a"
+}

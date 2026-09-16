@@ -53,8 +53,8 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
   - macro-F1 on known flows;
   - AUROC and FPR@95TPR (MSP and energy);
   - OSCR;
-  - ECE (15 bins) before and after temperature scaling (fitted on validation known flows);
-  - NLL, Brier, AURC;
+  - calibration: NLL after temperature scaling (fitted on validation known flows) is the main calibration outcome (D7); ECE (15 bins) before and after temperature scaling, NLL before scaling and Brier are also reported;
+  - AURC;
   - per-flow inheritance: Spearman correlation of energy scores between student and teacher, top-1 agreement and error Jaccard on known flows.
 - **Reporting groups:** all flows and flows with ≥5 packets; all, near and far unknown services.
 
@@ -80,7 +80,7 @@ Resampled clusters enter the metrics as flow weights. The reported interval is t
 | # | Hypothesis | Test |
 |---|---|---|
 | H1 | Teacher-specific inheritance: the `kdA` student's energy scores correlate more with Teacher A than with Teacher B, and the `kdB` student's more with B than with A | Pooled (own − other) Spearman correlation over all test flows > 0, for both students (2 components) |
-| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on energy AUROC and on post-hoc ECE at matched macro-F1 | Energy AUROC of `kdA` minus each control > 0, and post-hoc ECE of each control minus `kdA` > 0 (4 components). Post-hoc ECE uses temperature-scaled confidences; for `directTS` the scaled model itself. Matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
+| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on energy AUROC and on post-hoc NLL at matched macro-F1 | Energy AUROC of `kdA` minus each control > 0, and post-hoc NLL of each control minus `kdA` > 0 (4 components). Post-hoc NLL is the mean negative log-likelihood of the true class on known flows after temperature scaling; for `directTS` the scaled model itself. Post-hoc ECE is reported with intervals but not tested (decision D7). Matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
 | H3 | Decay: the Teacher A − `kdA` energy-AUROC gap grows with weeks since training | Slope > 0 in an OLS regression of the per-unit gap (seed-averaged) on weeks since the end of training, with one intercept per start date. Three start dates are too few to estimate a random-effect variance, so start date enters as a fixed effect; seed variation enters through the bootstrap |
 | H4 | Shortcut transfer (see D4) | See D4 |
 | H5 | EnDD keeps more of A's unknown detection than Hinton KD | Energy AUROC of `enddA` minus `kdA` > 0 |
@@ -93,6 +93,22 @@ Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 see
 - **H4a:** one component.
 - **H4b:** two components, each compared with the ρ = 0 teacher of the same seed: ECE higher; energy AUROC lower.
 
+**Decision D6 (primary unknown-score), open.** The week-3 pilot (validation week only, §8) found:
+
+| Model | Energy AUROC | MSP AUROC |
+|---|---|---|
+| Teacher A | 0.837 | 0.916 |
+| Direct student | 0.819 | 0.851 |
+
+So the energy score compresses the teacher–student gap (0.018 vs 0.065 with MSP), and for the teacher itself energy is the weaker score. The options are:
+- keep energy as primary;
+- switch to MSP;
+- make energy and MSP co-primary, with every AUROC component of H2, H3 and H5 tested for both scores and Holm applied over the doubled family.
+
+Proposal: co-primary. The choice must be fixed before freezing, and the reason recorded here, because it was informed by validation data.
+
+**Decision D7 (calibration outcome), settled 16 Sep 2026.** H2 tests post-hoc NLL instead of post-hoc ECE. Reason: in the pilot, all neural models already had ECE below 1% (Teacher A 0.14%, direct student 0.54%), so ECE differences would be close to zero and dominated by binning noise. NLL separated the models clearly (0.086 vs 0.239). ECE is still reported.
+
 ## 7. Exclusions and data rules
 - **Deduplication:** test flows whose exact PPI-30 sequence (timing, direction, size) occurs in the training window are reported separately (sensitivity analysis). They are flagged by a 64-bit hash of the scaled sequence (`duplicate` in `scores_<split>.npz`). The primary analysis keeps them. *Open decision D5:* keep (proposal) or drop in the primary analysis.
 - **Minimum training flows:** a known service with fewer than 100 training flows in a window stops the run (none expected under the split rules).
@@ -100,6 +116,18 @@ Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 see
 
 ## 8. Stopping and pivot rules
 - **Week-3 pilot gate** (`scripts/05_pilot.py`, validation only): continue if Teacher A beats the direct student by ≥2 macro-F1 points or ≥0.02 energy AUROC. Otherwise shrink the student (width 16), then use PPI-10. Every change is recorded here before freezing.
+  - **Result (16 Sep 2026)** — size S, laptop RTX 3050 Ti, run `results/pilot/20260916-122627_S_train11-14`: **passed**.
+
+    | Model | Macro-F1 | Energy AUROC |
+    |---|---|---|
+    | Teacher A | 0.964 | 0.837 |
+    | Direct student | 0.902 | 0.819 |
+    | Gap | 6.17 points | 0.018 |
+
+  - **Baselines** (`results/baselines/20260916-134400_S_train11-14`):
+    - XGBoost on flow statistics: macro-F1 0.883, energy AUROC 0.855 (0.875 on near unknowns);
+    - k-NN on PPI: macro-F1 0.712, AUROC 0.745 with the k-th-neighbour distance.
+  - No change to the student or the task was needed.
 - **Track B** (netFound): continue only if preprocessing works within one week and netFound-small beats XGBoost by ≥2 macro-F1 points; otherwise it becomes an appendix.
 
 ## 9. Exploratory analyses (labelled as such in the paper)

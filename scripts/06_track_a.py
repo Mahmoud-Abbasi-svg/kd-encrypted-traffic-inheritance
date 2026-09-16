@@ -19,7 +19,8 @@ and never touches the test unknowns.
 Outputs (results/track_a/<run>/):
     metrics.csv         metric rows per model, split, flow group (all / >=5 packets) and unknown group
     inheritance.csv     student-teacher agreement: rank correlation of unknown-scores, error overlap
-    scores_<split>.npz  per-flow energy, msp (and temperature-scaled msp_ts) and prediction of every model,
+    scores_<split>.npz  per-flow energy, msp (and temperature-scaled msp_ts), post-hoc NLL of the true class
+                        (nll_ts) and prediction of every model,
                         with labels, services, days, packet counts and an exact-duplicate-of-training flag
                         (input of scripts/08_analyze.py)
     training.json, config.json, log.txt, models/*.pt
@@ -175,6 +176,11 @@ def main() -> None:
         scores[split][f"{model}__msp"] = outputs.scores["msp"].astype(np.float16)
         if outputs.probs_ts is not None:
             scores[split][f"{model}__msp_ts"] = outputs.probs_ts.max(axis=1).astype(np.float16)
+        # post-hoc (temperature-scaled) negative log-likelihood of the true class; 0 for unknown flows
+        y = eval_sets[split].y
+        post_hoc = outputs.probs if outputs.probs_ts is None else outputs.probs_ts
+        p_true = np.where(y >= 0, post_hoc[np.arange(len(y)), np.maximum(y, 0)], 1.0)
+        scores[split][f"{model}__nll_ts"] = -np.log(np.clip(p_true, 1e-12, 1.0)).astype(np.float32)
         scores[split][f"{model}__pred"] = outputs.probs.argmax(axis=1).astype(np.int16)
 
     def train(name: str, architecture: str, seed: int, cfg: TrainConfig, objective=None):

@@ -9,7 +9,8 @@ Resampled clusters enter the metrics as integer flow weights, so each metric is 
 that equals the ordinary metric when all weights are 1. Scores are sorted once per unit, which keeps
 a weighted AUROC at O(n) per resample.
 
-A hypothesis may have several components (e.g. H2 compares kdA with two controls on two outcomes);
+A hypothesis may have several components (e.g. H2 compares kdA with two controls on energy AUROC and
+on post-hoc NLL, the calibration outcome chosen in decision D7; ECE is reported, not tested);
 it is supported only if every component is, so its p-value is the largest component p-value
 (intersection-union test). One-sided bootstrap p-values are (1 + #{resampled estimate <= 0}) / (B + 1).
 Holm's correction is applied across the hypotheses of the primary analysis.
@@ -83,6 +84,12 @@ def weighted_ece(confidence: np.ndarray, correct: np.ndarray, bins: np.ndarray, 
     return float(np.abs(acc - conf).sum() / total)
 
 
+def weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
+    w = weights.astype(np.float64)
+    total = w.sum()
+    return float((w * values).sum() / total) if total > 0 else float("nan")
+
+
 def weighted_pearson(a: np.ndarray, b: np.ndarray, weights: np.ndarray) -> float:
     w = weights.astype(np.float64)
     total = w.sum()
@@ -115,6 +122,7 @@ class Unit:
     detect: dict[str, RankedScore] = field(repr=False, default_factory=dict)
     preds: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
     calib: dict[str, tuple] = field(repr=False, default_factory=dict)
+    nll: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
     rank: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
 
     def __len__(self) -> int:
@@ -152,6 +160,7 @@ def build_unit(data, start: int, split: str, weeks_since: float, num_classes: in
             what = "msp" if c == "directTS" else "msp_ts"
             confidence = get(model, what)[known]
             unit.calib[model] = (confidence, (pred == unit.y_known).astype(np.float64), confidence_bins(confidence))
+            unit.nll[model] = get(model, "nll_ts")[known]  # post-hoc NLL (decision D7)
     for model in ["teacherA", "teacherB"] + [student(c, s) for c in ("kdA", "kdB") for s in seeds]:
         unit.rank[model] = ranks(get(model, "energy"))
     return unit
@@ -185,6 +194,7 @@ def unit_statistics(unit: Unit, weights: np.ndarray, seed_counts: np.ndarray) ->
         out[f"f1_{c}"] = seed_mean(lambda s, c=c: weighted_macro_f1(unit.y_known, unit.preds[student(c, s)], wk,
                                                                     unit.num_classes))
         out[f"ece_{c}"] = seed_mean(lambda s, c=c: weighted_ece(*unit.calib[student(c, s)], wk))
+        out[f"nll_{c}"] = seed_mean(lambda s, c=c: weighted_mean(unit.nll[student(c, s)], wk))
     for c in ("kdA", "kdB"):
         for teacher in ("A", "B"):
             out[f"rho_{c}_{teacher}"] = seed_mean(
@@ -209,13 +219,15 @@ def hypothesis_components(table: pd.DataFrame) -> dict[str, float]:
         "H1:kdB_own_minus_other": m.rho_kdB_B - m.rho_kdB_A,
         "H2:auroc_kdA_minus_ls": m.auroc_kdA - m.auroc_ls,
         "H2:auroc_kdA_minus_directTS": m.auroc_kdA - m.auroc_directTS,
-        "H2:ece_ls_minus_kdA": m.ece_ls - m.ece_kdA,
-        "H2:ece_directTS_minus_kdA": m.ece_directTS - m.ece_kdA,
+        "H2:nll_ls_minus_kdA": m.nll_ls - m.nll_kdA,
+        "H2:nll_directTS_minus_kdA": m.nll_directTS - m.nll_kdA,
         "H3:gap_slope_per_week": fixed_effects_slope(table.weeks_since.to_numpy(), gap.to_numpy(), table.start.to_numpy()),
         "H5:auroc_enddA_minus_kdA": m.auroc_enddA - m.auroc_kdA,
         # reported, not tested: the accuracy match behind H2 (decision D3)
         "info:f1_kdA_minus_ls": m.f1_kdA - m.f1_ls,
         "info:f1_kdA_minus_directTS": m.f1_kdA - m.f1_directTS,
+        "info:ece_ls_minus_kdA": m.ece_ls - m.ece_kdA,
+        "info:ece_directTS_minus_kdA": m.ece_directTS - m.ece_kdA,
         "info:mean_gap_teacherA_minus_kdA": float(gap.mean()),
     }
 
