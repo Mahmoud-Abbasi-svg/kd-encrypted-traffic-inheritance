@@ -4,6 +4,9 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# Laptop smoke runs (meaningless numbers)
+results/**/*_smoke/
+
 # Large run artefacts (kept on disk, not in git)
 results/**/models/
 results/**/*.npz

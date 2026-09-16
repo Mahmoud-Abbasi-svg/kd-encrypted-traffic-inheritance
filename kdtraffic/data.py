@@ -11,7 +11,8 @@ configuration and FIXED service selection:
     1. training window  -> train set; fits the scalers
     2. validation week  -> served as the test period of a second configuration (known + validation
                            unknown services), reusing the fitted scalers
-    3. test window      -> the same, with the test unknown services (only when with_test is set)
+    3. test windows     -> the same, with the test unknown services (see load_window)
+Evaluation sets also record the day of each flow, for day x service cluster bootstraps.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ import os
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, Iterable, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -32,7 +33,8 @@ from kdtraffic.splits import Splits
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = Path(os.environ.get("KD_DATA_ROOT", "C:/datasets"))
 DIR_CHANNEL = 1  # PPI channels: inter-packet time, direction, size
-CACHE_VERSION = 2  # bump when the content of cached arrays changes
+CACHE_VERSION = 3  # bump when the content of cached arrays changes
+LOW_COVERAGE_WEEKS = (50, 52)  # less than half the median weekly volume (results/week1/weekly_totals.csv)
 Size = Union[int, str]  # an integer or "all"
 
 
@@ -62,6 +64,7 @@ class Arrays:
     flowstats: np.ndarray  # (N, F) float32, scaled
     y: np.ndarray  # (N,) int64 class index; -1 for unknown services
     app: np.ndarray  # (N,) service tag
+    day: np.ndarray | None = None  # (N,) int yyyymmdd; evaluation sets only
 
     def __len__(self) -> int:
         return len(self.y)
@@ -72,15 +75,21 @@ class Arrays:
         return (self.ppi[:, DIR_CHANNEL, :] != 0).sum(axis=1)
 
     def subset(self, index: np.ndarray) -> "Arrays":
-        return Arrays(self.ppi[index], self.flowstats[index], self.y[index], self.app[index])
+        day = None if self.day is None else self.day[index]
+        return Arrays(self.ppi[index], self.flowstats[index], self.y[index], self.app[index], day)
+
+    def with_flowstats(self, flowstats: np.ndarray) -> "Arrays":
+        return Arrays(self.ppi, flowstats, self.y, self.app, self.day)
 
     def save(self, path: Path) -> None:
-        np.savez(path, ppi=self.ppi, flowstats=self.flowstats, y=self.y, app=self.app)
+        extra = {} if self.day is None else {"day": self.day}
+        np.savez(path, ppi=self.ppi, flowstats=self.flowstats, y=self.y, app=self.app, **extra)
 
     @classmethod
     def load(cls, path: Path) -> "Arrays":
         with np.load(path) as data:
-            return cls(data["ppi"], data["flowstats"], data["y"], data["app"])
+            day = data["day"] if "day" in data.files else None
+            return cls(data["ppi"], data["flowstats"], data["y"], data["app"], day)
 
 
 @dataclass
@@ -102,26 +111,47 @@ class DataBundle:
         return int(self.train.flowstats.shape[1])
 
 
-def week_dates(dataset, weeks: tuple[int, int]) -> list[str]:
+def week_range(weeks: tuple[int, int]) -> list[int]:
+    return list(range(weeks[0], weeks[1] + 1))
+
+
+def week_dates(dataset, weeks: Iterable[int]) -> list[str]:
     dates: list[str] = []
-    for week in range(weeks[0], weeks[1] + 1):
+    for week in weeks:
         dates.extend(dataset.time_periods[f"W-2022-{week}"])
     return dates
 
 
-def period_name(weeks: tuple[int, int]) -> str:
-    return f"W-2022-{weeks[0]}-{weeks[1]}"
+def period_name(weeks: Sequence[int]) -> str:
+    """Unique name for a set of weeks (DataZoo caches indices by period name)."""
+    weeks = sorted(weeks)
+    name = f"W-2022-{weeks[0]}-{weeks[-1]}"
+    skipped = sorted(set(range(weeks[0], weeks[-1] + 1)) - set(weeks))
+    return name + ("-skip" + "-".join(map(str, skipped)) if skipped else "")
+
+
+def evaluation_windows(val_weeks: tuple[int, int], length: int = 4, last_week: int = 52,
+                       excluded: Sequence[int] = LOW_COVERAGE_WEEKS) -> list[list[int]]:
+    """Consecutive `length`-week test windows after the validation week, without low-coverage weeks."""
+    windows, start = [], val_weeks[1] + 1
+    while start <= last_week:
+        block = [w for w in range(start, min(start + length, last_week + 1)) if w not in excluded]
+        if block:
+            windows.append(block)
+        start += length
+    return windows
 
 
 def _to_numpy(x) -> np.ndarray:
     return x.numpy() if hasattr(x, "numpy") else np.asarray(x)
 
 
-def _collect(loader, keep: set[str], label_index: dict[str, int], name: str, log: Callable[[str], None]) -> Arrays:
+def _collect(loader, keep: set[str], label_index: dict[str, int], name: str, log: Callable[[str], None],
+             with_day: bool = False) -> Arrays:
     keep_array = np.array(sorted(keep))
-    ppis, stats, apps = [], [], []
+    ppis, stats, apps, days = [], [], [], []
     seen, started = 0, time.time()
-    for _, x_ppi, x_flowstats, labels in loader:
+    for other, x_ppi, x_flowstats, labels in loader:
         labels = np.asarray(labels).astype(str)
         seen += len(labels)
         mask = np.isin(labels, keep_array)
@@ -129,12 +159,15 @@ def _collect(loader, keep: set[str], label_index: dict[str, int], name: str, log
             ppis.append(_to_numpy(x_ppi)[mask].astype(np.float32, copy=False))
             stats.append(_to_numpy(x_flowstats)[mask].astype(np.float32, copy=False))
             apps.append(labels[mask])
+            if with_day:
+                day = pd.to_datetime(other["TIME_FIRST"]).dt.strftime("%Y%m%d").astype(np.int32).to_numpy()
+                days.append(day[mask])
     if not apps:
         raise RuntimeError(f"No flows collected for the {name} set")
     app = np.concatenate(apps)
     y = pd.Series(app).map(label_index).fillna(-1).astype(np.int64).to_numpy()
     log(f"  {name}: kept {len(app):,} of {seen:,} flows ({int((y < 0).sum()):,} unknown) in {time.time() - started:.0f}s")
-    return Arrays(np.concatenate(ppis), np.concatenate(stats), y, app)
+    return Arrays(np.concatenate(ppis), np.concatenate(stats), y, app, np.concatenate(days) if with_day else None)
 
 
 def _counts(arrays: Arrays) -> dict[str, int]:
@@ -143,6 +176,66 @@ def _counts(arrays: Arrays) -> dict[str, int]:
         "unknown_flows": int((arrays.y < 0).sum()),
         "services": int(len(np.unique(arrays.app))),
     }
+
+
+def _common_options(spec: DataSpec, workers: int) -> dict:
+    return dict(
+        use_packet_histograms=True,
+        use_tcp_features=False,
+        disable_label_encoding=True,
+        return_tensors=False,
+        batch_size=4096,
+        test_batch_size=4096,
+        train_workers=workers,
+        val_workers=workers,
+        test_workers=workers,
+        random_state=spec.seed,
+    )
+
+
+def _dataset_root(data_root: Path) -> str:
+    return str(Path(data_root) / "CESNET-TLS-Year22")
+
+
+def _evaluation_arrays(data_root: Path, spec: DataSpec, splits: Splits, weeks: Sequence[int], unknown: list[str],
+                       known_size: Size, unknown_size: Size, transforms: tuple, workers: int,
+                       name: str, log: Callable[[str], None]) -> Arrays:
+    """Known + `unknown` services of `weeks`, served through DataZoo's test loader with pre-fitted scalers."""
+    from cesnet_datazoo.config import AppSelection, DatasetConfig
+    from cesnet_datazoo.datasets import CESNET_TLS_Year22
+
+    ppi_transform, flowstats_transform, phist_transform = transforms
+    stage = CESNET_TLS_Year22(_dataset_root(data_root), size=spec.size, silent=True)
+    stage.set_dataset_config_and_initialize(DatasetConfig(
+        dataset=stage,
+        need_train_set=False,
+        need_val_set=False,
+        test_period_name=period_name(weeks),
+        test_dates=week_dates(stage, weeks),
+        apps_selection=AppSelection.FIXED,
+        apps_selection_fixed_known=list(splits.known),
+        apps_selection_fixed_unknown=list(unknown),
+        test_known_size=known_size,
+        test_unknown_size=unknown_size,
+        return_other_fields=True,  # TIME_FIRST gives the day of each flow
+        ppi_transform=ppi_transform,
+        flowstats_transform=flowstats_transform,
+        flowstats_phist_transform=phist_transform,
+        **_common_options(spec, workers),
+    ))
+    label_index = {app: i for i, app in enumerate(splits.known)}
+    arrays = _collect(stage.get_test_dataloader(), set(splits.known) | set(unknown), label_index, name, log,
+                      with_day=True)
+    if unknown and not (arrays.y < 0).any():
+        raise RuntimeError(f"The {name} set has no flows of its unknown services {unknown}")
+    return arrays
+
+
+def rebuild_transforms(meta: dict) -> tuple:
+    """Scalers fitted on the training window, reconstructed from the cache metadata."""
+    from cesnet_models.transforms import ClipAndScaleFlowstats, ClipAndScalePPI, NormalizeHistograms
+
+    return ClipAndScalePPI(**meta["ppi_transform"]), ClipAndScaleFlowstats(**meta["flowstats_transform"]), NormalizeHistograms()
 
 
 def build_bundle(
@@ -170,31 +263,17 @@ def build_bundle(
 
     started = time.time()
     log(f"Building arrays with cesnet-datazoo (size {spec.size}); cache: {cache_dir}")
-    dataset_root = str(Path(data_root) / "CESNET-TLS-Year22")
     label_index = {app: i for i, app in enumerate(splits.known)}
-    known = set(splits.known)
-    common = dict(
-        use_packet_histograms=True,
-        use_tcp_features=False,
-        disable_label_encoding=True,
-        return_tensors=False,
-        batch_size=4096,
-        test_batch_size=4096,
-        train_workers=workers,
-        val_workers=workers,
-        test_workers=workers,
-        random_state=spec.seed,
-    )
 
     # Stage 1: training window (known services only); fits the scalers.
     # FIXED selection uses only the listed services and ignores DataZoo's min-train-samples check,
     # which is therefore done below.
-    dataset = CESNET_TLS_Year22(dataset_root, size=spec.size, silent=True)
+    dataset = CESNET_TLS_Year22(_dataset_root(data_root), size=spec.size, silent=True)
     splits.validate(available=list(dataset.available_classes))
     dataset.set_dataset_config_and_initialize(DatasetConfig(
         dataset=dataset,
-        train_period_name=period_name(spec.train_weeks),
-        train_dates=week_dates(dataset, spec.train_weeks),
+        train_period_name=period_name(week_range(spec.train_weeks)),
+        train_dates=week_dates(dataset, week_range(spec.train_weeks)),
         need_val_set=False,
         need_test_set=False,
         apps_selection=AppSelection.FIXED,
@@ -204,45 +283,25 @@ def build_bundle(
         ppi_transform=ClipAndScalePPI(),
         flowstats_transform=ClipAndScaleFlowstats(),
         flowstats_phist_transform=NormalizeHistograms(),
-        **common,
+        **_common_options(spec, workers),
     ))
     fitted = dataset.dataset_config
+    transforms = (fitted.ppi_transform, fitted.flowstats_transform, fitted.flowstats_phist_transform)
     log(f"  training configuration initialised in {time.time() - started:.0f}s")
-    train = _collect(dataset.get_train_dataloader(), known, label_index, "train", log)
+    train = _collect(dataset.get_train_dataloader(), set(splits.known), label_index, "train", log)
     train_counts = pd.Series(train.app).value_counts()
     too_few = sorted(s for s in splits.known if train_counts.get(s, 0) < spec.min_train_samples)
     if too_few:
         raise RuntimeError(f"Known services with fewer than {spec.min_train_samples} training flows: {too_few}")
 
-    def evaluation_set(name: str, weeks: tuple[int, int], unknown: list[str], known_size: Size, unknown_size: Size) -> Arrays:
-        stage = CESNET_TLS_Year22(dataset_root, size=spec.size, silent=True)
-        stage.set_dataset_config_and_initialize(DatasetConfig(
-            dataset=stage,
-            need_train_set=False,
-            need_val_set=False,
-            test_period_name=period_name(weeks),
-            test_dates=week_dates(stage, weeks),
-            apps_selection=AppSelection.FIXED,
-            apps_selection_fixed_known=list(splits.known),
-            apps_selection_fixed_unknown=list(unknown),
-            test_known_size=known_size,
-            test_unknown_size=unknown_size,
-            ppi_transform=fitted.ppi_transform,  # fitted on the training window
-            flowstats_transform=fitted.flowstats_transform,
-            flowstats_phist_transform=fitted.flowstats_phist_transform,
-            **common,
-        ))
-        arrays = _collect(stage.get_test_dataloader(), known | set(unknown), label_index, name, log)
-        if unknown and not (arrays.y < 0).any():
-            raise RuntimeError(f"The {name} set has no flows of its unknown services {unknown}")
-        return arrays
-
     # Stage 2: validation week with the validation unknown services.
-    val = evaluation_set("val", spec.val_weeks, splits.val_unknown, spec.val_known_size, spec.val_unknown_size)
-    # Stage 3: test window with the test unknown services, only once the pre-registration is frozen.
+    val = _evaluation_arrays(data_root, spec, splits, week_range(spec.val_weeks), splits.val_unknown,
+                             spec.val_known_size, spec.val_unknown_size, transforms, workers, "val", log)
+    # Stage 3: one test window with the test unknown services, only once the pre-registration is frozen.
     test = None
     if spec.with_test:
-        test = evaluation_set("test", spec.test_weeks, splits.test_unknown, spec.test_known_size, spec.test_unknown_size)
+        test = _evaluation_arrays(data_root, spec, splits, week_range(spec.test_weeks), splits.test_unknown,
+                                  spec.test_known_size, spec.test_unknown_size, transforms, workers, "test", log)
 
     meta = {
         "spec": asdict(spec),
@@ -263,3 +322,22 @@ def build_bundle(
     meta_path.write_text(json.dumps(meta, indent=2, default=float), encoding="utf-8")  # written last: marks a complete cache
     log(f"  cached arrays in {time.time() - started:.0f}s total")
     return DataBundle(spec, list(splits.known), train, val, test, cache_dir, meta)
+
+
+def load_window(bundle: DataBundle, splits: Splits, weeks: Sequence[int], unknown: list[str], kind: str,
+                known_size: Size, unknown_size: Size, data_root: Path = DATA_ROOT, workers: int = 4,
+                log: Callable[[str], None] = print) -> Arrays:
+    """Known + `unknown` services of `weeks`, scaled with the bundle's training scalers; cached in the bundle.
+
+    Callers are responsible for the pre-registration rule: test unknown services only after it is frozen.
+    """
+    key = hashlib.sha1(json.dumps(sorted(unknown)).encode()).hexdigest()[:8]
+    path = bundle.cache_dir / "windows" / f"{kind}_{period_name(weeks)}_{known_size}_{unknown_size}_{key}.npz"
+    if path.exists():
+        log(f"  {kind} {period_name(weeks)}: loading cached window")
+        return Arrays.load(path)
+    arrays = _evaluation_arrays(data_root, bundle.spec, splits, weeks, unknown, known_size, unknown_size,
+                                rebuild_transforms(bundle.meta), workers, f"{kind} {period_name(weeks)}", log)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    arrays.save(path)
+    return arrays

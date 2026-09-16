@@ -69,9 +69,15 @@ def predict_logits(model: nn.Module, arrays: Arrays, device: str, amp: bool = Tr
     return (logits, np.concatenate(feature_parts)) if with_features else logits
 
 
+Objective = Callable[[torch.Tensor, torch.Tensor, torch.Tensor], torch.Tensor]
+
+
 def train_classifier(model: nn.Module, train: Arrays, val: Arrays, cfg: TrainConfig,
-                     log: Callable[[str], None] = print, name: str = "model") -> dict:
-    """Cross-entropy training; keeps the epoch with the lowest loss on validation known flows."""
+                     log: Callable[[str], None] = print, name: str = "model", objective: Objective | None = None) -> dict:
+    """Train with cross-entropy, or with `objective(logits, labels, train_indices)` if given.
+
+    Keeps the epoch with the lowest cross-entropy on validation known flows.
+    """
     device = resolve_device(cfg.device)
     set_seed(cfg.seed)
     model.to(device)
@@ -100,7 +106,10 @@ def train_classifier(model: nn.Module, train: Arrays, val: Arrays, cfg: TrainCon
             idx = order[step * batch_size:(step + 1) * batch_size]
             with autocast(device, cfg.amp):
                 logits = model(ppi[idx], stats[idx])
-            loss = loss_fn(logits.float(), labels[idx])
+            if objective is None:
+                loss = loss_fn(logits.float(), labels[idx])
+            else:
+                loss = objective(logits.float(), labels[idx], idx)
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             optimizer.step()

@@ -70,8 +70,44 @@ XGBoost on flow statistics (500k training flows, GPU `hist`) and k-NN on packet 
 - **Not passed:** re-run with a smaller student (`--student-width 16`, about 15k parameters). If it still fails, make the task harder (PPI-10), as the plan says.
 - **Baselines:** compare the teacher with `xgboost_flowstats` and `knn_ppi`. If a baseline matches the teacher, report it; that result is itself important.
 
-## 10. What to send back
-`results/pilot/<run>/gate.json`, `metrics.csv` and `log.txt`, plus `results/baselines/<run>/metrics.csv`. The models and logits can stay on the server.
+## 10. Track A grid (after the gate passes; validation week only)
+Run once per start date. For start 11, reuse the pilot's Teacher A: the data settings must match the pilot, which the script checks.
+```bash
+python scripts/06_track_a.py --smoke --smoke-windows --size S          # quick check
+python scripts/06_track_a.py --size S --start 11 --teachers-from results/pilot/<run> --workers 8
+python scripts/06_track_a.py --size S --start 24 --workers 8
+python scripts/06_track_a.py --size S --start 37 --workers 8
+```
+- **Per start date:** Teacher A (5 members), Teacher B (wide, 10.3M parameters) and 3 seeds × 5 student conditions (`direct`, `ls`, `kdA`, `kdB`, `enddA`); `directTS` is reported too.
+- **Outputs** (`results/track_a/<run>/`):
+  - `metrics.csv`;
+  - `inheritance.csv` (student–teacher rank correlation, error overlap);
+  - `scores_val.npz` (per-flow scores, for bootstraps);
+  - `models/`.
+- **If the `enddA` student trains poorly** (its loss is large by design), try `--endd-max-precision 1000` and record the change in `docs/preregistration.md`.
+
+## 11. Shortcut experiment (RQ3; validation week only)
+```bash
+python scripts/07_shortcut.py --smoke --size S
+python scripts/07_shortcut.py --size S --workers 8
+```
+- **Runs:** ρ ∈ {0, 0.5, 0.9, 1.0} × 3 seeds.
+- **Outputs:**
+  - `reliance.csv`: flip-test macro-F1 drop for the teacher and the two students that see the feature;
+  - `shortcut.csv`: all metrics, including the teacher-only setting.
+
+## 12. Test windows (only after the pre-registration is frozen)
+Settle the open decisions in `docs/preregistration.md`, set its status line to `**Status:** FROZEN`, commit, and register it on OSF. Only then:
+```bash
+python scripts/06_track_a.py --size S --start 11 --teachers-from results/pilot/<run> --with-test --workers 8
+```
+`--with-test` refuses to run while the file is not frozen. Test windows are 4-week blocks after the validation week up to week 52, without weeks 50 and 52, and are cached separately.
+
+## 13. What to send back
+- From the pilot: `results/pilot/<run>/gate.json`, `metrics.csv` and `log.txt`.
+- From the other runs: `results/baselines/<run>/metrics.csv`, `results/track_a/<run>/{metrics,inheritance}.csv` and `results/shortcut/<run>/{reliance,shortcut}.csv`, with their `log.txt`.
+
+Models, logits and `scores_*.npz` can stay on the server.
 
 ## Rules that protect the pre-registration
 - `--with-test` loads the test window (weeks 16–19, test unknown services). **Do not use it until the pre-registration is frozen.**

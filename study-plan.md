@@ -62,6 +62,10 @@ Section 8 checks this plan against that bar.
 
 **Primary outcome:** the teacher-minus-student gap in unknown-detection AUROC (energy score), plotted against weeks since training. All other metrics are secondary. Holm correction applies across the confirmatory tests (H1–H5).
 
+> **H4 wording is under review** (decision D4 in `docs/preregistration.md`). A student that never sees a feature cannot rely on it, so H4 is proposed as two parts:
+> - **H4a:** flip-test reliance when both models see the feature;
+> - **H4b:** over-confidence transferred from a shortcut-reliant teacher to a student that never sees the feature.
+
 ## 4. Track A: core study on CESNET-TLS-Year22
 
 ### 4.1 Data
@@ -109,7 +113,7 @@ Student training conditions (same architecture, same tuning budget):
 2. **Direct + label smoothing.**
 3. **Direct + temperature scaling:** post-hoc, applied to run 1, so no extra training.
 4. **Hinton KD from Teacher A**, and **Hinton KD from Teacher B**.
-5. **EnDD from Teacher A:** ensemble distribution distillation (Malinin et al., ICLR 2020).
+5. **EnDD from Teacher A:** ensemble distribution distillation (Malinin et al., ICLR 2020), implemented with proxy Dirichlet targets and a reverse-KL loss (after Ryabinin et al., NeurIPS 2021). Maximum-likelihood EnDD is unstable with ~100 classes, and in the laptop smoke run its energy score was anti-correlated with both teachers.
 
 Baselines: **XGBoost** on flow statistics and **k-NN** on PPI-30.
 
