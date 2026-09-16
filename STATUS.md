@@ -19,6 +19,7 @@
 | Unit tests | 44 pass | `tests/` |
 | **Pilot on size S (week-3 gate)** | **PASSED** on the laptop GPU (16 Sep): macro-F1 gap 6.2 points; energy-AUROC gap 0.018 (MSP gap 0.065) | `results/pilot/20260916-122627_S_train11-14` |
 | Baselines on size S | Done: XGBoost macro-F1 0.883, energy AUROC 0.855 (beats the teacher's 0.837); k-NN 0.712 / 0.745 | `results/baselines/20260916-134400_S_train11-14` |
+| Track A, start 11, validation only | Done on the laptop (16 Sep, 14:00–16:05). Teacher B macro-F1 0.962 vs A 0.964 (D1 met). With T=4, α=0.9 the KD students lose ~2 macro-F1 points and ~0.05 energy AUROC vs direct, but follow the teachers' per-flow scores much more closely (ρ 0.88 vs 0.50). Teacher-specific shift vs direct is +0.04 for kdA and kdB alike, while raw own−other is negative for kdB (→ H1 wording) | `results/track_a/20260916-140053_S_train11-14` |
 | BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
 ## Next steps
