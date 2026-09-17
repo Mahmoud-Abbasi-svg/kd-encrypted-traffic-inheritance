@@ -41,6 +41,7 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
   - `ls`: label smoothing ε (tuned, D2; planned 0.1);
   - `directTS`: `direct` after temperature scaling;
   - `kdA`, `kdB`: Hinton KD with temperature T and weight α (tuned on `kdA`, D2; planned T = 4, α = 0.9). `kdB` uses the same values;
+  - `kdA4`, `kdB4`: the same, at the conventional T = 4 (the **inheritance arm**, see D8);
   - `enddA`: ensemble distribution distillation with proxy Dirichlet targets and a reverse-KL loss (after Ryabinin et al., NeurIPS 2021). The target mean is Teacher A's mean prediction, and the precision is estimated from member disagreement (capped at 10⁴). Plain maximum-likelihood EnDD was replaced because it is unstable with ~100 classes: in the laptop smoke run its energy score was anti-correlated with both teachers.
 - **Training (all models):** AdamW, lr 1e-3, weight decay 1e-4, one-cycle schedule, batch 1024, bf16 autocast; 10 epochs for teachers, 20 epochs for students (see the epoch check below). The kept epoch is the one with the lowest validation cross-entropy on known flows.
 - **Seeds:** 3 student seeds per condition and start date.
@@ -109,7 +110,7 @@ Resampled clusters enter the metrics as flow weights. The reported interval is t
 
 | # | Hypothesis | Test |
 |---|---|---|
-| H1 | Teacher-specific inheritance: distillation moves a student's energy scores toward its own teacher, beyond what a directly trained student shares with each teacher | Difference in differences of pooled Spearman correlations over all test flows (2 components, both > 0): `kdA`: [ρ(kdA, A) − ρ(kdA, B)] − [ρ(direct, A) − ρ(direct, B)]; `kdB`: [ρ(kdB, B) − ρ(kdB, A)] − [ρ(direct, B) − ρ(direct, A)]. The raw own − other differences are reported. **Reason for the baseline:** in the validation-only run (start 11), every student, including `direct`, correlated more with Teacher A (the ensemble) than with B (+0.044 for `direct`). A raw test would therefore confuse "follows its own teacher" with "follows the more central teacher" (raw kdB: −0.009; relative to `direct`: +0.034) |
+| H1 | Teacher-specific inheritance: distillation moves a student's energy scores toward its own teacher, beyond what a directly trained student shares with each teacher. Tested on the inheritance arm `kdA4` / `kdB4` (D8); the tuned arm is reported | Difference in differences of pooled Spearman correlations over all test flows (2 components, both > 0): `kdA4`: [ρ(kdA4, A) − ρ(kdA4, B)] − [ρ(direct, A) − ρ(direct, B)]; `kdB4`: [ρ(kdB4, B) − ρ(kdB4, A)] − [ρ(direct, B) − ρ(direct, A)]. The raw own − other differences are reported. **Reason for the baseline:** in the validation-only run (start 11), every student, including `direct`, correlated more with Teacher A (the ensemble) than with B (+0.044 for `direct`). A raw test would therefore confuse "follows its own teacher" with "follows the more central teacher" (raw kdB: −0.009; relative to `direct`: +0.034) |
 | H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on unknown-detection AUROC and on post-hoc NLL at matched macro-F1 | AUROC of `kdA` minus each control > 0 (tested separately for energy and MSP), and post-hoc NLL of each control minus `kdA` > 0 (4 components). Post-hoc NLL is the mean negative log-likelihood of the true class on known flows after temperature scaling; for `directTS` the scaled model itself. Post-hoc ECE is reported with intervals but not tested (decision D7). Matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
 | H3 | Decay: the Teacher A − `kdA` AUROC gap (energy; MSP) grows with weeks since training | Slope > 0 in an OLS regression of the per-unit gap (seed-averaged) on weeks since the end of training, with one intercept per start date. Three start dates are too few to estimate a random-effect variance, so start date enters as a fixed effect; seed variation enters through the bootstrap |
 | H4 | Shortcut transfer (see D4) | See D4 |
@@ -136,6 +137,22 @@ So the energy score compresses the teacher–student gap (0.018 vs 0.065 with MS
 - make energy and MSP co-primary, with every AUROC component of H2, H3 and H5 tested for both scores and Holm applied over the doubled family.
 
 Co-primary was chosen instead of switching to MSP. Choosing the score that looked better on validation data would be a selection on outcomes, and in the validation-only grid run (start 11) the two scores ranked the student methods differently: `ls` was best with energy, `enddA` with MSP. H2, H3 and H5 are tested once per score, inside the Holm family.
+
+**Decision D8 (KD temperature arms), settled 17 Sep 2026.** The accuracy-tuned KD setting (T = 1, α = 0.9) makes distillation behave like ordinary training, so there is nothing to inherit:
+
+| Start date | Student | ρ(student, Teacher A) | Shift toward own teacher vs `direct` |
+|---|---|---|---|
+| 11 | `direct` | 0.507 | — |
+| 11 | `kdA`, T = 1 | 0.503 | +0.004 |
+| 11 | `kdA`, T = 4 (16 Sep run) | 0.876 | +0.040 |
+| 24 | `direct` | 0.440 | — |
+| 24 | `kdA`, T = 1 | 0.446 | +0.006 |
+
+A teacher with 96% accuracy produces nearly one-hot targets at T = 1, so the KD loss is close to cross-entropy. The grid therefore keeps both arms:
+- **tuned arm** (`kdA`, `kdB`): the accuracy-optimal setting, used for H2 and H5, where matched accuracy matters;
+- **inheritance arm** (`kdA4`, `kdB4`, T = 4): conventional KD, used for H1 and for the shortcut experiment (`scripts/07_shortcut.py`), which asks the same inheritance question.
+
+The difference between the arms is itself reported: how much a student inherits is governed by the distillation temperature, and the most accurate setting inherits nothing beyond the labels.
 
 **Decision D7 (calibration outcome), settled 16 Sep 2026.** H2 tests post-hoc NLL instead of post-hoc ECE. Reason: in the pilot, all neural models already had ECE below 1% (Teacher A 0.14%, direct student 0.54%), so ECE differences would be close to zero and dominated by binning noise. NLL separated the models clearly (0.086 vs 0.239). ECE is still reported.
 

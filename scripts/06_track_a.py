@@ -54,17 +54,19 @@ from kdtraffic.models import build_model, count_parameters  # noqa: E402
 from kdtraffic.splits import load_splits  # noqa: E402
 from kdtraffic.train import TrainConfig, predict_logits, resolve_device, train_classifier  # noqa: E402
 
-CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA")
+CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA", "kdA4", "kdB4")
 HPARAMS_FILE = PROJECT_ROOT / "configs" / "student_hparams.json"  # written by scripts/09_tune_students.py
 
 
 def student_hparams() -> dict:
     """Tuned student settings (decision D2), or the planned defaults if tuning has not been run."""
-    planned = {"kd_temperature": 4.0, "kd_alpha": 0.9, "label_smoothing": 0.1, "student_epochs": 10}
+    planned = {"kd_temperature": 4.0, "kd_alpha": 0.9, "label_smoothing": 0.1, "student_epochs": 10,
+               "kd_temperature_alt": 4.0}
     if HPARAMS_FILE.exists():
         stored = json.loads(HPARAMS_FILE.read_text(encoding="utf-8"))
         planned.update(stored["selected"])
-        planned["student_epochs"] = stored.get("student_epochs", planned["student_epochs"])
+        for key in ("student_epochs", "kd_temperature_alt"):
+            planned[key] = stored.get(key, planned[key])
     return planned
 SUMMARY_METRICS = ["macro_f1", "auroc_energy", "auroc_msp", "fpr95_energy", "ece", "ece_ts", "aurc"]
 
@@ -117,6 +119,10 @@ def main() -> None:
                         help=f"default from {HPARAMS_FILE.name} if present")
     parser.add_argument("--kd-temperature", type=float, default=hp["kd_temperature"])
     parser.add_argument("--kd-alpha", type=float, default=hp["kd_alpha"])
+    parser.add_argument("--kd-temperature-alt", type=float, default=hp["kd_temperature_alt"],
+                        help="temperature of the kdA4 / kdB4 conditions (conventional KD)")
+    parser.add_argument("--conditions", default=",".join(CONDITIONS),
+                        help="student conditions to train in this run (the rest are left to other runs)")
     parser.add_argument("--teacher-b-from", type=Path, default=None,
                         help="teacherB_wide.pt from an earlier run with the same data settings")
     parser.add_argument("--endd-max-precision", type=float, default=1e4,
@@ -151,8 +157,9 @@ def main() -> None:
     device = resolve_device(args.device)
     amp = not args.no_amp
     log(f"Run directory: {run_dir}; device {device}; start week {args.start}")
-    log(f"Student settings: KD T={args.kd_temperature:g}, alpha={args.kd_alpha:g}; "
-        f"label smoothing {args.label_smoothing:g}; {args.student_epochs} epochs (teachers {args.epochs})" + (f" (from {HPARAMS_FILE.name})" if HPARAMS_FILE.exists() else ""))
+    log(f"Student settings: KD T={args.kd_temperature:g} (alt T={args.kd_temperature_alt:g}), alpha={args.kd_alpha:g}; "
+        f"label smoothing {args.label_smoothing:g}; {args.student_epochs} epochs (teachers {args.epochs}); "
+        f"conditions {args.conditions}" + (f" (from {HPARAMS_FILE.name})" if HPARAMS_FILE.exists() else ""))
     splits = load_splits(args.splits)
     bundle = build_bundle(spec, splits, args.data_root, args.cache_dir, args.workers, log)
     num_classes, flow_dim = bundle.num_classes, bundle.flowstats_dim
@@ -216,8 +223,9 @@ def main() -> None:
     members = []
     for i in range(args.ensemble):
         name = f"teacherA_{i}"
-        source = args.teachers_from / "models" / f"teacher_{i}.pt" if reuse else None
-        if source is not None and source.exists():
+        candidates = [args.teachers_from / "models" / f"{stem}_{i}.pt" for stem in ("teacher", "teacherA")] if reuse else []
+        source = next((c for c in candidates if c.exists()), None)
+        if source is not None:
             model = build_model("mm_cesnet_v2", num_classes, flow_dim)
             model.load_state_dict(torch.load(source, map_location="cpu"))
             model.to(device)
@@ -238,17 +246,30 @@ def main() -> None:
             log(f"WARNING: cannot reuse {b_source}; Teacher B will be retrained")
         teacher_b = train("teacherB_wide", "wide_teacher", args.seed + 500, base)
 
-    log("Teacher targets on the training set")
-    targets_a = np.zeros((len(bundle.train), num_classes), dtype=np.float32)
-    proxy = DirichletProxyAccumulator(len(bundle.train), num_classes)
+    conditions = [c for c in args.conditions.split(",") if c]
+    unknown_conditions = sorted(set(conditions) - set(CONDITIONS))
+    if unknown_conditions:
+        raise SystemExit(f"Unknown conditions {unknown_conditions}; choose from {list(CONDITIONS)}")
+    temperature_of = {"kdA": args.kd_temperature, "kdB": args.kd_temperature,
+                      "kdA4": args.kd_temperature_alt, "kdB4": args.kd_temperature_alt}
+    needed = {t for c, t in temperature_of.items() if c in conditions and c.startswith("kdA")}
+    needed_b = {t for c, t in temperature_of.items() if c in conditions and c.startswith("kdB")}
+
+    log(f"Teacher targets on the training set (A at T {sorted(needed)}, B at T {sorted(needed_b)})")
+    targets_a = {t: np.zeros((len(bundle.train), num_classes), dtype=np.float32) for t in needed}
+    proxy = DirichletProxyAccumulator(len(bundle.train), num_classes) if "enddA" in conditions else None
     for model in members:
         logits = predict_logits(model, bundle.train, device, amp)
-        targets_a += softmax_chunked(logits, args.kd_temperature) / len(members)
-        proxy.add(logits)
+        for t in needed:
+            targets_a[t] += softmax_chunked(logits, t) / len(members)
+        if proxy is not None:
+            proxy.add(logits)
         del logits
-    dirichlet_targets = proxy.concentrations(args.endd_max_precision)
+    dirichlet_targets = proxy.concentrations(args.endd_max_precision) if proxy is not None else None
     del proxy
-    targets_b = softmax_chunked(predict_logits(teacher_b, bundle.train, device, amp), args.kd_temperature)
+    b_logits_train = predict_logits(teacher_b, bundle.train, device, amp) if needed_b else None
+    targets_b = {t: softmax_chunked(b_logits_train, t) for t in needed_b}
+    del b_logits_train
 
     log("Evaluating teachers")
     val_member_logits = [predict_logits(m, bundle.val, device, amp) for m in members]
@@ -273,15 +294,18 @@ def main() -> None:
 
     # Students ---------------------------------------------------------------------------------
     student_base = replace(base, epochs=args.student_epochs)
+    kd = lambda targets, t: HintonKD(targets[t], t, args.kd_alpha, device)  # noqa: E731
     objectives = {
         "direct": (student_base, None),
         "ls": (replace(student_base, label_smoothing=args.label_smoothing), None),
-        "kdA": (student_base, HintonKD(targets_a, args.kd_temperature, args.kd_alpha, device)),
-        "kdB": (student_base, HintonKD(targets_b, args.kd_temperature, args.kd_alpha, device)),
-        "enddA": (student_base, ProxyDirichletKL(dirichlet_targets, device)),
+        "kdA": (student_base, kd(targets_a, args.kd_temperature) if "kdA" in conditions else None),
+        "kdB": (student_base, kd(targets_b, args.kd_temperature) if "kdB" in conditions else None),
+        "kdA4": (student_base, kd(targets_a, args.kd_temperature_alt) if "kdA4" in conditions else None),
+        "kdB4": (student_base, kd(targets_b, args.kd_temperature_alt) if "kdB4" in conditions else None),
+        "enddA": (student_base, ProxyDirichletKL(dirichlet_targets, device) if "enddA" in conditions else None),
     }
     for seed in range(args.seeds):
-        for condition in CONDITIONS:
+        for condition in conditions:
             cfg, objective = objectives[condition]
             name = f"student_{condition}_s{seed}"
             model = train(name, "student", args.seed + 1000 + 10 * seed, cfg, objective)

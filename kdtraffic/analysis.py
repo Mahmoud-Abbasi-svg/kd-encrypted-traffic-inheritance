@@ -124,6 +124,7 @@ class Unit:
     preds: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
     calib: dict[str, tuple] = field(repr=False, default_factory=dict)
     nll: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
+    kd_conditions: list[str] = field(default_factory=list)  # kdA/kdB (tuned) and kdA4/kdB4 (T = 4) if trained
     rank: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
 
     def __len__(self) -> int:
@@ -163,8 +164,10 @@ def build_unit(data, start: int, split: str, weeks_since: float, num_classes: in
             confidence = get(model, what)[known]
             unit.calib[model] = (confidence, (pred == unit.y_known).astype(np.float64), confidence_bins(confidence))
             unit.nll[model] = get(model, "nll_ts")[known]  # post-hoc NLL (decision D7)
-    for model in ["teacherA", "teacherB"] + [student(c, s) for c in ("kdA", "kdB", "direct") for s in seeds]:
+    kd_conditions = [c for c in ("kdA", "kdB", "kdA4", "kdB4") if f"{student(c, seeds[0])}__energy" in data]
+    for model in ["teacherA", "teacherB"] + [student(c, s) for c in kd_conditions + ["direct"] for s in seeds]:
         unit.rank[model] = ranks(get(model, "energy"))
+    unit.kd_conditions = kd_conditions
     return unit
 
 
@@ -200,7 +203,7 @@ def unit_statistics(unit: Unit, weights: np.ndarray, seed_counts: np.ndarray) ->
                                                                     unit.num_classes))
         out[f"ece_{c}"] = seed_mean(lambda s, c=c: weighted_ece(*unit.calib[student(c, s)], wk))
         out[f"nll_{c}"] = seed_mean(lambda s, c=c: weighted_mean(unit.nll[student(c, s)], wk))
-    for c in ("kdA", "kdB", "direct"):
+    for c in unit.kd_conditions + ["direct"]:
         for teacher in ("A", "B"):
             out[f"rho_{c}_{teacher}"] = seed_mean(
                 lambda s, c=c, t=teacher: weighted_pearson(unit.rank[student(c, s)], unit.rank[f"teacher{t}"], weights))
@@ -219,11 +222,18 @@ def hypothesis_components(table: pd.DataFrame) -> dict[str, float]:
     """Pooled components (all oriented so that > 0 supports the hypothesis) from per-unit statistics."""
     m = table.mean(numeric_only=True)
     direct_a_minus_b = m.rho_direct_A - m.rho_direct_B  # how much more any student follows A than B
+    # H1 uses the conventional-KD arm (T = 4) when it was trained; the tuned arm is then reported only
+    tested, reported = ("kdA4", "kdB4"), ("kdA", "kdB")
+    if f"rho_{tested[0]}_A" not in m:
+        tested, reported = reported, None
     out = {
-        # H1: shift toward the own teacher, relative to the directly trained student (difference in differences)
-        "H1:kdA_shift_to_A": (m.rho_kdA_A - m.rho_kdA_B) - direct_a_minus_b,
-        "H1:kdB_shift_to_B": (m.rho_kdB_B - m.rho_kdB_A) + direct_a_minus_b,
+        # shift toward the own teacher, relative to the directly trained student (difference in differences)
+        f"H1:{tested[0]}_shift_to_A": (m[f"rho_{tested[0]}_A"] - m[f"rho_{tested[0]}_B"]) - direct_a_minus_b,
+        f"H1:{tested[1]}_shift_to_B": (m[f"rho_{tested[1]}_B"] - m[f"rho_{tested[1]}_A"]) + direct_a_minus_b,
     }
+    if reported is not None:
+        out[f"info:{reported[0]}_shift_to_A"] = (m[f"rho_{reported[0]}_A"] - m[f"rho_{reported[0]}_B"]) - direct_a_minus_b
+        out[f"info:{reported[1]}_shift_to_B"] = (m[f"rho_{reported[1]}_B"] - m[f"rho_{reported[1]}_A"]) + direct_a_minus_b
     for score in SCORES:
         a = lambda c: m[f"auroc_{score}_{c}"]  # noqa: E731
         gap = table[f"auroc_{score}_teacherA"] - table[f"auroc_{score}_kdA"]

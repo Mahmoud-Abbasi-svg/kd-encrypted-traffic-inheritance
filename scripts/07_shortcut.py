@@ -60,7 +60,9 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--student-width", type=int, default=48)
-    parser.add_argument("--kd-temperature", type=float, default=hp.get("kd_temperature", 4.0))
+    # the conventional-KD temperature (kdA4 arm): at the accuracy-tuned T = 1 the teacher's targets are
+    # nearly one-hot and nothing teacher-specific transfers, so nothing could be inherited here either
+    parser.add_argument("--kd-temperature", type=float, default=stored.get("kd_temperature_alt", 4.0))
     parser.add_argument("--kd-alpha", type=float, default=hp.get("kd_alpha", 0.9))
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="auto")

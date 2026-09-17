@@ -85,26 +85,41 @@ def load_runs(runs: list[Path], kind: str, log):
         loaded.append({"run": run, "start": start, "files": files, "weeks_since": weeks_since,
                        "num_classes": num_classes, "metrics": metrics,
                        "inheritance": pd.read_csv(run / "inheritance.csv")})
-    starts = [r["start"] for r in loaded]
-    if len(set(starts)) != len(starts):
-        raise SystemExit(f"Each start date may appear once; got {starts}")
     return loaded
+
+
+SHARED = ("y", "app", "day", "duplicate", "ppi_len")
+
+
+def load_scores(paths: list[Path]) -> dict[str, np.ndarray]:
+    """One split's per-flow arrays, merging several runs of the same start date (e.g. extra conditions)."""
+    data: dict[str, np.ndarray] = {}
+    for path in paths:
+        with np.load(path, allow_pickle=False) as npz:
+            part = {k: npz[k] for k in npz.files}
+        for needed in SHARED[2:]:
+            if needed not in part:
+                raise SystemExit(f"{path} lacks '{needed}': re-run scripts/06_track_a.py with the current code")
+        if not any(k.endswith("__nll_ts") for k in part):
+            raise SystemExit(f"{path} lacks post-hoc NLL: re-run scripts/06_track_a.py with the current code")
+        if data and not np.array_equal(data["y"], part["y"]):
+            raise SystemExit(f"{path} covers different flows than the other runs of this start date")
+        data.update(part)
+    return data
 
 
 def build_units(loaded, mask_fn):
     units, days, apps = [], [], []
+    by_start: dict[int, list] = {}
     for r in loaded:
-        for split, path in r["files"].items():
-            with np.load(path, allow_pickle=False) as npz:
-                data = {k: npz[k] for k in npz.files}
-            for needed in ("day", "duplicate", "ppi_len"):
-                if needed not in data:
-                    raise SystemExit(f"{path} lacks '{needed}': re-run scripts/06_track_a.py with the current code")
-            if not any(k.endswith("__nll_ts") for k in data):
-                raise SystemExit(f"{path} lacks post-hoc NLL: re-run scripts/06_track_a.py with the current code")
+        by_start.setdefault(r["start"], []).append(r)
+    for start, runs in by_start.items():
+        for split in runs[0]["files"]:
+            paths = [r["files"][split] for r in runs if split in r["files"]]
+            data = load_scores(paths)
             mask = mask_fn(data)
-            num_classes = r["num_classes"] or int(data["y"].max()) + 1
-            units.append(build_unit(data, r["start"], split, float(r["weeks_since"][split]), num_classes, mask))
+            num_classes = runs[0]["num_classes"] or int(data["y"].max()) + 1
+            units.append(build_unit(data, start, split, float(runs[0]["weeks_since"][split]), num_classes, mask))
             days.append(data["day"][mask])
             apps.append(data["app"][mask])
     n_clusters = assign_clusters(units, days, apps)
@@ -189,7 +204,8 @@ def markdown_table(df: pd.DataFrame) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--runs", type=Path, nargs="+", required=True, help="scripts/06_track_a.py run directories")
+    parser.add_argument("--runs", type=Path, nargs="+", required=True,
+                        help="scripts/06_track_a.py run directories; several runs of one start date are merged")
     parser.add_argument("--shortcut", type=Path, default=None, help="scripts/07_shortcut.py run directory")
     parser.add_argument("--windows", choices=["test", "smokewin", "val"], default="test")
     parser.add_argument("--n-boot", type=int, default=1000)

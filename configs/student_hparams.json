@@ -29,5 +29,7 @@
   "tuning_run": "results\\tuning\\20260917-085200_S_train11-14",
   "date": "2026-09-17",
   "student_epochs": 20,
-  "student_epochs_reason": "Epoch check in the tuning run: at 20 epochs direct 0.9150 and kdA (T=1, alpha=0.9) 0.9154 vs 0.9000 / 0.9034 at 10 epochs, best epoch at or next to the last, so 10 epochs leave students unconverged. Teachers stay at 10 epochs (validation loss had flattened). Decided by the user on 2026-09-17."
+  "student_epochs_reason": "Epoch check in the tuning run: at 20 epochs direct 0.9150 and kdA (T=1, alpha=0.9) 0.9154 vs 0.9000 / 0.9034 at 10 epochs, best epoch at or next to the last, so 10 epochs leave students unconverged. Teachers stay at 10 epochs (validation loss had flattened). Decided by the user on 2026-09-17.",
+  "kd_temperature_alt": 4.0,
+  "kd_temperature_alt_reason": "Conventional-KD arm (kdA4 / kdB4). The tuned T=1 makes the teacher's targets nearly one-hot, so the KD students matched the direct student in accuracy AND in per-flow scores (energy rho 0.503 vs direct 0.507, start 11, 17 Sep) - no inheritance to measure. H1 is therefore tested on the T=4 arm. Added 2026-09-17."
 }

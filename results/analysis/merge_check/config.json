@@ -1,0 +1,16 @@
+{
+  "args": {
+    "runs": [
+      "results\\track_a\\20260917-234856_XS_train11-14_smoke",
+      "results\\track_a\\20260917-234916_XS_train11-14_smoke"
+    ],
+    "shortcut": null,
+    "windows": "val",
+    "n_boot": 10,
+    "seed": 2022,
+    "analyses": "primary",
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\analysis",
+    "name": "merge_check",
+    "preregistration": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\docs\\preregistration.md"
+  }
+}

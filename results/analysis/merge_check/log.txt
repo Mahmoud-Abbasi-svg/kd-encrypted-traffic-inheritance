@@ -1,0 +1,24 @@
+[23:49:32] 20260917-234856_XS_train11-14_smoke: start 11, splits ['val']
+[23:49:32] 20260917-234916_XS_train11-14_smoke: start 11, splits ['val']
+[23:49:32] primary: 1 units, 8,000 flows, 628 day x service clusters
+[23:49:32]   bootstrap 1/10
+[23:49:32]   bootstrap 2/10
+[23:49:32]   bootstrap 3/10
+[23:49:32]   bootstrap 4/10
+[23:49:32]   bootstrap 5/10
+[23:49:32]   bootstrap 6/10
+[23:49:32]   bootstrap 7/10
+[23:49:32]   bootstrap 8/10
+[23:49:33]   bootstrap 9/10
+[23:49:33]   bootstrap 10/10
+[23:49:33] primary: done in 0s
+[23:49:34] Hypotheses:
+hypothesis   p_iut  p_holm  supported                      note
+        H1 0.09091  0.4545      False                       NaN
+H2[energy]  0.1818  0.7273      False                       NaN
+   H2[msp]  0.1818  0.7273      False                       NaN
+H3[energy]     NaN     NaN      False undefined: one time point
+   H3[msp]     NaN     NaN      False undefined: one time point
+H5[energy]       1       1      False                       NaN
+   H5[msp]       1       1      False                       NaN
+[23:49:34] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\merge_check\report.md
