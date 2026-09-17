@@ -6,6 +6,7 @@ __pycache__/
 
 # Laptop smoke runs (meaningless numbers)
 results/**/*_smoke/
+results/**/*_stopped/
 results/analysis/*smoke*/
 logs/*
 !logs/.gitkeep

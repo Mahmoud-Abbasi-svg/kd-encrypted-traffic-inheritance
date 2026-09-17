@@ -16,7 +16,7 @@
 | Cluster bootstrap (day × service) | Written and tested | `kdtraffic/stats.py` |
 | Confirmatory analysis (pooled cluster + seed bootstrap, Holm, sensitivity analyses, figures, report) | Written, tested, smoke-run on laptop | `scripts/08_analyze.py`, `kdtraffic/analysis.py` |
 | Pre-registration | **Draft.** Settled: D2 (small equal tuning grid, chosen by validation macro-F1), D6 (energy and MSP co-primary), D7 (NLL), and H1 as a shift relative to the direct student. Open: D1, D3, D4, D5. Analysis section matches the code | `docs/preregistration.md` |
-| Student tuning (D2) | Script written and smoke-tested; not run yet | `scripts/09_tune_students.py` → `configs/student_hparams.json` |
+| Student tuning (D2) | **Done (17 Sep).** Selected KD T=1, α=0.9 (0.9034 vs direct 0.9000; planned T=4 gave 0.8821) and LS 0.05 (0.8929). Epoch check: students gain 1.5 points at 20 epochs → students now train for 20 epochs, teachers 10 | `results/tuning/20260917-085200_S_train11-14`, `configs/student_hparams.json` |
 | Remaining validation-only work (tuning, 3 start dates, shortcut) | Ready to run on the laptop, about 11–12 h | `run_validation_grid_laptop.cmd`, `logs/validation_grid_laptop.log` |
 | Unit tests | 44 pass | `tests/` |
 | **Pilot on size S (week-3 gate)** | **PASSED** on the laptop GPU (16 Sep): macro-F1 gap 6.2 points; energy-AUROC gap 0.018 (MSP gap 0.065) | `results/pilot/20260916-122627_S_train11-14` |

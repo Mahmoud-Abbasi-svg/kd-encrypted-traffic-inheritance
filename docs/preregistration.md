@@ -42,7 +42,7 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
   - `directTS`: `direct` after temperature scaling;
   - `kdA`, `kdB`: Hinton KD with temperature T and weight α (tuned on `kdA`, D2; planned T = 4, α = 0.9). `kdB` uses the same values;
   - `enddA`: ensemble distribution distillation with proxy Dirichlet targets and a reverse-KL loss (after Ryabinin et al., NeurIPS 2021). The target mean is Teacher A's mean prediction, and the precision is estimated from member disagreement (capped at 10⁴). Plain maximum-likelihood EnDD was replaced because it is unstable with ~100 classes: in the laptop smoke run its energy score was anti-correlated with both teachers.
-- **Training (all models):** AdamW, lr 1e-3, weight decay 1e-4, one-cycle schedule, batch 1024, 10 epochs, bf16 autocast. The kept epoch is the one with the lowest validation cross-entropy on known flows.
+- **Training (all models):** AdamW, lr 1e-3, weight decay 1e-4, one-cycle schedule, batch 1024, bf16 autocast; 10 epochs for teachers, 20 epochs for students (see the epoch check below). The kept epoch is the one with the lowest validation cross-entropy on known flows.
 - **Seeds:** 3 student seeds per condition and start date.
 - **Tuning (decision D2, settled 16 Sep 2026):** a small grid with the same kind of budget for each tunable method, run once by `scripts/09_tune_students.py` on start date 11 (validation week 15, student seed 0):
   - KD: T ∈ {1, 2, 4} × α ∈ {0.5, 0.9};
@@ -51,7 +51,27 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
   The selection criterion is validation macro-F1 on known flows only. Unknown detection and calibration are not computed during tuning. A tie (within 0.001) goes to the planned value. The chosen values are stored in `configs/student_hparams.json` and used for all start dates and for the shortcut experiment. `direct` and `enddA` have no tuned settings.
 
   **Reason:** in the first validation-only grid run (start 11, planned values), the KD students lost about 2 macro-F1 points against `direct` (0.881 vs 0.901, 3 seeds). With untuned settings, a comparison at matched accuracy (H2) would not be fair to KD.
-- **Epoch check (reported only):** the tuning run also trains `direct` and the selected KD student for 20 epochs, to show whether 10 epochs leave KD unconverged. The epoch count stays at 10 unless this is changed here before freezing.
+- **Tuning result (17 Sep 2026)** — run `results/tuning/20260917-085200_S_train11-14`, validation macro-F1 after 10 epochs:
+
+  | Setting | Macro-F1 |
+  |---|---|
+  | direct | 0.9000 |
+  | KD, T = 1, α = 0.5 | 0.9012 |
+  | **KD, T = 1, α = 0.9 (selected)** | **0.9034** |
+  | KD, T = 2, α = 0.5 | 0.8993 |
+  | KD, T = 2, α = 0.9 | 0.9005 |
+  | KD, T = 4, α = 0.5 | 0.8879 |
+  | KD, T = 4, α = 0.9 (planned) | 0.8821 |
+  | **LS 0.05 (selected)** | **0.8929** |
+  | LS 0.1 (planned) | 0.8876 |
+  | LS 0.2 | 0.8782 |
+
+  The selected values are stored in `configs/student_hparams.json`.
+- **Epoch check and change (17 Sep 2026, decided before freezing):**
+  - With 20 epochs, `direct` reached 0.9150 and the selected KD student 0.9154, against 0.9000 and 0.9034 at 10 epochs.
+  - Their best epoch was the last or second-to-last one, so 10 epochs left the students unconverged.
+  - **Change:** students are trained for 20 epochs (`student_epochs` in `configs/student_hparams.json`). Teachers stay at 10 epochs; their validation loss had flattened by epoch 9–10 in the pilot.
+  - The validation-only start-11 grid run of 16 Sep (10-epoch students, planned KD values) is kept only as the record behind the H1 and D6 decisions.
 
 ## 5. Outcomes
 - **Unknown-scores** (higher = more likely known): energy (logsumexp of logits) and maximum softmax probability (MSP).

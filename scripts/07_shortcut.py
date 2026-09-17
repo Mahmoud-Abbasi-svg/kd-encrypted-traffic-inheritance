@@ -51,13 +51,15 @@ def main() -> None:
     parser.add_argument("--rhos", default="0,0.5,0.9,1.0")
     parser.add_argument("--groups", type=int, default=8)
     parser.add_argument("--seeds", type=int, default=3)
-    parser.add_argument("--epochs", type=int, default=10)
+    hparams_file = PROJECT_ROOT / "configs" / "student_hparams.json"  # tuned settings (decision D2)
+    stored = json.loads(hparams_file.read_text(encoding="utf-8")) if hparams_file.exists() else {}
+    hp = stored.get("selected", {})
+    parser.add_argument("--epochs", type=int, default=10, help="teacher epochs")
+    parser.add_argument("--student-epochs", type=int, default=stored.get("student_epochs", 10))
     parser.add_argument("--batch-size", type=int, default=1024)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--student-width", type=int, default=48)
-    hparams_file = PROJECT_ROOT / "configs" / "student_hparams.json"  # tuned settings (decision D2)
-    hp = json.loads(hparams_file.read_text(encoding="utf-8"))["selected"] if hparams_file.exists() else {}
     parser.add_argument("--kd-temperature", type=float, default=hp.get("kd_temperature", 4.0))
     parser.add_argument("--kd-alpha", type=float, default=hp.get("kd_alpha", 0.9))
     parser.add_argument("--seed", type=int, default=0)
@@ -68,6 +70,7 @@ def main() -> None:
         raise SystemExit("The shortcut experiment uses the validation week only")
     if args.smoke:
         args.rhos, args.seeds, args.epochs, args.batch_size = "0,1", 1, 1, min(args.batch_size, 512)
+        args.student_epochs = 1
     rhos = [float(r) for r in args.rhos.split(",")]
 
     spec = spec_from_args(args)
@@ -75,7 +78,8 @@ def main() -> None:
     log = RunLogger(run_dir / "log.txt")
     device = resolve_device(args.device)
     amp = not args.no_amp
-    log(f"KD settings: T={args.kd_temperature:g}, alpha={args.kd_alpha:g}")
+    log(f"KD settings: T={args.kd_temperature:g}, alpha={args.kd_alpha:g}; "
+        f"student epochs {args.student_epochs}, teacher epochs {args.epochs}")
     splits = load_splits(args.splits)
     bundle = build_bundle(spec, splits, args.data_root, args.cache_dir, args.workers, log)
     write_json(run_dir / "config.json", {"args": vars(args), "spec": asdict(spec), "cache_dir": bundle.cache_dir})
@@ -89,7 +93,8 @@ def main() -> None:
 
     def train(name, architecture, dim, train_arrays, val_arrays, seed, objective=None):
         model = build_model(architecture, num_classes, dim, student_width=args.student_width)
-        train_classifier(model, train_arrays, val_arrays, replace(base, seed=seed), log, name, objective)
+        epochs = args.student_epochs if architecture == "student" else args.epochs
+        train_classifier(model, train_arrays, val_arrays, replace(base, seed=seed, epochs=epochs), log, name, objective)
         return model
 
     def report(name, rho, seed, setting, arrays, logits):

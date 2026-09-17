@@ -60,9 +60,11 @@ HPARAMS_FILE = PROJECT_ROOT / "configs" / "student_hparams.json"  # written by s
 
 def student_hparams() -> dict:
     """Tuned student settings (decision D2), or the planned defaults if tuning has not been run."""
-    planned = {"kd_temperature": 4.0, "kd_alpha": 0.9, "label_smoothing": 0.1}
+    planned = {"kd_temperature": 4.0, "kd_alpha": 0.9, "label_smoothing": 0.1, "student_epochs": 10}
     if HPARAMS_FILE.exists():
-        planned.update(json.loads(HPARAMS_FILE.read_text(encoding="utf-8"))["selected"])
+        stored = json.loads(HPARAMS_FILE.read_text(encoding="utf-8"))
+        planned.update(stored["selected"])
+        planned["student_epochs"] = stored.get("student_epochs", planned["student_epochs"])
     return planned
 SUMMARY_METRICS = ["macro_f1", "auroc_energy", "auroc_msp", "fpr95_energy", "ece", "ece_ts", "aurc"]
 
@@ -103,12 +105,14 @@ def main() -> None:
     parser.add_argument("--seeds", type=int, default=3)
     parser.add_argument("--ensemble", type=int, default=5)
     parser.add_argument("--teachers-from", type=Path, default=None, help="pilot run directory with models/teacher_<i>.pt")
-    parser.add_argument("--epochs", type=int, default=10)
+    hp = student_hparams()
+    parser.add_argument("--epochs", type=int, default=10, help="teacher epochs")
+    parser.add_argument("--student-epochs", type=int, default=hp["student_epochs"],
+                        help=f"default from {HPARAMS_FILE.name} if present")
     parser.add_argument("--batch-size", type=int, default=1024)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--student-width", type=int, default=48)
-    hp = student_hparams()
     parser.add_argument("--label-smoothing", type=float, default=hp["label_smoothing"],
                         help=f"default from {HPARAMS_FILE.name} if present")
     parser.add_argument("--kd-temperature", type=float, default=hp["kd_temperature"])
@@ -134,6 +138,7 @@ def main() -> None:
         raise SystemExit("--smoke-windows is only allowed together with --smoke")
     if args.smoke:
         args.seeds, args.ensemble, args.epochs, args.batch_size = 1, min(args.ensemble, 2), 1, min(args.batch_size, 512)
+        args.student_epochs = 1
         args.window_known_size = args.window_unknown_size = "2000"
     args.train_weeks, args.val_weeks = f"{args.start}-{args.start + 3}", f"{args.start + 4}"
     use_test = args.with_test
@@ -147,7 +152,7 @@ def main() -> None:
     amp = not args.no_amp
     log(f"Run directory: {run_dir}; device {device}; start week {args.start}")
     log(f"Student settings: KD T={args.kd_temperature:g}, alpha={args.kd_alpha:g}; "
-        f"label smoothing {args.label_smoothing:g}" + (f" (from {HPARAMS_FILE.name})" if HPARAMS_FILE.exists() else ""))
+        f"label smoothing {args.label_smoothing:g}; {args.student_epochs} epochs (teachers {args.epochs})" + (f" (from {HPARAMS_FILE.name})" if HPARAMS_FILE.exists() else ""))
     splits = load_splits(args.splits)
     bundle = build_bundle(spec, splits, args.data_root, args.cache_dir, args.workers, log)
     num_classes, flow_dim = bundle.num_classes, bundle.flowstats_dim
@@ -267,12 +272,13 @@ def main() -> None:
     del val_member_logits, val_b_logits
 
     # Students ---------------------------------------------------------------------------------
+    student_base = replace(base, epochs=args.student_epochs)
     objectives = {
-        "direct": (base, None),
-        "ls": (replace(base, label_smoothing=args.label_smoothing), None),
-        "kdA": (base, HintonKD(targets_a, args.kd_temperature, args.kd_alpha, device)),
-        "kdB": (base, HintonKD(targets_b, args.kd_temperature, args.kd_alpha, device)),
-        "enddA": (base, ProxyDirichletKL(dirichlet_targets, device)),
+        "direct": (student_base, None),
+        "ls": (replace(student_base, label_smoothing=args.label_smoothing), None),
+        "kdA": (student_base, HintonKD(targets_a, args.kd_temperature, args.kd_alpha, device)),
+        "kdB": (student_base, HintonKD(targets_b, args.kd_temperature, args.kd_alpha, device)),
+        "enddA": (student_base, ProxyDirichletKL(dirichlet_targets, device)),
     }
     for seed in range(args.seeds):
         for condition in CONDITIONS:

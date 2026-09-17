@@ -1,0 +1,170 @@
+[08:52:00] Loading cached arrays from C:\datasets\cache\tls-year22_S_121012501890
+[08:52:03] Teacher A targets at T in [1.0, 2.0, 4.0]
+[09:04:34] direct epoch 1/10: train_loss=1.535, seconds=58.7, val_loss=0.5395, val_macro_f1=0.7831
+[09:05:40] direct epoch 2/10: train_loss=0.4657, seconds=64, val_loss=0.4001, val_macro_f1=0.8404
+[09:06:45] direct epoch 3/10: train_loss=0.375, seconds=62.3, val_loss=0.3493, val_macro_f1=0.8584
+[09:07:49] direct epoch 4/10: train_loss=0.3308, seconds=61.9, val_loss=0.3171, val_macro_f1=0.8716
+[09:08:54] direct epoch 5/10: train_loss=0.3004, seconds=62.4, val_loss=0.2871, val_macro_f1=0.8824
+[09:09:58] direct epoch 6/10: train_loss=0.2768, seconds=62.1, val_loss=0.2722, val_macro_f1=0.89
+[09:11:02] direct epoch 7/10: train_loss=0.2574, seconds=61.2, val_loss=0.2622, val_macro_f1=0.8925
+[09:12:08] direct epoch 8/10: train_loss=0.242, seconds=64.1, val_loss=0.2486, val_macro_f1=0.8983
+[09:12:38] direct epoch 9/10: train_loss=0.2312, seconds=28.7, val_loss=0.244, val_macro_f1=0.9
+[09:13:01] direct epoch 10/10: train_loss=0.2259, seconds=22.4, val_loss=0.2424, val_macro_f1=0.9
+[09:13:01] direct: macro-F1 0.9000 (epoch 10)
+[09:13:40] kdA_T1_a0.5 epoch 1/10: train_loss=1.497, seconds=30.6, val_loss=0.5534, val_macro_f1=0.7642
+[09:14:06] kdA_T1_a0.5 epoch 2/10: train_loss=0.4354, seconds=25.4, val_loss=0.3896, val_macro_f1=0.8436
+[09:14:34] kdA_T1_a0.5 epoch 3/10: train_loss=0.3422, seconds=28.3, val_loss=0.3361, val_macro_f1=0.861
+[09:15:00] kdA_T1_a0.5 epoch 4/10: train_loss=0.2975, seconds=25.6, val_loss=0.3109, val_macro_f1=0.8725
+[09:15:26] kdA_T1_a0.5 epoch 5/10: train_loss=0.2678, seconds=25.4, val_loss=0.2848, val_macro_f1=0.8845
+[09:15:53] kdA_T1_a0.5 epoch 6/10: train_loss=0.2448, seconds=25.9, val_loss=0.266, val_macro_f1=0.8903
+[09:16:17] kdA_T1_a0.5 epoch 7/10: train_loss=0.2259, seconds=23.8, val_loss=0.2545, val_macro_f1=0.8938
+[09:16:44] kdA_T1_a0.5 epoch 8/10: train_loss=0.211, seconds=26.1, val_loss=0.2441, val_macro_f1=0.8998
+[09:17:11] kdA_T1_a0.5 epoch 9/10: train_loss=0.2009, seconds=26.4, val_loss=0.2401, val_macro_f1=0.9008
+[09:17:36] kdA_T1_a0.5 epoch 10/10: train_loss=0.1958, seconds=25.1, val_loss=0.2384, val_macro_f1=0.9012
+[09:17:36] kdA_T1_a0.5: macro-F1 0.9012 (epoch 10)
+[09:18:03] kdA_T1_a0.9 epoch 1/10: train_loss=1.475, seconds=25.7, val_loss=0.5565, val_macro_f1=0.7658
+[09:18:28] kdA_T1_a0.9 epoch 2/10: train_loss=0.4126, seconds=24.5, val_loss=0.3915, val_macro_f1=0.8409
+[09:18:55] kdA_T1_a0.9 epoch 3/10: train_loss=0.319, seconds=26.7, val_loss=0.333, val_macro_f1=0.8624
+[09:19:22] kdA_T1_a0.9 epoch 4/10: train_loss=0.2747, seconds=26.4, val_loss=0.3061, val_macro_f1=0.8771
+[09:19:51] kdA_T1_a0.9 epoch 5/10: train_loss=0.2446, seconds=27.8, val_loss=0.2848, val_macro_f1=0.8824
+[09:20:16] kdA_T1_a0.9 epoch 6/10: train_loss=0.2221, seconds=25.3, val_loss=0.2644, val_macro_f1=0.892
+[09:20:43] kdA_T1_a0.9 epoch 7/10: train_loss=0.2033, seconds=26, val_loss=0.2526, val_macro_f1=0.8942
+[09:21:09] kdA_T1_a0.9 epoch 8/10: train_loss=0.1885, seconds=25.7, val_loss=0.2426, val_macro_f1=0.9005
+[09:21:35] kdA_T1_a0.9 epoch 9/10: train_loss=0.1786, seconds=26, val_loss=0.2394, val_macro_f1=0.9026
+[09:22:02] kdA_T1_a0.9 epoch 10/10: train_loss=0.1734, seconds=26.2, val_loss=0.2378, val_macro_f1=0.9034
+[09:22:02] kdA_T1_a0.9: macro-F1 0.9034 (epoch 10)
+[09:22:33] kdA_T2_a0.5 epoch 1/10: train_loss=3.817, seconds=26.3, val_loss=0.6113, val_macro_f1=0.7703
+[09:23:01] kdA_T2_a0.5 epoch 2/10: train_loss=1.018, seconds=27.5, val_loss=0.4482, val_macro_f1=0.8377
+[09:23:28] kdA_T2_a0.5 epoch 3/10: train_loss=0.7798, seconds=26.4, val_loss=0.379, val_macro_f1=0.8611
+[09:23:56] kdA_T2_a0.5 epoch 4/10: train_loss=0.6698, seconds=27.4, val_loss=0.3465, val_macro_f1=0.8735
+[09:24:24] kdA_T2_a0.5 epoch 5/10: train_loss=0.6003, seconds=26.9, val_loss=0.3194, val_macro_f1=0.8812
+[09:24:51] kdA_T2_a0.5 epoch 6/10: train_loss=0.5477, seconds=26.8, val_loss=0.2997, val_macro_f1=0.8884
+[09:25:16] kdA_T2_a0.5 epoch 7/10: train_loss=0.5061, seconds=25, val_loss=0.2902, val_macro_f1=0.8908
+[09:25:43] kdA_T2_a0.5 epoch 8/10: train_loss=0.4731, seconds=25.6, val_loss=0.2791, val_macro_f1=0.8972
+[09:26:16] kdA_T2_a0.5 epoch 9/10: train_loss=0.4524, seconds=33.1, val_loss=0.275, val_macro_f1=0.8993
+[09:26:44] kdA_T2_a0.5 epoch 10/10: train_loss=0.4422, seconds=27.4, val_loss=0.2723, val_macro_f1=0.8993
+[09:26:44] kdA_T2_a0.5: macro-F1 0.8993 (epoch 10)
+[09:27:12] kdA_T2_a0.9 epoch 1/10: train_loss=5.488, seconds=27.2, val_loss=0.6348, val_macro_f1=0.77
+[09:27:40] kdA_T2_a0.9 epoch 2/10: train_loss=1.361, seconds=27.6, val_loss=0.4632, val_macro_f1=0.8426
+[09:28:08] kdA_T2_a0.9 epoch 3/10: train_loss=1.029, seconds=26.7, val_loss=0.3946, val_macro_f1=0.8638
+[09:28:33] kdA_T2_a0.9 epoch 4/10: train_loss=0.875, seconds=25.1, val_loss=0.3547, val_macro_f1=0.877
+[09:28:52] kdA_T2_a0.9 epoch 5/10: train_loss=0.778, seconds=18.5, val_loss=0.334, val_macro_f1=0.8853
+[09:29:04] kdA_T2_a0.9 epoch 6/10: train_loss=0.7071, seconds=11.3, val_loss=0.3041, val_macro_f1=0.8924
+[09:29:17] kdA_T2_a0.9 epoch 7/10: train_loss=0.6502, seconds=12.7, val_loss=0.2962, val_macro_f1=0.8953
+[09:29:30] kdA_T2_a0.9 epoch 8/10: train_loss=0.6076, seconds=12.2, val_loss=0.2831, val_macro_f1=0.8993
+[09:29:41] kdA_T2_a0.9 epoch 9/10: train_loss=0.5806, seconds=11.3, val_loss=0.2804, val_macro_f1=0.9003
+[09:29:53] kdA_T2_a0.9 epoch 10/10: train_loss=0.5671, seconds=11.2, val_loss=0.2778, val_macro_f1=0.9005
+[09:29:53] kdA_T2_a0.9: macro-F1 0.9005 (epoch 10)
+[09:30:08] kdA_T4_a0.5 epoch 1/10: train_loss=8.883, seconds=11.5, val_loss=0.7056, val_macro_f1=0.7595
+[09:30:20] kdA_T4_a0.5 epoch 2/10: train_loss=2.423, seconds=11.3, val_loss=0.493, val_macro_f1=0.8321
+[09:30:33] kdA_T4_a0.5 epoch 3/10: train_loss=1.893, seconds=12.4, val_loss=0.4301, val_macro_f1=0.8564
+[09:30:45] kdA_T4_a0.5 epoch 4/10: train_loss=1.665, seconds=11.5, val_loss=0.3982, val_macro_f1=0.8678
+[09:30:56] kdA_T4_a0.5 epoch 5/10: train_loss=1.522, seconds=11.4, val_loss=0.3685, val_macro_f1=0.8738
+[09:31:08] kdA_T4_a0.5 epoch 6/10: train_loss=1.42, seconds=11.4, val_loss=0.3459, val_macro_f1=0.8797
+[09:31:21] kdA_T4_a0.5 epoch 7/10: train_loss=1.344, seconds=12.4, val_loss=0.3385, val_macro_f1=0.8844
+[09:31:35] kdA_T4_a0.5 epoch 8/10: train_loss=1.287, seconds=13.8, val_loss=0.3249, val_macro_f1=0.886
+[09:31:53] kdA_T4_a0.5 epoch 9/10: train_loss=1.252, seconds=17.3, val_loss=0.322, val_macro_f1=0.8877
+[09:32:18] kdA_T4_a0.5 epoch 10/10: train_loss=1.235, seconds=24.5, val_loss=0.3196, val_macro_f1=0.8879
+[09:32:18] kdA_T4_a0.5: macro-F1 0.8879 (epoch 10)
+[09:32:46] kdA_T4_a0.9 epoch 1/10: train_loss=14.33, seconds=27.4, val_loss=0.7693, val_macro_f1=0.7529
+[09:33:12] kdA_T4_a0.9 epoch 2/10: train_loss=3.799, seconds=24.7, val_loss=0.5452, val_macro_f1=0.8224
+[09:33:44] kdA_T4_a0.9 epoch 3/10: train_loss=2.968, seconds=31.3, val_loss=0.469, val_macro_f1=0.8468
+[09:34:12] kdA_T4_a0.9 epoch 4/10: train_loss=2.614, seconds=27.7, val_loss=0.4461, val_macro_f1=0.8598
+[09:34:37] kdA_T4_a0.9 epoch 5/10: train_loss=2.398, seconds=24.4, val_loss=0.4022, val_macro_f1=0.8674
+[09:35:00] kdA_T4_a0.9 epoch 6/10: train_loss=2.243, seconds=23.3, val_loss=0.3752, val_macro_f1=0.8749
+[09:35:27] kdA_T4_a0.9 epoch 7/10: train_loss=2.126, seconds=26, val_loss=0.369, val_macro_f1=0.8782
+[09:35:54] kdA_T4_a0.9 epoch 8/10: train_loss=2.04, seconds=26.3, val_loss=0.3551, val_macro_f1=0.8798
+[09:36:21] kdA_T4_a0.9 epoch 9/10: train_loss=1.986, seconds=27.1, val_loss=0.3524, val_macro_f1=0.882
+[09:36:47] kdA_T4_a0.9 epoch 10/10: train_loss=1.96, seconds=25, val_loss=0.3507, val_macro_f1=0.8821
+[09:36:47] kdA_T4_a0.9: macro-F1 0.8821 (epoch 10)
+[09:37:12] ls_0.05 epoch 1/10: train_loss=1.851, seconds=25, val_loss=0.6112, val_macro_f1=0.7643
+[09:37:39] ls_0.05 epoch 2/10: train_loss=0.9304, seconds=25.6, val_loss=0.4663, val_macro_f1=0.8339
+[09:38:05] ls_0.05 epoch 3/10: train_loss=0.8455, seconds=26.5, val_loss=0.4006, val_macro_f1=0.8596
+[09:38:37] ls_0.05 epoch 4/10: train_loss=0.8043, seconds=31.3, val_loss=0.3791, val_macro_f1=0.869
+[09:38:53] ls_0.05 epoch 5/10: train_loss=0.777, seconds=14.8, val_loss=0.3509, val_macro_f1=0.8795
+[09:39:05] ls_0.05 epoch 6/10: train_loss=0.7557, seconds=11.9, val_loss=0.3419, val_macro_f1=0.8828
+[09:39:19] ls_0.05 epoch 7/10: train_loss=0.7389, seconds=13.6, val_loss=0.3269, val_macro_f1=0.8872
+[09:39:32] ls_0.05 epoch 8/10: train_loss=0.7259, seconds=12.8, val_loss=0.3191, val_macro_f1=0.8907
+[09:39:46] ls_0.05 epoch 9/10: train_loss=0.7169, seconds=13.9, val_loss=0.3141, val_macro_f1=0.8929
+[09:40:07] ls_0.05 epoch 10/10: train_loss=0.7125, seconds=20.2, val_loss=0.3142, val_macro_f1=0.8928
+[09:40:07] ls_0.05: macro-F1 0.8929 (epoch 9)
+[09:40:33] ls_0.1 epoch 1/10: train_loss=2.119, seconds=25.2, val_loss=0.6649, val_macro_f1=0.7618
+[09:40:58] ls_0.1 epoch 2/10: train_loss=1.284, seconds=24.1, val_loss=0.5451, val_macro_f1=0.8288
+[09:41:25] ls_0.1 epoch 3/10: train_loss=1.204, seconds=26.1, val_loss=0.4758, val_macro_f1=0.8524
+[09:41:49] ls_0.1 epoch 4/10: train_loss=1.166, seconds=23.6, val_loss=0.46, val_macro_f1=0.8632
+[09:42:18] ls_0.1 epoch 5/10: train_loss=1.14, seconds=28.7, val_loss=0.4305, val_macro_f1=0.8732
+[09:42:43] ls_0.1 epoch 6/10: train_loss=1.12, seconds=25.1, val_loss=0.4063, val_macro_f1=0.8786
+[09:43:08] ls_0.1 epoch 7/10: train_loss=1.104, seconds=24, val_loss=0.404, val_macro_f1=0.8813
+[09:43:31] ls_0.1 epoch 8/10: train_loss=1.092, seconds=22.2, val_loss=0.3895, val_macro_f1=0.8862
+[09:43:55] ls_0.1 epoch 9/10: train_loss=1.084, seconds=24.1, val_loss=0.3874, val_macro_f1=0.8876
+[09:44:18] ls_0.1 epoch 10/10: train_loss=1.079, seconds=22.9, val_loss=0.3877, val_macro_f1=0.8883
+[09:44:18] ls_0.1: macro-F1 0.8876 (epoch 9)
+[09:44:42] ls_0.2 epoch 1/10: train_loss=2.576, seconds=23.2, val_loss=0.819, val_macro_f1=0.7476
+[09:45:06] ls_0.2 epoch 2/10: train_loss=1.887, seconds=23.5, val_loss=0.7029, val_macro_f1=0.8187
+[09:45:32] ls_0.2 epoch 3/10: train_loss=1.817, seconds=24.9, val_loss=0.669, val_macro_f1=0.8453
+[09:45:58] ls_0.2 epoch 4/10: train_loss=1.783, seconds=26.1, val_loss=0.6085, val_macro_f1=0.8527
+[09:46:35] ls_0.2 epoch 5/10: train_loss=1.761, seconds=36.1, val_loss=0.5523, val_macro_f1=0.8648
+[09:47:08] ls_0.2 epoch 6/10: train_loss=1.743, seconds=32.6, val_loss=0.57, val_macro_f1=0.87
+[09:47:34] ls_0.2 epoch 7/10: train_loss=1.729, seconds=25, val_loss=0.5489, val_macro_f1=0.8732
+[09:47:58] ls_0.2 epoch 8/10: train_loss=1.718, seconds=24, val_loss=0.5288, val_macro_f1=0.8782
+[09:48:24] ls_0.2 epoch 9/10: train_loss=1.711, seconds=25.3, val_loss=0.5358, val_macro_f1=0.8794
+[09:48:49] ls_0.2 epoch 10/10: train_loss=1.707, seconds=24.5, val_loss=0.5361, val_macro_f1=0.879
+[09:48:49] ls_0.2: macro-F1 0.8782 (epoch 8)
+[09:48:50] Selected: {'kd_temperature': 1.0, 'kd_alpha': 0.9, 'label_smoothing': 0.05}
+[09:49:12] direct_long epoch 1/20: train_loss=1.852, seconds=22.2, val_loss=0.682, val_macro_f1=0.7139
+[09:49:34] direct_long epoch 2/20: train_loss=0.5512, seconds=21.4, val_loss=0.4326, val_macro_f1=0.8276
+[09:49:56] direct_long epoch 3/20: train_loss=0.4061, seconds=21.6, val_loss=0.366, val_macro_f1=0.8513
+[09:50:20] direct_long epoch 4/20: train_loss=0.35, seconds=23.1, val_loss=0.3354, val_macro_f1=0.8656
+[09:50:42] direct_long epoch 5/20: train_loss=0.317, seconds=21.8, val_loss=0.307, val_macro_f1=0.8747
+[09:51:05] direct_long epoch 6/20: train_loss=0.2941, seconds=22, val_loss=0.284, val_macro_f1=0.8826
+[09:51:28] direct_long epoch 7/20: train_loss=0.2754, seconds=22.7, val_loss=0.2758, val_macro_f1=0.8862
+[09:51:54] direct_long epoch 8/20: train_loss=0.2614, seconds=25.3, val_loss=0.2594, val_macro_f1=0.8928
+[09:52:18] direct_long epoch 9/20: train_loss=0.2489, seconds=23.5, val_loss=0.2508, val_macro_f1=0.8973
+[09:52:42] direct_long epoch 10/20: train_loss=0.2378, seconds=24.1, val_loss=0.2422, val_macro_f1=0.9011
+[09:53:05] direct_long epoch 11/20: train_loss=0.2278, seconds=21.9, val_loss=0.2352, val_macro_f1=0.905
+[09:53:27] direct_long epoch 12/20: train_loss=0.2191, seconds=21.6, val_loss=0.2285, val_macro_f1=0.9059
+[09:53:50] direct_long epoch 13/20: train_loss=0.2104, seconds=22.5, val_loss=0.2263, val_macro_f1=0.9082
+[09:54:12] direct_long epoch 14/20: train_loss=0.2037, seconds=22.1, val_loss=0.2215, val_macro_f1=0.9082
+[09:54:34] direct_long epoch 15/20: train_loss=0.1972, seconds=21.6, val_loss=0.214, val_macro_f1=0.9123
+[09:54:57] direct_long epoch 16/20: train_loss=0.1918, seconds=22, val_loss=0.2116, val_macro_f1=0.9129
+[09:55:19] direct_long epoch 17/20: train_loss=0.1871, seconds=22, val_loss=0.2093, val_macro_f1=0.9137
+[09:55:42] direct_long epoch 18/20: train_loss=0.1835, seconds=22.1, val_loss=0.2075, val_macro_f1=0.9145
+[09:56:02] direct_long epoch 19/20: train_loss=0.1812, seconds=19.7, val_loss=0.2068, val_macro_f1=0.915
+[09:56:25] direct_long epoch 20/20: train_loss=0.1801, seconds=22.9, val_loss=0.2068, val_macro_f1=0.9145
+[09:56:25] direct_long: macro-F1 0.9150 (epoch 19)
+[09:56:57] kdA_T1_a0.9_long epoch 1/20: train_loss=1.803, seconds=25.1, val_loss=0.6667, val_macro_f1=0.7166
+[09:57:22] kdA_T1_a0.9_long epoch 2/20: train_loss=0.5005, seconds=24.4, val_loss=0.4313, val_macro_f1=0.8274
+[09:57:47] kdA_T1_a0.9_long epoch 3/20: train_loss=0.3545, seconds=25, val_loss=0.3573, val_macro_f1=0.852
+[09:58:12] kdA_T1_a0.9_long epoch 4/20: train_loss=0.2975, seconds=24.6, val_loss=0.3261, val_macro_f1=0.866
+[09:58:37] kdA_T1_a0.9_long epoch 5/20: train_loss=0.2655, seconds=24.8, val_loss=0.3002, val_macro_f1=0.8809
+[09:59:03] kdA_T1_a0.9_long epoch 6/20: train_loss=0.243, seconds=24.9, val_loss=0.2807, val_macro_f1=0.886
+[09:59:28] kdA_T1_a0.9_long epoch 7/20: train_loss=0.2255, seconds=24.7, val_loss=0.2745, val_macro_f1=0.8849
+[09:59:53] kdA_T1_a0.9_long epoch 8/20: train_loss=0.2117, seconds=24.3, val_loss=0.2554, val_macro_f1=0.8955
+[10:00:18] kdA_T1_a0.9_long epoch 9/20: train_loss=0.1997, seconds=25.3, val_loss=0.2514, val_macro_f1=0.8995
+[10:00:43] kdA_T1_a0.9_long epoch 10/20: train_loss=0.1894, seconds=24.1, val_loss=0.238, val_macro_f1=0.9031
+[10:01:08] kdA_T1_a0.9_long epoch 11/20: train_loss=0.1794, seconds=24.9, val_loss=0.2324, val_macro_f1=0.9046
+[10:01:33] kdA_T1_a0.9_long epoch 12/20: train_loss=0.1714, seconds=24.1, val_loss=0.2264, val_macro_f1=0.9068
+[10:01:57] kdA_T1_a0.9_long epoch 13/20: train_loss=0.1634, seconds=23.9, val_loss=0.2217, val_macro_f1=0.9107
+[10:02:22] kdA_T1_a0.9_long epoch 14/20: train_loss=0.1565, seconds=24.5, val_loss=0.2172, val_macro_f1=0.9114
+[10:02:48] kdA_T1_a0.9_long epoch 15/20: train_loss=0.1504, seconds=25, val_loss=0.2122, val_macro_f1=0.9134
+[10:03:16] kdA_T1_a0.9_long epoch 16/20: train_loss=0.1453, seconds=27.5, val_loss=0.2094, val_macro_f1=0.9136
+[10:03:44] kdA_T1_a0.9_long epoch 17/20: train_loss=0.1412, seconds=27.5, val_loss=0.2082, val_macro_f1=0.9144
+[10:04:11] kdA_T1_a0.9_long epoch 18/20: train_loss=0.1379, seconds=26.8, val_loss=0.2061, val_macro_f1=0.9146
+[10:04:36] kdA_T1_a0.9_long epoch 19/20: train_loss=0.1356, seconds=24.3, val_loss=0.2056, val_macro_f1=0.9152
+[10:05:00] kdA_T1_a0.9_long epoch 20/20: train_loss=0.1346, seconds=24.2, val_loss=0.2056, val_macro_f1=0.9154
+[10:05:00] kdA_T1_a0.9_long: macro-F1 0.9154 (epoch 20)
+[10:05:01] Validation macro-F1 (known flows):
+ epochs method  best_epoch  macro_f1  val_loss  minutes  kd_temperature  kd_alpha  label_smoothing
+     10 direct          10       0.9    0.2424      9.5             NaN       NaN              NaN
+     10     kd          10    0.9012    0.2384      4.5               1       0.5              NaN
+     10     kd          10    0.9034    0.2378      4.4               1       0.9              NaN
+     10     kd          10    0.8993    0.2723      4.6               2       0.5              NaN
+     10     kd          10    0.9005    0.2778      3.1               2       0.9              NaN
+     10     kd          10    0.8879    0.3196      2.4               4       0.5              NaN
+     10     kd          10    0.8821    0.3507      4.5               4       0.9              NaN
+     10     ls           9    0.8929    0.3141      3.3             NaN       NaN             0.05
+     10     ls           9    0.8876    0.3874      4.2             NaN       NaN              0.1
+     10     ls           8    0.8782    0.5288      4.5             NaN       NaN              0.2
+     20 direct          19     0.915    0.2068      7.6             NaN       NaN              NaN
+     20     kd          20    0.9154    0.2056      8.5               1       0.9              NaN
+[10:05:01] Wrote C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\configs\student_hparams.json
