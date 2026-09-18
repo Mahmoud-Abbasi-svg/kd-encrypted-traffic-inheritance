@@ -26,11 +26,25 @@
 | Track A, start 11 (10-epoch students, 16 Sep) | Done on the laptop (16 Sep, 14:00–16:05). Teacher B macro-F1 0.962 vs A 0.964 (D1 met). With T=4, α=0.9 the KD students lose ~2 macro-F1 points and ~0.05 energy AUROC vs direct, but follow the teachers' per-flow scores much more closely (ρ 0.88 vs 0.50). Teacher-specific shift vs direct is +0.04 for kdA and kdB alike, while raw own−other is negative for kdB (→ H1 wording) | `results/track_a/20260916-140053_S_train11-14` |
 | BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
+## Validation-week findings so far (starts 11 and 24, 490k flows; NOT confirmatory)
+From `results/analysis/val_start11_24/` (`scripts/08_analyze.py --windows val`):
+
+| Hypothesis | Result | Numbers |
+|---|---|---|
+| **H1 inheritance** | **supported** | kdA4 shifts +0.048 toward A (CI 0.040–0.057), kdB4 +0.041 toward B (0.033–0.049), Holm p = 0.017. The tuned T=1 students: +0.005 and −0.004 |
+| **H2 beyond regularisation** | not supported | kdA vs ls −0.011 energy AUROC, vs directTS −0.003; NLL better than ls (+0.024) but only +0.002 vs directTS. Accuracy matched within 0.9 points (D3 rule satisfied) |
+| **H5 EnDD** | score-dependent | MSP +0.012 (supported), energy −0.048 (clearly worse) — the case for keeping both scores co-primary |
+| Teacher − kdA gap | — | 0.024 energy AUROC, 0.045 MSP |
+
+Reading: distillation transfers the teacher's per-flow score pattern, and it is teacher-specific, but it does not transfer the teacher's unknown-detection quality; label smoothing does as well or better. How much transfers is set by the temperature (D8).
+
 ## Next steps
-1. **Validation-only runs** (on the laptop while the cluster is blocked; about 8–10 h in total):
-   - Track A for the three start dates (§10). Start 11 reuses the pilot teachers: `--teachers-from results\pilot\20260916-122627_S_train11-14 --workers 0`;
-   - the shortcut experiment (§11).
-   - Score files written before 16 Sep 14:00 lack post-hoc NLL; re-run them with the current code.
+1. **Finish the validation-only runs on the laptop** (run one job at a time; other GPU jobs on this laptop slow them 3×):
+   - start 37: `run_validation_grid_laptop.cmd` (was running at 15:15 on 18 Sep, student 4 of 21, expected to finish ~16:30);
+   - then the shortcut experiment: `run_shortcut_laptop.cmd`, about 5.5 h, best overnight with the lid **open** (a closed lid suspended the machine on 17 Sep).
+   - Then rerun the analysis over all three starts:
+     `python scripts\08_analyze.py --windows val --name val_all --runs <start11 base> <start11 kd4> <start24 base> <start24 kd4> <start37>`
+   - Run directories so far: start 11 `20260917-110225` + `20260918-121700`, start 24 `20260917-121305` + `20260918-124618`, start 37 `20260918-132337`. Folders ending `_stopped` are interrupted runs and must not be used.
 2. **Settle the open pre-registration decisions** (`docs/preregistration.md`):
    - **D1:** how close Teacher B's accuracy must be to Teacher A's (proposal: within 2 macro-F1 points).
    - **D2:** hyperparameter tuning budget (proposal: none).

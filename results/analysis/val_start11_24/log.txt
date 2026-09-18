@@ -1,0 +1,26 @@
+[13:20:32] 20260917-110225_S_train11-14: start 11, splits ['val']
+[13:20:32] 20260918-121700_S_train11-14: start 11, splits ['val']
+[13:20:32] 20260917-121305_S_train24-27: start 24, splits ['val']
+[13:20:32] 20260918-124618_S_train24-27: start 24, splits ['val']
+[13:20:34] primary: 2 units, 490,973 flows, 1,648 day x service clusters
+[13:20:48]   bootstrap 30/300
+[13:21:03]   bootstrap 60/300
+[13:21:17]   bootstrap 90/300
+[13:21:31]   bootstrap 120/300
+[13:21:45]   bootstrap 150/300
+[13:21:59]   bootstrap 180/300
+[13:22:14]   bootstrap 210/300
+[13:22:27]   bootstrap 240/300
+[13:22:41]   bootstrap 270/300
+[13:22:55]   bootstrap 300/300
+[13:22:55] primary: done in 144s
+[13:22:57] Hypotheses:
+hypothesis    p_iut  p_holm  supported                      note
+        H1 0.003322 0.01661       True                       NaN
+H2[energy]    0.907       1      False                       NaN
+   H2[msp]   0.8937       1      False                       NaN
+H3[energy]      NaN     NaN      False undefined: one time point
+   H3[msp]      NaN     NaN      False undefined: one time point
+H5[energy]        1       1      False                       NaN
+   H5[msp] 0.006645 0.02658       True                       NaN
+[13:22:57] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\val_start11_24\report.md

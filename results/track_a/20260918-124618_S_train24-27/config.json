@@ -4,8 +4,8 @@
     "cache_dir": null,
     "splits": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\configs\\splits.json",
     "size": "S",
-    "train_weeks": "37-40",
-    "val_weeks": "41",
+    "train_weeks": "24-27",
+    "val_weeks": "28",
     "test_weeks": "16-19",
     "with_test": false,
     "train_size": "all",
@@ -17,11 +17,11 @@
     "data_seed": 420,
     "workers": 0,
     "smoke": false,
-    "start": 37,
+    "start": 24,
     "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\track_a",
     "seeds": 3,
     "ensemble": 5,
-    "teachers_from": null,
+    "teachers_from": "results\\track_a\\20260917-121305_S_train24-27",
     "epochs": 10,
     "student_epochs": 20,
     "batch_size": 1024,
@@ -31,7 +31,9 @@
     "label_smoothing": 0.05,
     "kd_temperature": 1.0,
     "kd_alpha": 0.9,
-    "teacher_b_from": null,
+    "kd_temperature_alt": 4.0,
+    "conditions": "kdA4,kdB4",
+    "teacher_b_from": "results\\track_a\\20260917-121305_S_train24-27\\models\\teacherB_wide.pt",
     "endd_max_precision": 10000.0,
     "window_known_size": "100000",
     "window_unknown_size": "100000",
@@ -44,12 +46,12 @@
   "spec": {
     "size": "S",
     "train_weeks": [
-      37,
-      40
+      24,
+      27
     ],
     "val_weeks": [
-      41,
-      41
+      28,
+      28
     ],
     "test_weeks": [
       16,
@@ -64,6 +66,6 @@
     "min_train_samples": 100,
     "seed": 420
   },
-  "cache_dir": "C:\\datasets\\cache\\tls-year22_S_be7560e0c3ee",
+  "cache_dir": "C:\\datasets\\cache\\tls-year22_S_f8ccd8cce77b",
   "splits_digest": "305ac8d0ea2a"
 }
