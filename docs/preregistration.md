@@ -8,7 +8,7 @@
 |---|---|
 | Frozen on | 19 September 2026 |
 | Git commit (frozen code and design) | `fa8f718` |
-| OSF registration | *(to be added when the registration is posted)* |
+| OSF registration | https://osf.io/rts6n (public, registered 20 September 2026); project https://osf.io/xcgpb |
 | Decisions settled | D1–D8, all recorded below with their reasons |
 | Evidence used to settle them | validation weeks only (weeks 15, 28, 41); no test-window result has been computed |
 | Split file | `configs/splits.json` (digest `305ac8d0ea2a`) |
@@ -199,3 +199,7 @@ Everything is released with the paper.
 
 ## 11. Deviations after freezing
 *(append dated entries)*
+
+**20 Sep 2026 — registered on OSF.** Registration https://osf.io/rts6n, public with no embargo; project https://osf.io/xcgpb, which archives this file and `configs/splits.json`. The only change to this document since the freeze is the OSF link in the header table, which was a placeholder. The registration form answers "Authors have observed the data, but have not performed the proposed analyses", with the explanation that the validation weeks settled decisions D1–D8 and that no test-window result existed at the freeze.
+
+**20 Sep 2026 — note on timing.** The confirmatory test-window runs and their analysis (`results/analysis/CONFIRMATORY/`, commit `7ef3b5d`) were computed on 19 September, after the freeze (commit `fa8f718`) but before the OSF registration was posted. The freeze commit and its timestamp are in the public repository; the OSF registration certifies the same document one day later. No design decision was changed between the two.
