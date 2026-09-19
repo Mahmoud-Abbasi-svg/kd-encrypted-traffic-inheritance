@@ -26,8 +26,21 @@
 | Track A, start 11 (10-epoch students, 16 Sep) | Done on the laptop (16 Sep, 14:00–16:05). Teacher B macro-F1 0.962 vs A 0.964 (D1 met). With T=4, α=0.9 the KD students lose ~2 macro-F1 points and ~0.05 energy AUROC vs direct, but follow the teachers' per-flow scores much more closely (ρ 0.88 vs 0.50). Teacher-specific shift vs direct is +0.04 for kdA and kdB alike, while raw own−other is negative for kdB (→ H1 wording) | `results/track_a/20260916-140053_S_train11-14` |
 | BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
-## Validation-week findings so far (starts 11 and 24, 490k flows; NOT confirmatory)
-From `results/analysis/val_start11_24/` (`scripts/08_analyze.py --windows val`):
+## Validation-week findings (all 3 start dates, 745k flows, plus the shortcut experiment; NOT confirmatory)
+From `results/analysis/val_all_with_shortcut/` (`scripts/08_analyze.py --windows val`). Numbers below are from starts 11 + 24; the three-start values are within 0.003 of them.
+
+**Shortcut experiment** (`results/shortcut/20260918-234156_S_train11-14`, flip-test reliance, mean of 3 seeds):
+
+| ρ | Teacher | direct student | KD student |
+|---|---|---|---|
+| 0 | 0.000 | 0.000 | 0.000 |
+| 0.5 | 0.037 | 0.069 | 0.068 |
+| 0.9 | 0.103 | 0.185 | 0.196 |
+| 1.0 | 0.800 | 0.945 | 0.870 |
+
+- **H4a not supported** (−0.032, p = 0.92): the KD student does not rely on the shortcut more than the direct student. The real pattern is capacity: both 101k students rely about twice as much as the 2.3M-parameter teacher.
+- **H4b splits:** a shortcut-reliant teacher does pass on over-confidence (ECE +0.009 vs the ρ = 0 teacher, p = 0.0005), but its student's unknown detection gets *better*, not worse (energy AUROC +0.020), so the hypothesis as written (both parts) fails. See D4.
+
 
 | Hypothesis | Result | Numbers |
 |---|---|---|
@@ -39,17 +52,14 @@ From `results/analysis/val_start11_24/` (`scripts/08_analyze.py --windows val`):
 Reading: distillation transfers the teacher's per-flow score pattern, and it is teacher-specific, but it does not transfer the teacher's unknown-detection quality; label smoothing does as well or better. How much transfers is set by the temperature (D8).
 
 ## Next steps
-1. **Finish the validation-only runs on the laptop** (run one job at a time; other GPU jobs on this laptop slow them 3×):
-   - start 37: `run_validation_grid_laptop.cmd` (was running at 15:15 on 18 Sep, student 4 of 21, expected to finish ~16:30);
-   - then the shortcut experiment: `run_shortcut_laptop.cmd`, about 5.5 h, best overnight with the lid **open** (a closed lid suspended the machine on 17 Sep).
-   - Then rerun the analysis over all three starts:
-     `python scripts\08_analyze.py --windows val --name val_all --runs <start11 base> <start11 kd4> <start24 base> <start24 kd4> <start37>`
-   - Run directories so far: start 11 `20260917-110225` + `20260918-121700`, start 24 `20260917-121305` + `20260918-124618`, start 37 `20260918-132337`. Folders ending `_stopped` are interrupted runs and must not be used.
+1. **All validation-week runs are done** (19 Sep). Run directories: start 11 `20260917-110225` + `20260918-121700`, start 24 `20260917-121305` + `20260918-124618`, start 37 `20260918-132337`, shortcut `20260918-234156`. Folders ending `_stopped` are interrupted runs and must not be used. Rerun the analysis with:
+   `python scripts\08_analyze.py --windows val --shortcut results\shortcut\20260918-234156_S_train11-14 --runs <the five above>`
+   Laptop rules: one job at a time, lid open.
 2. **Settle the open pre-registration decisions** (`docs/preregistration.md`):
    - **D1:** how close Teacher B's accuracy must be to Teacher A's (proposal: within 2 macro-F1 points).
    - **D2:** hyperparameter tuning budget (proposal: none).
    - **D3:** how to compare at matched accuracy for H2.
-   - **D4:** split H4 into H4a (flip-test reliance) and H4b (over-confidence transfer).
+   - **D4:** split H4 into H4a (flip-test reliance) and H4b (over-confidence transfer). **Proposal after the validation run:** keep H4a, and split H4b into two separate hypotheses — H4b1 (ECE higher, supported on validation) and H4b2 (energy AUROC lower, contradicted on validation) — instead of bundling two independent predictions into one test.
    - **D5:** keep or drop exact-duplicate test flows in the primary analysis (proposal: keep, drop in a sensitivity analysis).
    - **D6:** primary unknown-score: energy, MSP, or both co-primary (proposal: co-primary). This came from the pilot: the energy score shrinks the teacher–student gap.
    - **D7:** settled. H2 tests post-hoc NLL.
