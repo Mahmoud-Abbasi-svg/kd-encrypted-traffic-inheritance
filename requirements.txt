@@ -13,3 +13,7 @@ xgboost==3.2.0
 pyarrow
 matplotlib
 pytest
+onnxruntime
+onnx
+onnxscript
+psutil
