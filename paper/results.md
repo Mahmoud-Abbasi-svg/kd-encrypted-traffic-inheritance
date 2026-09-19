@@ -38,7 +38,7 @@ Three things frame everything that follows. First, the teachers are 5–6 macro-
 | H5[energy] | EnDD keeps more than Hinton KD | −0.092 (−0.099, −0.084) | 1.0 | not supported |
 | H5[msp] | as H5, MSP | −0.008 (−0.009, −0.006) | 1.0 | not supported |
 
-The two sensitivity analyses (exact duplicates of training flows removed, 5.6% of test flows; flows with at least five packets) reach the same decision on every hypothesis, with every p-value within 0.1 of the primary analysis.
+The two sensitivity analyses (exact duplicates of training flows removed, 1.8% of test flows; flows with at least five packets only, 94.0% of test flows) reach the same decision on every hypothesis, with every p-value within 0.1 of the primary analysis.
 
 ## 2. RQ1: what the student inherits
 
