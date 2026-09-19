@@ -7,6 +7,7 @@
 |---|---|---|
 | Research-gap scan | Done | `docs/research-gap-scan.md` |
 | Novelty check (incl. full reading of PreDyn-IDS) | Done: gap open | `docs/novelty-check-2026-09-15.md` |
+| Novelty re-check before freezing (19 Sep) | Gap still open; new must-cite work found; 2 findings need a defence against contrary literature | `docs/novelty-check-2026-09-19.md` |
 | Study plan | Approved, updated with week-1 findings | `study-plan.md` |
 | Week-1 data checks (service appearance, coverage, duplicates) | Done on laptop | `scripts/00–02`, `results/week1/` |
 | Known/unknown split | Generated and frozen | `configs/splits.json`, `scripts/03_make_splits.py` |
@@ -63,9 +64,7 @@ Reading: distillation transfers the teacher's per-flow score pattern, and it is 
    - **D5:** keep or drop exact-duplicate test flows in the primary analysis (proposal: keep, drop in a sensitivity analysis).
    - **D6:** primary unknown-score: energy, MSP, or both co-primary (proposal: co-primary). This came from the pilot: the energy score shrinks the teacher–student gap.
    - **D7:** settled. H2 tests post-hoc NLL.
-3. **Before freezing:**
-   - run the manual Google Scholar / IEEE Xplore novelty search;
-   - check for new work from the ResAware group.
+3. **Before freezing:** the automated re-check is done (19 Sep). Still by hand: IEEE Xplore KD-for-traffic papers, a dblp listing of the Luxemburk / Hynek / Čejka 2026 output, and **NTC-R 2026 at CoNEXT (programme published 15 Oct 2026)** — the highest scoop risk, topics include shortcut learning and negative results.
 4. **Freeze the pre-registration** together with the analysis code: set the status line to `**Status:** FROZEN`, commit, and post it on OSF. Only then run `--with-test` and `08_analyze.py --windows test` (§12).
 5. **Still to write:** Track B (netFound on UNSW-IoTraffic); CPU deployment measurements (ONNX Runtime); conformal recalibration (exploratory).
 
