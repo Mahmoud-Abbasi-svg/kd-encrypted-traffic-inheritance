@@ -1,14 +1,16 @@
 # Pre-registration: What Does the Student Inherit?
 
-**Status:** DRAFT (not frozen)
+**Status:** FROZEN
 
-> **How this file is used.** `scripts/06_track_a.py --with-test` refuses to load the test windows unless the status line reads `**Status:** FROZEN`. Freeze this file only after the week-3 pilot has passed and the open decisions below are settled. Then post it on OSF and record the OSF link and the git commit here. After freezing, change it only by appending dated deviations (section 11).
+> **How this file is used.** `scripts/06_track_a.py --with-test` and `scripts/08_analyze.py --windows test` refuse to touch the test windows unless the status line reads `**Status:** FROZEN`. This file was frozen on 19 September 2026, after the week-3 pilot passed and decisions D1–D8 were settled on validation data alone. **From now on it changes only by appending dated entries to section 11 (Deviations).** Nothing above section 11 may be edited.
 
 | Item | Value |
 |---|---|
-| Frozen on | *(date)* |
-| Git commit | *(hash)* |
-| OSF registration | *(link)* |
+| Frozen on | 19 September 2026 |
+| Git commit (frozen code and design) | `fa8f718` |
+| OSF registration | *(to be added when the registration is posted)* |
+| Decisions settled | D1–D8, all recorded below with their reasons |
+| Evidence used to settle them | validation weeks only (weeks 15, 28, 41); no test-window result has been computed |
 | Split file | `configs/splits.json` (digest `305ac8d0ea2a`) |
 
 ## 1. Question
