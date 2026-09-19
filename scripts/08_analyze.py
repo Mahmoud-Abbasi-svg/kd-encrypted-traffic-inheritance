@@ -168,13 +168,15 @@ def figures(out: Path, per_window: pd.DataFrame, specificity: pd.DataFrame, reli
     plt.close(fig)
     made.append("fig_gap.png")
 
-    spec = specificity[specificity.condition.isin(["kdA", "kdB", "enddA", "ls", "directTS"])]
+    order = [c for c in ("directTS", "ls", "enddA", "kdA", "kdB", "kdA4", "kdB4") if c in set(specificity.condition)]
+    spec = specificity[specificity.condition.isin(order)]
     if {"A", "B"} <= set(spec.columns):
-        mean = spec.groupby("condition")[["A", "B"]].mean()
-        fig, ax = plt.subplots(figsize=(5.5, 3.5))
+        mean = spec.groupby("condition")[["A", "B"]].mean().reindex(order)
+        fig, ax = plt.subplots(figsize=(7, 3.6))
         mean.plot.bar(ax=ax, rot=0)
-        ax.set(ylabel="Spearman ρ of energy scores", title="Which teacher does the student follow?")
-        ax.legend(title="teacher")
+        ax.set(ylabel="Spearman ρ of energy scores", title="Which teacher does the student follow?",
+               ylim=(mean.min().min() - 0.1, min(1.0, mean.max().max() + 0.1)))
+        ax.legend(title="teacher", loc="lower left", fontsize=8)
         fig.tight_layout()
         fig.savefig(out / "fig_specificity.png", dpi=150)
         plt.close(fig)
