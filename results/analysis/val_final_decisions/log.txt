@@ -1,0 +1,54 @@
+[10:57:01] 20260917-110225_S_train11-14: start 11, splits ['val']
+[10:57:01] 20260918-121700_S_train11-14: start 11, splits ['val']
+[10:57:01] 20260917-121305_S_train24-27: start 24, splits ['val']
+[10:57:01] 20260918-124618_S_train24-27: start 24, splits ['val']
+[10:57:01] 20260918-132337_S_train37-40: start 37, splits ['val']
+[10:57:04] primary: 3 units, 745,355 flows, 2,468 day x service clusters
+[10:57:23]   bootstrap 30/300
+[10:57:43]   bootstrap 60/300
+[10:58:01]   bootstrap 90/300
+[10:58:21]   bootstrap 120/300
+[10:58:41]   bootstrap 150/300
+[10:59:03]   bootstrap 180/300
+[10:59:26]   bootstrap 210/300
+[10:59:49]   bootstrap 240/300
+[11:00:13]   bootstrap 270/300
+[11:00:36]   bootstrap 300/300
+[11:00:36] primary: done in 215s
+[11:00:39] drop_duplicates: 3 units, 703,613 flows, 2,466 day x service clusters
+[11:00:57]   bootstrap 30/300
+[11:01:14]   bootstrap 60/300
+[11:01:31]   bootstrap 90/300
+[11:01:48]   bootstrap 120/300
+[11:02:06]   bootstrap 150/300
+[11:02:23]   bootstrap 180/300
+[11:02:40]   bootstrap 210/300
+[11:02:59]   bootstrap 240/300
+[11:03:16]   bootstrap 270/300
+[11:03:35]   bootstrap 300/300
+[11:03:35] drop_duplicates: done in 179s
+[11:03:38] ge5_packets: 3 units, 713,904 flows, 2,466 day x service clusters
+[11:03:56]   bootstrap 30/300
+[11:04:14]   bootstrap 60/300
+[11:04:31]   bootstrap 90/300
+[11:04:49]   bootstrap 120/300
+[11:05:06]   bootstrap 150/300
+[11:05:24]   bootstrap 180/300
+[11:05:42]   bootstrap 210/300
+[11:06:00]   bootstrap 240/300
+[11:06:18]   bootstrap 270/300
+[11:06:36]   bootstrap 300/300
+[11:06:36] ge5_packets: done in 181s
+[11:06:37] Hypotheses:
+hypothesis     p_iut   p_holm  supported                      note
+        H1  0.003322  0.02326       True                       NaN
+H2[energy]    0.9801        1      False                       NaN
+   H2[msp]    0.9701        1      False                       NaN
+H3[energy]       NaN      NaN      False undefined: one time point
+   H3[msp]       NaN      NaN      False undefined: one time point
+       H4a    0.9193        1      False                       NaN
+      H4b1 0.0004731 0.003785       True                       NaN
+      H4b2    0.9984        1      False                       NaN
+H5[energy]         1        1      False                       NaN
+   H5[msp]  0.003322  0.02326       True                       NaN
+[11:06:37] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\val_final_decisions\report.md

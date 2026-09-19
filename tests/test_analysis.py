@@ -161,3 +161,4 @@ def test_shortcut_components():
     assert comp.loc["reliance_kd_minus_direct", "estimate"] > 0
     assert comp.loc["reliance_kd_minus_direct", "p_one_sided"] < 0.01
     assert comp.loc["ece_minus_rho0", "p_one_sided"] < 0.01
+    assert set(comp.hypothesis) == {"H4a", "H4b1", "H4b2"}  # decision D4: H4b is split in two

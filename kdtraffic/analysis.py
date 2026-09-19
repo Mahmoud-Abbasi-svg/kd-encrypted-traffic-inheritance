@@ -350,6 +350,8 @@ def shortcut_components(reliance: pd.DataFrame, shortcut: pd.DataFrame, rhos=(0.
     view["rho"] = view.rho.astype(float)
     base = view[view.rho == 0.0].set_index("seed")
     shifted = view[view.rho.isin(rhos)].join(base[["ece", "auroc_energy"]], on="seed", rsuffix="_rho0")
-    rows.append(test("H4b", "ece_minus_rho0", (shifted.ece - shifted.ece_rho0).to_numpy(dtype=float)))
-    rows.append(test("H4b", "rho0_minus_auroc", (shifted.auroc_energy_rho0 - shifted.auroc_energy).to_numpy(dtype=float)))
+    # H4b1 and H4b2 are separate hypotheses (decision D4): over-confidence and unknown detection are
+    # independent predictions, and bundling them hides which one holds
+    rows.append(test("H4b1", "ece_minus_rho0", (shifted.ece - shifted.ece_rho0).to_numpy(dtype=float)))
+    rows.append(test("H4b2", "rho0_minus_auroc", (shifted.auroc_energy_rho0 - shifted.auroc_energy).to_numpy(dtype=float)))
     return pd.DataFrame(rows)

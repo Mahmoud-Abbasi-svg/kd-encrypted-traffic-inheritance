@@ -35,7 +35,7 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
 
 ## 4. Models and training conditions
 - **Teacher A:** 5 × `mm_cesnet_v2` (2.26M parameters each), seeds 0–4. The ensemble prediction is the mean of member softmaxes. The ensemble energy score is the mean of member energies.
-- **Teacher B:** one wider multimodal CESNET network (the swap control). *Open decision D1:* its accuracy must be similar to A's; the tolerance is to be fixed here (proposal: validation macro-F1 within 2 points). Validation result for start 11: Teacher B 0.962 vs Teacher A 0.964.
+- **Teacher B:** one wider multimodal CESNET network (the swap control). **Decision D1, settled 19 Sep 2026:** the teacher swap is interpretable only if Teacher B's validation macro-F1 is within **2 points** of Teacher A's, checked per start date. If a start date fails, its teacher-swap results (H1) are reported but excluded from the pooled test, and the exclusion is recorded in §11. Validation results (A − B, macro-F1 points): start 11 +0.19, start 24 +0.04, start 37 +0.06, so all three are well inside the tolerance.
 - **Student:** 1D-CNN, 101k parameters. Conditions:
   - `direct`: cross-entropy;
   - `ls`: label smoothing ε (tuned, D2; planned 0.1);
@@ -87,10 +87,10 @@ Fixed by `scripts/03_make_splits.py` (seed 2022) before any model was trained.
 - **Reporting groups:** all flows and flows with ≥5 packets; all, near and far unknown services.
 
 ## 6. Hypotheses and confirmatory tests
-All tests are one-sided at α = 0.05, Holm-corrected across the family of 9 hypotheses:
+All tests are one-sided at α = 0.05, Holm-corrected across the family of 10 hypotheses:
 - H1;
-- H2, H3 and H5, each once per co-primary score: `[energy]` and `[msp]` (D6);
-- H4a and H4b (if D4 is accepted). The analysis code is `scripts/08_analyze.py` with `kdtraffic/analysis.py`, and it is frozen together with this file.
+- H2, H3 and H5, each once per co-primary score: `[energy]` and `[msp]` (D6) — 6 in total;
+- H4a, H4b1 and H4b2 (D4). The analysis code is `scripts/08_analyze.py` with `kdtraffic/analysis.py`, and it is frozen together with this file.
 
 **Unit and pooling.** The unit is one start date × one test window. Pooled estimates are unweighted means over units of the seed-averaged statistic.
 
@@ -111,18 +111,19 @@ Resampled clusters enter the metrics as flow weights. The reported interval is t
 | # | Hypothesis | Test |
 |---|---|---|
 | H1 | Teacher-specific inheritance: distillation moves a student's energy scores toward its own teacher, beyond what a directly trained student shares with each teacher. Tested on the inheritance arm `kdA4` / `kdB4` (D8); the tuned arm is reported | Difference in differences of pooled Spearman correlations over all test flows (2 components, both > 0): `kdA4`: [ρ(kdA4, A) − ρ(kdA4, B)] − [ρ(direct, A) − ρ(direct, B)]; `kdB4`: [ρ(kdB4, B) − ρ(kdB4, A)] − [ρ(direct, B) − ρ(direct, A)]. The raw own − other differences are reported. **Reason for the baseline:** in the validation-only run (start 11), every student, including `direct`, correlated more with Teacher A (the ensemble) than with B (+0.044 for `direct`). A raw test would therefore confuse "follows its own teacher" with "follows the more central teacher" (raw kdB: −0.009; relative to `direct`: +0.034) |
-| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on unknown-detection AUROC and on post-hoc NLL at matched macro-F1 | AUROC of `kdA` minus each control > 0 (tested separately for energy and MSP), and post-hoc NLL of each control minus `kdA` > 0 (4 components). Post-hoc NLL is the mean negative log-likelihood of the true class on known flows after temperature scaling; for `directTS` the scaled model itself. Post-hoc ECE is reported with intervals but not tested (decision D7). Matched accuracy is checked by reporting the macro-F1 difference. *Open decision D3:* the matching method (proposal: report only if \|Δ macro-F1\| ≤ 1 point, otherwise compare within macro-F1 bins across seeds) |
+| H2 | Beyond regularisation: `kdA` beats `ls` and `directTS` on unknown-detection AUROC and on post-hoc NLL at matched macro-F1 | AUROC of `kdA` minus each control > 0 (tested separately for energy and MSP), and post-hoc NLL of each control minus `kdA` > 0 (4 components). Post-hoc NLL is the mean negative log-likelihood of the true class on known flows after temperature scaling; for `directTS` the scaled model itself. Post-hoc ECE is reported with intervals but not tested (decision D7). **Matched accuracy (decision D3, settled 19 Sep 2026):** H2 is interpreted as a matched-accuracy comparison only while \|Δ macro-F1\| ≤ 1 point between `kdA` and the control, pooled over units; the difference is always reported with its interval. If a control exceeds 1 point, that comparison is reported as unmatched and excluded from H2, and the exclusion is recorded in §11. Validation values with the tuned settings: `kdA` − `ls` = +0.9 points, `kdA` − `directTS` = +0.1 points, so both are matched |
 | H3 | Decay: the Teacher A − `kdA` AUROC gap (energy; MSP) grows with weeks since training | Slope > 0 in an OLS regression of the per-unit gap (seed-averaged) on weeks since the end of training, with one intercept per start date. Three start dates are too few to estimate a random-effect variance, so start date enters as a fixed effect; seed variation enters through the bootstrap |
-| H4 | Shortcut transfer (see D4) | See D4 |
+| H4a, H4b1, H4b2 | Shortcut transfer | See D4 below |
 | H5 | EnDD keeps more of A's unknown detection than Hinton KD | AUROC of `enddA` minus `kdA` > 0 (energy; MSP) |
 
-**Open decision D4 (H4 wording).** The study plan's H4 ("with a feature visible only to the teacher, the KD student relies on it more") cannot be measured directly: a student that never sees the feature cannot rely on it. The proposal is to split H4:
+**Decision D4 (H4 wording), settled 19 Sep 2026.** The study plan's H4 ("with a feature visible only to the teacher, the KD student relies on it more") cannot be measured directly: a student that never sees the feature cannot rely on it. H4 is therefore replaced by three hypotheses:
 - **H4a (both see the feature):** at ρ ∈ {0.9, 1.0}, the flip-test reliance (macro-F1 aligned − flipped) of the `kd` student exceeds that of the `direct` student.
-- **H4b (teacher only):** a KD student distilled from a shortcut-reliant teacher (ρ ∈ {0.9, 1.0}) has higher ECE and lower energy AUROC than one distilled from the ρ = 0 teacher.
+- **H4b1 (teacher only, confidence):** a KD student distilled from a shortcut-reliant teacher (ρ ∈ {0.9, 1.0}) has higher ECE than one distilled from the ρ = 0 teacher.
+- **H4b2 (teacher only, detection):** the same student has lower energy AUROC than one distilled from the ρ = 0 teacher.
 
-Implemented in `scripts/07_shortcut.py`, validation week of start date 11, 3 seeds. Test: a paired one-sided t-test over the 6 (ρ, seed) pairs.
-- **H4a:** one component.
-- **H4b:** two components, each compared with the ρ = 0 teacher of the same seed: ECE higher; energy AUROC lower.
+H4b1 and H4b2 were one hypothesis with two components until 19 Sep. They are separate because they are independent predictions, and the validation run showed them pointing in opposite directions (ECE +0.009 while AUROC was +0.020, i.e. detection improved). Bundling them would report only "not supported" and hide which half holds.
+
+Implemented in `scripts/07_shortcut.py` (KD at the conventional T = 4, D8), validation week of start date 11, 3 seeds. Test: a paired one-sided t-test over the 6 (ρ, seed) pairs, one component each.
 
 **Decision D6 (primary unknown-score), settled 16 Sep 2026: energy and MSP are co-primary.** The week-3 pilot (validation week only, §8) found:
 
@@ -157,7 +158,7 @@ The difference between the arms is itself reported: how much a student inherits 
 **Decision D7 (calibration outcome), settled 16 Sep 2026.** H2 tests post-hoc NLL instead of post-hoc ECE. Reason: in the pilot, all neural models already had ECE below 1% (Teacher A 0.14%, direct student 0.54%), so ECE differences would be close to zero and dominated by binning noise. NLL separated the models clearly (0.086 vs 0.239). ECE is still reported.
 
 ## 7. Exclusions and data rules
-- **Deduplication:** test flows whose exact PPI-30 sequence (timing, direction, size) occurs in the training window are reported separately (sensitivity analysis). They are flagged by a 64-bit hash of the scaled sequence (`duplicate` in `scores_<split>.npz`). The primary analysis keeps them. *Open decision D5:* keep (proposal) or drop in the primary analysis.
+- **Deduplication:** test flows whose exact PPI-30 sequence (timing, direction, size) occurs in the training window are reported separately (sensitivity analysis). They are flagged by a 64-bit hash of the scaled sequence (`duplicate` in `scores_<split>.npz`). **Decision D5, settled 19 Sep 2026:** the primary analysis **keeps** them, because they are part of the traffic a deployed classifier really sees, and the `drop_duplicates` sensitivity analysis reports every hypothesis without them. A hypothesis whose decision differs between the two is flagged in the paper. Validation duplicate rate: 5.0% of week-15 flows.
 - **Minimum training flows:** a known service with fewer than 100 training flows in a window stops the run (none expected under the split rules).
 - **No data from after the end of a training window** is used for training, early stopping or temperature fitting.
 

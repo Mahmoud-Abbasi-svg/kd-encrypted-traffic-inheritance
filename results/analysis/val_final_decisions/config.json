@@ -1,0 +1,19 @@
+{
+  "args": {
+    "runs": [
+      "results\\track_a\\20260917-110225_S_train11-14",
+      "results\\track_a\\20260918-121700_S_train11-14",
+      "results\\track_a\\20260917-121305_S_train24-27",
+      "results\\track_a\\20260918-124618_S_train24-27",
+      "results\\track_a\\20260918-132337_S_train37-40"
+    ],
+    "shortcut": "results\\shortcut\\20260918-234156_S_train11-14",
+    "windows": "val",
+    "n_boot": 300,
+    "seed": 2022,
+    "analyses": "primary,drop_duplicates,ge5_packets",
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\analysis",
+    "name": "val_final_decisions",
+    "preregistration": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\docs\\preregistration.md"
+  }
+}
