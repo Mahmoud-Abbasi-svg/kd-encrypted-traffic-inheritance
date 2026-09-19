@@ -28,6 +28,9 @@
 | Track A, start 11 (10-epoch students, 16 Sep) | Done on the laptop (16 Sep, 14:00–16:05). Teacher B macro-F1 0.962 vs A 0.964 (D1 met). With T=4, α=0.9 the KD students lose ~2 macro-F1 points and ~0.05 energy AUROC vs direct, but follow the teachers' per-flow scores much more closely (ρ 0.88 vs 0.50). Teacher-specific shift vs direct is +0.04 for kdA and kdB alike, while raw own−other is negative for kdB (→ H1 wording) | `results/track_a/20260916-140053_S_train11-14` |
 | BISITE cluster access (`hpc-bisite.usal.es`, 8 × H100, SLURM) | Blocked: port 22 times out through eduVPN (VPN address 10.52.64.6); follow-up sent to Juanan | `slurm/*.sbatch` ready |
 
+## CONFIRMATORY RESULTS (test windows, 19 Sep 2026) — `docs/results-confirmatory-2026-09-19.md`
+18 test windows, 200k flows each, 1,000 cluster bootstraps, Holm over 10 hypotheses. **Supported: H1** (inheritance is teacher-specific: kdA4 +0.007, kdB4 +0.026, Holm p = 0.009) and **H4b1** (a shortcut-reliant teacher passes on over-confidence, ECE +0.009, Holm p = 0.005). The other eight are not supported, and two are reversed: the teacher–student gap **shrinks** over time (H3, slope −0.0004/week; after ~3 months the student detects unknowns better than its teacher), and a shortcut-reliant teacher's student detects unknowns *better*, not worse (H4b2). Both sensitivity analyses agree with the primary analysis everywhere.
+
 ## Validation-week findings (all 3 start dates, 745k flows, plus the shortcut experiment; NOT confirmatory)
 From `results/analysis/val_all_with_shortcut/` (`scripts/08_analyze.py --windows val`). Numbers below are from starts 11 + 24; the three-start values are within 0.003 of them.
 
@@ -66,11 +69,8 @@ Reading: distillation transfers the teacher's per-flow score pattern, and it is 
    - **D6:** primary unknown-score: energy, MSP, or both co-primary (proposal: co-primary). This came from the pilot: the energy score shrinks the teacher–student gap.
    - **D7:** settled. H2 tests post-hoc NLL.
 3. **Before freezing:** the automated re-check is done (19 Sep). Still by hand: IEEE Xplore KD-for-traffic papers, a dblp listing of the Luxemburk / Hynek / Čejka 2026 output, and **NTC-R 2026 at CoNEXT (programme published 15 Oct 2026)** — the highest scoop risk, topics include shortcut learning and negative results.
-4. **Run the confirmatory test-window runs** (the pre-registration is frozen, so the guards are open):
-   `run_test_windows_laptop.cmd` — about 2–2.5 h per start date, roughly 7 h in total, resumable. Teachers are reused; the students are retrained and evaluated on the test windows (18 windows in all: 9 + 6 + 3).
-   Then the confirmatory analysis:
-   `python scripts\08_analyze.py --windows test --shortcut results\shortcut\20260918-234156_S_train11-14 --runs <the five validation runs plus the three new test runs>`
-   Post the pre-registration on OSF before or alongside this, and write the link into the table above.
+4. **Done (19 Sep):** test-window runs (`results/track_a/20260919-*`) and the confirmatory analysis (`results/analysis/CONFIRMATORY/`). Still to do: post the frozen pre-registration on OSF and record the link as a §11 entry.
+5. **Writing.** The paper's result is mostly negative and that is the contribution: the teacher's score pattern transfers teacher-specifically, but detection quality, calibration and shortcut robustness do not; temperature scaling of a directly trained student matches distillation on every unknown-detection outcome; the compressed student ages at least as well as its teacher. Defend the two findings that run against the literature (see `docs/novelty-check-2026-09-19.md`).
 5. **Still to write:** Track B (netFound on UNSW-IoTraffic); CPU deployment measurements (ONNX Runtime); conformal recalibration (exploratory).
 
 ## Watch items

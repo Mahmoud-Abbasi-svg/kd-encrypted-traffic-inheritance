@@ -1,0 +1,17 @@
+{
+  "args": {
+    "runs": [
+      "results\\track_a\\20260919-113607_S_train11-14",
+      "results\\track_a\\20260919-131820_S_train24-27",
+      "results\\track_a\\20260919-143354_S_train37-40"
+    ],
+    "shortcut": "results\\shortcut\\20260918-234156_S_train11-14",
+    "windows": "test",
+    "n_boot": 1000,
+    "seed": 2022,
+    "analyses": "primary,drop_duplicates,ge5_packets",
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\analysis",
+    "name": "CONFIRMATORY",
+    "preregistration": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\docs\\preregistration.md"
+  }
+}
