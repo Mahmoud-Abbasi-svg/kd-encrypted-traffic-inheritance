@@ -15,3 +15,13 @@ logs/*
 results/**/models/
 results/**/*.npz
 results/**/*.pt
+
+# LaTeX build products
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz

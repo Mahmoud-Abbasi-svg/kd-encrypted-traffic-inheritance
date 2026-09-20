@@ -1,0 +1,317 @@
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{balance}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[#1]}}
+\newcommand{\kd}[1]{\texttt{#1}}
+
+\begin{document}
+
+\title{What Does the Student Inherit?\\Unknown-Traffic Detection, Calibration and Shortcuts in Distilled Traffic Classifiers over Time}
+
+\author{Mahmoud~Abbasi%
+\thanks{M. Abbasi is with the University of Salamanca, Spain (e-mail: mahmoudabbasi@usal.es).}%
+\thanks{Draft of 20 September 2026. Pre-registration: OSF \url{https://osf.io/rts6n}.}}
+
+\markboth{Draft manuscript, September 2026}{Abbasi: What Does the Student Inherit?}
+
+\maketitle
+
+\begin{abstract}
+Knowledge distillation is the standard route from large encrypted-traffic classifiers to the small models that can run at the network edge, and the literature evaluates the result almost exclusively by its accuracy. We ask what else a distilled student inherits from its teacher: its detection of unknown traffic, its calibration, and its reliance on shortcut features, and whether the inheritance lasts. On CESNET-TLS-Year22, a year of real TLS traffic, we distil a 101k-parameter student from two teachers of equal accuracy but different architecture, so that a student's per-flow behaviour can be attributed to the specific teacher that produced its soft targets rather than to soft labels in general. The design was pre-registered and publicly registered before any test result was computed; ten hypotheses were tested on 18 test windows spanning 35 weeks after training, with a day-by-service cluster bootstrap and Holm correction. Two are supported. A student's per-flow unknown-scores shift measurably toward its own teacher, but only at a conventional distillation temperature; the accuracy-optimal temperature transmits nothing teacher-specific. A teacher that relies on a shortcut passes its over-confidence to a student that never sees the feature. Nothing else transfers: against the same student trained directly and temperature-scaled, distillation improves no unknown-detection outcome, and against label smoothing it trades detection for calibration. Two hypotheses are reversed. The teacher--student gap in unknown detection shrinks rather than grows, and after about three months the 101k student is the better detector than the 11M-parameter ensemble. Shortcut reliance is set by model size, not by distillation: both small students lean on a planted feature about twice as hard as the teacher regardless of how they were trained. Distillation transfers the teacher's habits, not its abilities.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Encrypted traffic classification, knowledge distillation, open-set recognition, calibration, concept drift, shortcut learning, pre-registration.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+
+Encrypted-traffic classifiers are getting larger and their deployment targets are not. The models that set the state of the art on public benchmarks are multimodal CNNs, transformers and pre-trained ``traffic foundation models'' with millions to hundreds of millions of parameters~\cite{luxemburk2024year22,etbert,yatc,netfound}, while the places they must run---line-rate probes, edge gateways, customer-premises equipment---offer a fraction of a CPU core per flow. Knowledge distillation~\cite{hinton2015} is the standard answer to this mismatch, and a growing body of work applies it to traffic classification~\cite{netclus,merlot,resaware,ciphersight,tnsm2026fedkd}. Almost without exception, that work reports one thing about the student: its accuracy on a held-out split of the same dataset.
+
+Accuracy is not what makes a traffic classifier deployable. Traffic changes: the year-long CESNET-TLS-Year22 capture shows classifiers losing tens of points of macro-F1 within months of training~\cite{luxemburk2024year22,ntccrisis}. Traffic contains things the classifier has never seen, and a model that confidently assigns a new service to an old label is worse than one that abstains~\cite{luxemburk2022reject}. And traffic datasets are full of shortcuts---features that predict the label in the capture but not in the world---which a model may learn instead of the intended signal~\cite{biasseeker}. A large model that handles these three problems well is valuable because of that handling. Whether a small model distilled from it inherits the handling, rather than merely the accuracy, is the question this paper asks.
+
+The question has a sharper form than ``does the student inherit?''. Soft targets are a regulariser~\cite{yuan2020revisiting,functionalkd}, and much of what distillation appears to transfer could be produced by any smoothing of the labels, with no teacher involved. To claim that a student has inherited something \emph{from its teacher}, one needs a control in which the teacher changes and nothing else does. We build that control: two teachers of equal accuracy but different architecture, each distilled into the same student, and a test of whether each student's per-flow unknown-scores follow its own teacher more than the other---measured against a directly trained student, because the two teachers are not equally ``central''. We then ask the same question about the properties operators care about, and we ask it over a year, because a property inherited at deployment time may not be inherited three months later.
+
+We pre-registered the design, froze it after a pilot and a validation-only design phase, registered it publicly, and only then computed results on 18 test windows spanning 35 weeks (OSF \url{https://osf.io/rts6n}). Ten hypotheses were tested with Holm correction; two were supported and two were reversed.
+
+\subsubsection*{Contributions}
+\begin{enumerate}
+\item \textbf{A teacher-swap protocol for measuring inheritance.} A distilled student's per-flow unknown-score pattern shifts measurably toward the specific teacher it was distilled from, relative to a directly trained student, and this shift exists only at a conventional distillation temperature: the accuracy-optimal temperature transmits nothing teacher-specific.
+\item \textbf{A negative result on what inheritance buys.} Against the cheapest control---the same student trained directly and temperature-scaled---distillation improves no unknown-detection outcome we measured, and against label smoothing it trades detection for calibration. Inheriting the teacher's score pattern includes inheriting its weakness on near unknowns.
+\item \textbf{Drift in the wrong direction for the usual worry.} Over 35 weeks, the 11.3M-parameter teacher ensemble loses unknown-detection ability faster than the 101k student; after about three months the student is the better detector.
+\item \textbf{Shortcuts are a capacity problem, not a distillation problem.} Small students rely on a planted shortcut about twice as much as the teacher regardless of how they are trained, and distillation does not increase that reliance---but a shortcut-reliant teacher does pass over-confidence to a student that never sees the feature.
+\item \textbf{A released, pre-registered benchmark} on public data: frozen service split, per-flow scores for every model and window, and analysis code with a cluster bootstrap that respects the day\,$\times$\,service dependence structure of traffic data.
+\end{enumerate}
+
+\section{Related Work}
+
+\subsubsection*{Distillation in traffic classification}
+Distillation appears in the traffic literature as a compression tool~\cite{netclus,prunedtrees,futureinternet2026}, a cross-environment transfer mechanism~\cite{resaware,ciphersight}, a self-supervised pre-training objective~\cite{mmaeflowmix}, and a component of federated training~\cite{tnsm2026fedkd}. ResAware~\cite{resaware} is the closest in spirit: it reports that a website-fingerprinting student inherits some of its teacher's calibration and open-world behaviour, but on a single task, without a teacher-swap control and without a time axis. NetClus~\cite{netclus} distils a traffic transformer and holds out one malware class, on random splits of older datasets. None of these works evaluates the student's unknown-traffic detection against alternatives, its calibration under drift, or its shortcut reliance, and none tests whether what the student learned came from the teacher rather than from soft labels in general.
+
+\subsubsection*{What distillation transfers}
+Outside networking, the assumption that students inherit their teachers' properties has been examined directly. Stanton et al.~\cite{stanton2021} showed that students often fail to match their teachers' outputs even when they match their accuracy; Ojha et al.~\cite{ojha2023} and Lukasik et al.~\cite{teacherspet} showed that invariances and biases do transfer; Mason-Williams et al.~\cite{functionalkd} found across 22 configurations that functional transfer is weaker and more asymmetric than assumed and reframed distillation as a data-dependent regulariser, echoing the label-smoothing equivalence of Yuan et al.~\cite{yuan2020revisiting}. Most relevant to our temperature result, \emph{Beyond Dark Knowledge}~\cite{beyonddarkknowledge} reports that calibration propagates from teacher to student independently of accuracy and that the temperature governs an accuracy--calibration trade-off; \cite{cud2026,teachercalibration2025} design or study teachers for that purpose. A recent position paper argues that distillation should be judged on the teacher capabilities it preserves rather than the task score it retains~\cite{kdloses2026}; our study is evidence of the kind it calls for. None of this work uses teacher identity as a control, evaluates open-set detection as the inherited property, or measures anything over time.
+
+\subsubsection*{Whose student is it?}
+Whether a student's behaviour is specific to its teacher has been studied as forensics: tracing an LLM student to its teacher through lexical fingerprints~\cite{whotaughtyou}, detecting distillation from a given open-weights model~\cite{kddetection2025}, and watermarking against it~\cite{antidistill,tokenprint}. We borrow the question and change its purpose: teacher identity is here a control for whether a behavioural property---the ranking of flows by how unknown they look---was inherited, and the directly trained student supplies the baseline that forensic work does not need.
+
+\subsubsection*{Open-set and drift-aware traffic classification}
+Rejecting unknown services on CESNET data was studied by the dataset authors~\cite{luxemburk2022reject}, and open-world evaluation with leave-one-service-out folds appears in recent darknet work~\cite{darknetopenworld}, without distillation. Drift is documented at week scale in the Year22 dataset itself~\cite{luxemburk2024year22} and is the subject of a growing critique of evaluation practice: redundancy and leakage in benchmarks~\cite{ntccrisis}, label provenance~\cite{soklabels}, and distribution-shift robustness~\cite{unialign,colossus}. Our time-based splits, held-out unknown services, duplicate accounting and pre-registration follow the recommendations of that critique.
+
+\subsubsection*{Shortcuts and compression}
+Shortcut learning in encrypted-traffic classification was recently mapped across 19 datasets~\cite{biasseeker}, and spurious-correlation mitigation has entered the traffic literature~\cite{tddm}. That shortcuts pass through distillation is assumed by a wave of mitigation methods in vision and language~\cite{asd2026,saopd2026,iga2026}, and synthetic injected bias features with flip tests have been used to study it in medical imaging~\cite{medshortcutkd}. That compressed models bear a disproportionate share of a model family's brittleness is established for pruning and quantisation~\cite{hooker2020,mtforget,robustnessdistill}. We measure rather than mitigate, on traffic, with the condition those works omit: a student that never sees the shortcut, influenced only through soft targets.
+
+\subsubsection*{Uncertainty-preserving distillation and label smoothing}
+Ensemble distribution distillation~\cite{malinin2020endd} and its descendants~\cite{logitendd,selfdistdist,credalendd} report students that match or exceed teacher ensembles at uncertainty estimation; the proxy-Dirichlet formulation we use is due to Ryabinin et al.~\cite{ryabinin2021}. Several studies report that label smoothing harms out-of-distribution detection~\cite{softlabelsood,lsembedding,adaptivels,lsselective}. Our results for both families run the other way; Section~\ref{sec:discussion} addresses the difference.
+
+\section{Methods}
+\label{sec:methods}
+
+The study was pre-registered (OSF \url{https://osf.io/rts6n}, frozen 19 September 2026 at repository commit \texttt{fa8f718}) after a pilot and a validation-only design phase, and before any test-window result was computed. This section describes the design as registered.
+
+\subsection{Data}
+
+\subsubsection*{Dataset}
+CESNET-TLS-Year22~\cite{luxemburk2024year22} contains one year (2022) of TLS flows from the Czech national research network, labelled with 180 web services from the server name. We use the S subset (25M flows) through \texttt{cesnet-datazoo}~0.2.0. Weeks 1--10 are excluded because the flow exporter was updated in week 10, which changed the packet-sequence distribution; weeks 50 and 52 are excluded because they contain less than half the median weekly volume. No service first appears mid-year (177 of 180 are present in every week), so unknown services are simulated by holding them out rather than observed emerging.
+
+\subsubsection*{Inputs}
+Each flow is represented by its first 30 packets as three sequences (inter-packet time, direction, size), plus 12 flow statistics and a 32-bin packet-size histogram (44 tabular features). Server name, IP addresses, ports, autonomous system and JA3 fingerprint are not used, so the classifier sees what it would see under Encrypted Client Hello. Sequences and statistics are scaled with transforms fitted on each training window only.
+
+\subsubsection*{Known and unknown services}
+A fixed split, generated once with seed 2022 before any model was trained, designates 102 services as known. Unknown services are held out and differ between validation and test, so no threshold or design choice made on validation unknowns can be tuned to the test unknowns. Each unknown set is divided into \emph{far} unknowns, whole categories held out (validation: Music and Videoconferencing, 8 services; test: Search and Social, 11 services), and \emph{near} unknowns, individual services whose category remains known (validation: 5; test: 8). The remaining 46 services are excluded, mostly for insufficient or inconsistent volume.
+
+\subsubsection*{Time structure}
+Three training start dates give three replicates of the whole design: training on weeks 11--14, 24--27 and 37--40 (1.89M, 1.37M and 1.35M known flows), validation on the following week (15, 28, 41; 200k known flows plus every flow of the validation unknown services), and testing on consecutive 4-week windows from the week after validation to week 52, skipping the excluded weeks. This yields 9, 6 and 3 test windows, 18 in total, each a stratified sample of 100k known and 100k test-unknown flows, at 3.5 to 35.3 weeks after the end of training. Each test flow carries its day, its packet count, and a flag for whether its exact 30-packet sequence occurs in its training window (a 64-bit hash of the scaled sequence; 1.8\% of test flows).
+
+\subsection{Models}
+
+\textbf{Teacher A} is an ensemble of five \texttt{mm\_cesnet\_v2} networks~\cite{luxemburk2024year22}, the dataset authors' multimodal CNN (2.26M parameters each, seeds 0--4). Its prediction is the mean of the members' softmax outputs; its energy score is the mean of the members' energies. \textbf{Teacher B}, the teacher-swap control, is a single wider network of the same family (three convolutional blocks of 400/600/600 channels, two 450-unit flow-statistics layers, a 1,200-unit shared layer; 10.3M parameters). It must be within 2 macro-F1 points of Teacher A on the validation week of each start date; it was within 0.2 points at all three. The \textbf{student} is a multimodal 1D-CNN of 101,190 parameters: three convolutions (48, 96, 96 channels; kernels 5, 5, 3) over the packet sequences, pooled by mean and max; a 64-unit layer over the flow statistics; a 128-unit shared layer with dropout 0.1; and a linear classifier. It is 22$\times$ smaller than one teacher member and 112$\times$ smaller than the ensemble. \textbf{Baselines} (validation week only): XGBoost on the 44 flow statistics (500k training flows, 300 trees, depth 8) with the top-two margin as unknown-score, and $k$-nearest-neighbours on the packet sequences (300k reference flows, $k=10$) with the negative $k$-th distance.
+
+\subsection{Training Conditions}
+
+Every network is trained with AdamW (learning rate $10^{-3}$, weight decay $10^{-4}$), a one-cycle schedule with 10\% warm-up, batch size 1,024 and bf16 autocast; teachers for 10 epochs and students for 20. The kept checkpoint is the epoch with the lowest cross-entropy on the validation week's known flows. Students are trained under seven conditions, three seeds each: \kd{direct} (cross-entropy); \kd{ls} (label smoothing $\varepsilon=0.05$); \kd{directTS} (the \kd{direct} student after post-hoc temperature scaling); \kd{kdA} and \kd{kdB} (Hinton distillation from Teacher A or B, loss $\alpha T^2\,\mathrm{KL}(p^{\text{teacher}}_T \,\|\, p^{\text{student}}_T) + (1-\alpha)\,\mathrm{CE}$, with $T=1$, $\alpha=0.9$); \kd{kdA4} and \kd{kdB4} (the same at $T=4$); and \kd{enddA} (ensemble distribution distillation from Teacher A's members with proxy-Dirichlet targets~\cite{ryabinin2021}, precision capped at $10^4$, reverse-KL loss; maximum-likelihood distribution distillation was unstable with 102 classes in the pilot and was replaced before freezing).
+
+\subsubsection*{Tuning}
+One tuning pass on start date 11 (validation week, one seed) chose the KD temperature and weight from $\{1,2,4\}\times\{0.5,0.9\}$ and the smoothing strength from $\{0.05,0.1,0.2\}$, by validation macro-F1 alone; no unknown-detection or calibration metric was computed during tuning. The accuracy-optimal temperature was $T=1$. Because a 96\%-accurate teacher's targets at $T=1$ are nearly one-hot, the validation grid showed \kd{kdA} and \kd{kdB} at $T=1$ to be indistinguishable from \kd{direct} in their per-flow scores, leaving nothing for a teacher-swap test to detect. The $T=4$ arm was therefore added, before freezing, as the arm on which inheritance (H1) and the shortcut experiment are tested, while the tuned arm carries the matched-accuracy comparisons (H2, H5). Both arms are reported throughout. The same pass showed that 10 epochs left students unconverged (macro-F1 rose by 1.5 points at 20), which fixed the student budget at 20 epochs. Post-hoc temperatures for every model are fitted by minimising NLL on the validation week's known flows.
+
+\subsection{Outcomes}
+
+For each model, window and flow group we report closed-set macro-F1 over the known services; unknown-detection AUROC and FPR at 95\% TPR with two unknown-scores, the energy score (log-sum-exp of the logits) and the maximum softmax probability (MSP), treating known flows as positives; the open-set classification rate (OSCR); calibration as ECE (15 bins), NLL and Brier score, before and after temperature scaling; and the area under the risk--coverage curve (AURC). Per-flow inheritance is measured by the Spearman correlation of a student's energy scores with each teacher's. Everything is computed for all flows and for flows with at least five packets, against all, near and far unknown services.
+
+\subsection{Hypotheses and Analysis}
+\label{sec:analysis}
+
+The unit of analysis is one start date $\times$ one test window (18 units). A per-unit statistic is the mean over the three student seeds; a pooled estimate is the unweighted mean over units. Uncertainty comes from 1,000 bootstrap resamples that redraw day\,$\times$\,service clusters with replacement, \emph{globally}, so that a cluster appearing in the windows of several start dates receives the same multiplicity everywhere, and independently redraw the three seeds per start date; resampled clusters enter every metric as integer flow weights. Intervals are 95\% percentile intervals; $p$-values are one-sided, $(1+\#\{\text{resampled estimate}\le 0\})/1001$, and Holm-corrected across ten hypotheses. A hypothesis with several components is supported only if every component is, so its $p$-value is its largest component $p$-value (intersection--union).
+
+\begin{itemize}
+\item \textbf{H1 (teacher-specific inheritance).} For the $T=4$ students, the own-minus-other difference in Spearman correlation with the two teachers, minus the same difference for the \kd{direct} student; both \kd{kdA4} (toward A) and \kd{kdB4} (toward B) must exceed zero. The baseline is necessary because every student correlates more with the ensemble teacher regardless of training.
+\item \textbf{H2 (beyond regularisation)}, once per score: \kd{kdA} exceeds each of \kd{ls} and \kd{directTS} in unknown-detection AUROC and has lower post-hoc NLL than each; interpreted as a matched-accuracy comparison only while the macro-F1 difference is at most 1 point (it was 0.99 and 0.08).
+\item \textbf{H3 (decay)}, once per score: positive slope of the per-unit Teacher~A\,$-$\,\kd{kdA} AUROC gap on weeks since training, in an OLS fit with one intercept per start date.
+\item \textbf{H4a, H4b1, H4b2 (shortcuts).} A one-hot feature with 8 values, equal to the class index modulo 8 with probability $\rho$ and random otherwise, is appended to the flow statistics during training ($\rho\in\{0,0.5,0.9,1.0\}$, three seeds, start date 11, its validation week). Reliance is macro-F1 with the feature aligned to the true class minus macro-F1 with it shifted to a wrong value. H4a: with the feature visible to both, the KD student ($T=4$) relies on it more than the \kd{direct} student at $\rho\in\{0.9,1.0\}$. H4b1 and H4b2: a student that never sees the feature, distilled from a teacher trained at $\rho\in\{0.9,1.0\}$, has higher ECE (H4b1) and lower energy AUROC (H4b2) than one distilled from the $\rho=0$ teacher of the same seed. Paired one-sided $t$-tests over the six ($\rho$, seed) pairs.
+\item \textbf{H5 (distribution distillation)}, once per score: \kd{enddA} exceeds \kd{kdA} in unknown-detection AUROC.
+\end{itemize}
+
+Two sensitivity analyses repeat everything with exact duplicates of training flows removed and with flows of fewer than five packets removed; they are reported but are outside the Holm family. The pilot gate (Teacher A must beat the \kd{direct} student by $\ge 2$ macro-F1 points or $\ge 0.02$ energy AUROC on the validation week) was passed with a 6.2-point accuracy gap.
+
+\section{Results}
+\label{sec:results}
+
+All numbers come from the pre-registered test windows unless marked otherwise. Unknown-scores are oriented so that higher means ``more likely known''; ``gap'' means teacher minus student.
+
+\subsection{Setting and Headline Numbers}
+
+Table~\ref{tab:headline} averages over all 18 windows. Three things frame everything that follows. First, the teachers are 5--6 macro-F1 points more accurate than any student, but their advantage in unknown detection is small: 0.001 energy AUROC over \kd{kdA} (CI $-0.003$ to $0.005$) and 0.025 with MSP (CI 0.023 to 0.026). Second, the accuracy-tuned distillation arm ($T=1$) is indistinguishable from the directly trained student on every column. Third, the two teachers are well matched: Teacher B trails Teacher A by 0.55 macro-F1 points on average across windows (maximum 1.6), inside the pre-registered tolerance, so the teacher-swap comparison is between equals.
+
+\begin{table*}[t]
+\centering
+\caption{Test-window averages (18 windows, all flows, all test-unknown services). Higher is better except FPR, NLL and AURC. NLL is post-hoc (temperature-scaled).}
+\label{tab:headline}
+\begin{tabular}{llrrrrrrr}
+\toprule
+Model & Params & Macro-F1 & AUROC$_{\text{energy}}$ & AUROC$_{\text{MSP}}$ & FPR@95 & OSCR & NLL & AURC \\
+\midrule
+Teacher A (5$\times$ mm\_cesnet\_v2) & 11.3M & 0.860 & 0.836 & 0.868 & 0.626 & 0.789 & 0.447 & 0.012 \\
+Teacher B (wide)                     & 10.3M & 0.855 & 0.840 & 0.851 & 0.614 & 0.791 & 0.480 & 0.014 \\
+\midrule
+\kd{direct}           & 101k & 0.806 & 0.835 & 0.844 & 0.674 & 0.768 & 0.609 & 0.020 \\
+\kd{directTS}         & 101k & 0.806 & 0.835 & 0.845 & 0.676 & 0.767 & ---   & 0.020 \\
+\kd{ls} ($\varepsilon=0.05$) & 101k & 0.797 & 0.814 & 0.836 & 0.683 & 0.747 & 0.561 & 0.023 \\
+\kd{kdA} ($T=1$)      & 101k & 0.807 & 0.835 & 0.843 & 0.667 & 0.767 & 0.601 & 0.020 \\
+\kd{kdB} ($T=1$)      & 101k & 0.806 & 0.832 & 0.840 & 0.674 & 0.764 & 0.602 & 0.020 \\
+\kd{kdA4} ($T=4$)     & 101k & 0.790 & 0.809 & 0.824 & 0.678 & 0.739 & 0.565 & 0.023 \\
+\kd{kdB4} ($T=4$)     & 101k & 0.789 & 0.810 & 0.822 & 0.669 & 0.741 & 0.582 & 0.023 \\
+\kd{enddA}            & 101k & 0.801 & 0.743 & 0.835 & 0.780 & 0.679 & 0.563 & 0.022 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{The ten pre-registered hypotheses. Estimates are pooled over 18 test windows; intervals are 95\% percentile intervals from 1,000 day$\times$service cluster bootstrap resamples (H4: paired $t$-tests over six ($\rho$, seed) pairs, lower confidence bound shown); $p$-values are one-sided and Holm-corrected. Both sensitivity analyses reach the same decision on every row.}
+\label{tab:hypotheses}
+\begin{tabular}{llllc}
+\toprule
+\# & Hypothesis & Estimate (95\% CI) & Holm $p$ & Outcome \\
+\midrule
+H1 & inheritance is teacher-specific & \kd{kdA4} $+0.007$ (0.005, 0.009); \kd{kdB4} $+0.026$ (0.024, 0.028) & 0.009 & \textbf{supported} \\
+H2[energy] & KD beats \kd{ls}, \kd{directTS} at matched accuracy & AUROC vs \kd{ls} $+0.021$, vs \kd{directTS} $0.000$; NLL vs \kd{ls} $-0.040$, vs \kd{directTS} $+0.008$ & 1.0 & not supported \\
+H2[MSP] & as H2, MSP & AUROC vs \kd{ls} $+0.006$, vs \kd{directTS} $-0.002$ & 1.0 & not supported \\
+H3[energy] & gap grows with time & $-0.0004$ per week ($-0.0007$, $-0.0001$) & 1.0 & reversed \\
+H3[MSP] & as H3, MSP & $-0.0003$ per week ($-0.0004$, $-0.0001$) & 1.0 & reversed \\
+H4a & KD student relies on a visible shortcut more & $-0.032$ (lower bound $-0.071$) & 1.0 & not supported \\
+H4b1 & shortcut-reliant teacher transfers over-confidence & ECE $+0.0086$ (lower bound 0.0061) & 0.005 & \textbf{supported} \\
+H4b2 & \ldots and degrades unknown detection & $-0.020$ (detection improves) & 1.0 & reversed \\
+H5[energy] & EnDD keeps more than Hinton KD & $-0.092$ ($-0.099$, $-0.084$) & 1.0 & not supported \\
+H5[MSP] & as H5, MSP & $-0.008$ ($-0.009$, $-0.006$) & 1.0 & not supported \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:hypotheses} gives the ten pre-registered tests. The two sensitivity analyses (exact duplicates of training flows removed, 1.8\% of test flows; flows with at least five packets only, 94.0\% of test flows) reach the same decision on every hypothesis, with every $p$-value within 0.1 of the primary analysis.
+
+\subsection{RQ1: What the Student Inherits}
+
+\subsubsection*{The score pattern transfers, and it is teacher-specific (H1)}
+Every student, including the directly trained one, correlates more with Teacher A than with Teacher B (Spearman $\rho$ of per-flow energy scores: 0.746 vs 0.705 for \kd{direct}). Teacher A is an ensemble and therefore produces the more ``average'' score, so a raw own-minus-other comparison would credit that artefact to distillation. H1 therefore measures the shift \emph{relative to the direct student}. On that measure both conventional-KD students move toward their own teacher: \kd{kdA4} by $+0.007$ and \kd{kdB4} by $+0.026$ (Fig.~\ref{fig:specificity}). The effect is small in absolute terms, but it is estimated from 3.5 million test flows and it survives Holm correction ($p=0.009$). It is also asymmetric. The \kd{kdB4} shift is positive in all 18 windows (0.017 to 0.033). The \kd{kdA4} shift is positive in the nine windows of start dates 24 and 37 (0.011 to 0.023) and indistinguishable from zero in the nine windows of start date 11 ($-0.007$ to $+0.005$). We have no pre-registered explanation for the start-11 asymmetry and report it as a limitation of H1's support.
+
+The accuracy-tuned arm inherits nothing: the \kd{kdA} and \kd{kdB} shifts are $+0.001$ (CI $-0.001$, 0.003) and $-0.000$ (CI $-0.001$, 0.001). This is not a null result about distillation in general but about distillation at $T=1$ from a 96\%-accurate teacher, whose soft targets are almost one-hot. The amount of teacher-specific signal a student receives is set by the temperature, and the temperature the tuning procedure selected for accuracy is the one that transmits none of it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig_specificity}
+\caption{Spearman correlation of per-flow energy scores with Teacher A and Teacher B, per student condition, averaged over the 18 test windows. Every student follows the ensemble (A) more; distillation at $T=4$ moves \kd{kdB4} toward B and \kd{kdA4} further toward A, while the $T=1$ arm is indistinguishable from \kd{directTS}.}
+\label{fig:specificity}
+\end{figure}
+
+\subsubsection*{Detection quality and calibration do not transfer (H2, H5)}
+Table~\ref{tab:headline} already shows the result: \kd{kdA} and \kd{directTS} have the same energy AUROC to three decimals (0.835), the same MSP AUROC within 0.002, the same OSCR, AURC and macro-F1. Temperature-scaling a directly trained student, which costs one scalar fitted on validation data, matches distillation on every unknown-detection outcome we measured. Against label smoothing the picture is mixed and does not favour distillation overall: \kd{kdA} detects unknowns better ($+0.021$ energy AUROC, $+0.006$ MSP) but is worse calibrated (post-hoc NLL 0.601 vs 0.561). Because H2 requires distillation to win on both outcomes against both controls, it is not supported for either score. The ensemble-distribution-distillation student is the worst unknown detector in the grid with the energy score (0.743, a 0.092 deficit to \kd{kdA}) and slightly worse with MSP ($-0.008$); H5 is not supported for either score.
+
+\subsubsection*{Near and far unknowns}
+Table~\ref{tab:nearfar} splits detection by the distance of the unknown services. The small direct student is a \emph{better} detector of near unknowns (services from a known category) than either teacher with the energy score, and the teachers' advantage is confined to far unknowns and to the MSP score. Distillation at $T=4$ moves the student toward the teacher's profile: \kd{kdA4} loses 0.058 energy AUROC on near unknowns relative to \kd{direct} and lands exactly on Teacher B's value. Inheriting the teacher's score pattern therefore includes inheriting the teacher's weakness.
+
+\begin{table}[t]
+\centering
+\caption{Unknown detection by distance of the unknown services (test windows; energy AUROC / MSP AUROC).}
+\label{tab:nearfar}
+\begin{tabular}{lcc}
+\toprule
+Model & Near unknowns & Far unknowns \\
+\midrule
+Teacher A & 0.805 / 0.836 & 0.840 / 0.872 \\
+Teacher B & 0.788 / 0.794 & 0.848 / 0.859 \\
+\kd{direct}, \kd{directTS}, \kd{kdA} & 0.846 / 0.824 & 0.833 / 0.847 \\
+\kd{ls}   & 0.795 / 0.809 & 0.816 / 0.840 \\
+\kd{kdA4} & 0.788 / 0.794 & 0.812 / 0.829 \\
+\kd{enddA} & 0.695 / 0.816 & 0.749 / 0.838 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{RQ2: The Gap over Time (H3)}
+
+We pre-registered that the teacher--student gap would grow with weeks since training. It shrinks (Fig.~\ref{fig:gap}, left). The fixed-effects slope is $-0.0004$ energy AUROC per week (CI $-0.0007$ to $-0.0001$) and $-0.0003$ per week with MSP; both are opposite in sign to H3. Table~\ref{tab:time} follows start date 11. Both models degrade over the year, and steeply: closed-set macro-F1 for every student falls from about 0.90 to about 0.69 over 35 weeks (Fig.~\ref{fig:gap}, right). But the 11.3M-parameter ensemble loses energy AUROC faster than the 101k student, and from roughly the third month onwards the student is the better unknown detector. With MSP the teacher keeps a roughly constant 0.02--0.03 lead throughout, so the direction of the drift in the gap depends on the score; with neither score does the gap widen. The label-smoothing student is the exception in the other direction: its gap to the teacher grows from 0.011 to 0.027 over start date 11.
+
+\begin{table}[t]
+\centering
+\caption{Start date 11: energy AUROC against all test-unknown services, and the student's closed-set accuracy, by weeks since the end of training.}
+\label{tab:time}
+\begin{tabular}{rrrrr}
+\toprule
+Weeks & Teacher A & \kd{kdA} & Gap & \kd{kdA} macro-F1 \\
+\midrule
+3.5  & 0.869 & 0.854 & $+0.015$ & 0.902 \\
+7.5  & 0.863 & 0.858 & $+0.005$ & 0.880 \\
+11.5 & 0.841 & 0.846 & $-0.005$ & 0.848 \\
+19.5 & 0.815 & 0.818 & $-0.003$ & 0.747 \\
+27.5 & 0.803 & 0.806 & $-0.003$ & 0.724 \\
+35.3 & 0.784 & 0.793 & $-0.008$ & 0.687 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_gap}
+\caption{Left: teacher-minus-student energy AUROC against weeks since the end of training, per student condition and start date. The gap for \kd{kdA} and \kd{directTS} shrinks and crosses zero; for \kd{ls} it grows; for \kd{enddA} it stays large. Right: student macro-F1 over the same axis, showing the drift all models suffer.}
+\label{fig:gap}
+\end{figure*}
+
+\subsection{RQ3: Shortcuts (H4a, H4b1, H4b2)}
+
+The shortcut experiment plants a one-hot feature that agrees with the class with probability $\rho$ during training and measures reliance as the macro-F1 lost when the feature is flipped to a wrong value (Table~\ref{tab:reliance}, Fig.~\ref{fig:reliance}). Distillation does not increase shortcut reliance: at $\rho\in\{0.9,1.0\}$ the KD student relies on the feature 0.032 \emph{less} than the direct student (H4a not supported), the difference being driven by $\rho=1$, where the direct student collapses almost completely. What the table does show is a capacity effect. At every $\rho$ below 1, both 101k students rely on the shortcut about twice as much as the 2.3M-parameter teacher (0.185--0.196 vs 0.103 at $\rho=0.9$), whichever way they were trained.
+
+In the teacher-only setting the student never sees the feature and can be influenced only through the soft targets. A teacher trained with a reliable shortcut ($\rho\in\{0.9,1.0\}$) produces a student with higher ECE than a shortcut-free teacher does ($+0.0086$, Holm $p=0.005$; H4b1 supported): over-confidence transfers even when the feature that caused it does not. The same student's energy AUROC is \emph{higher}, not lower ($+0.020$; H4b2 reversed), and its macro-F1 is unchanged. Whatever the shortcut-reliant teacher's soft targets carry, it sharpens the student's confidence without damaging its ranking of unknown flows.
+
+\begin{table}[t]
+\centering
+\caption{Flip-test reliance on the planted shortcut (macro-F1 aligned $-$ flipped; validation week of start date 11, mean of 3 seeds).}
+\label{tab:reliance}
+\begin{tabular}{cccc}
+\toprule
+$\rho$ & Teacher (2.3M) & \kd{direct} student & KD student ($T=4$) \\
+\midrule
+0   & 0.000 & 0.000 & 0.000 \\
+0.5 & 0.037 & 0.069 & 0.068 \\
+0.9 & 0.103 & 0.185 & 0.196 \\
+1.0 & 0.800 & 0.945 & 0.870 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig_reliance}
+\caption{Flip-test reliance against the shortcut's reliability $\rho$ during training, for the teacher and the two students that see the feature.}
+\label{fig:reliance}
+\end{figure}
+
+\subsection{Baselines and Deployment Cost}
+
+On the validation week, XGBoost on the 44 flow statistics reaches macro-F1 0.883 and energy-margin AUROC 0.855, against 0.964 and 0.837 for Teacher A: the gradient-boosted model is 8 points less accurate but a slightly better detector of unknown services, and clearly better on near unknowns (0.875 vs 0.828). $k$-NN on packet sequences reaches 0.712 / 0.745. Table~\ref{tab:cpu} reports inference cost on a laptop CPU (AMD Ryzen 7 5800H) as a stand-in for an edge device. The student in ONNX Runtime processes a flow in 0.08\,ms on one thread, 230$\times$ faster than the teacher ensemble and 43$\times$ faster than one teacher member, in 0.4\,MB of weights. XGBoost is not the cheap alternative it is often taken to be at this class count: 300 boosting rounds over 102 classes is 30,600 trees, a 244\,MB model and 42\,ms per flow, 500$\times$ the student's latency; it recovers only in large batches on all cores.
+
+\input{cpu_table}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsubsection*{What transfers, and what does not}
+The teacher-swap control answers the question in the title with some precision. Distillation at a conventional temperature does hand the student something specific to its teacher: the per-flow pattern of unknown-scores shifts measurably toward the teacher that produced the soft targets, and away from an equally accurate teacher that did not (H1). But that pattern is all that transfers. The teacher's \emph{quality} as an unknown detector, its calibration and its robustness to shortcuts do not arrive with it. Against the cheapest possible control, the same student trained directly and temperature-scaled, distillation buys nothing on any unknown-detection outcome, and against label smoothing it trades detection for calibration. Inheriting the teacher's pattern even means inheriting its weaknesses: the $T=4$ student takes on the teacher's poorer detection of near unknowns.
+
+The temperature result reconciles two findings that would otherwise conflict. Tuned for accuracy, distillation chooses $T=1$, at which a 96\%-accurate teacher's targets are nearly one-hot and nothing teacher-specific survives; the student is then a directly trained student by another name. At $T=4$ the teacher's signal comes through, at a cost of 1.7 macro-F1 points. Practitioners who tune distillation for accuracy, which is the norm in the traffic-classification literature we surveyed, are therefore not transferring the properties that distillation is often assumed to preserve, and practitioners who keep the textbook temperature are paying accuracy for a pattern that does not improve detection.
+
+\subsubsection*{The gap closes rather than opens}
+We expected the compressed student to age faster than its teacher. The opposite happened: over 35 weeks of real traffic the 11.3M-parameter ensemble lost unknown-detection AUROC faster than the 101k student, and from about the third month the student was the better detector. We offer two readings and cannot yet separate them. The ensemble's energy score aggregates five members' logit scales, which may drift more than a single small model's; and a higher-capacity model may fit more of the training period's transient structure, which then decays. Either way the deployment implication is the same and is the opposite of the usual worry: in this setting the small model is not the fragile one. The exception is label smoothing, whose gap to the teacher widened, so the effect is not a property of small models in general but of how they are trained. Both teacher and students lose about 20 macro-F1 points over the year; nothing in this study mitigates drift, it only shows that compression does not make it worse.
+
+\subsubsection*{Shortcuts: capacity, not pedagogy}
+Whether a student relies on a shortcut it can see is governed by its size: both 101k students leaned on the planted feature about twice as hard as the 2.3M teacher, regardless of whether they were distilled. This agrees with prior findings that compressed models bear a disproportionate share of a model family's brittleness~\cite{hooker2020}, and it means that distillation is not a route to the teacher's shortcut robustness. What distillation \emph{does} carry is confidence: a teacher that learned to lean on a shortcut produces, through its soft targets alone, a student that is more over-confident on data where the shortcut does not exist. That the same student detected unknowns slightly better is a reminder that calibration and open-set ranking are different quantities, and that improving one is no evidence about the other.
+
+\subsubsection*{Two results that run against the literature}
+\emph{Label smoothing.} Several studies report that label smoothing degrades out-of-distribution detection by collapsing the geometry of the penultimate layer~\cite{softlabelsood,lsembedding,adaptivels,lsselective}. In our grid the label-smoothed student is the second-best unknown detector with MSP and within 0.02 of the best with energy, ahead of every distilled student at $T=4$ and of EnDD. We do not think the prior findings are wrong; we think the regime differs. Those studies use tens of classes, image features and a smoothing strength of 0.1; ours has 102 fine-grained services with heavy overlap, flow-level features, a tuned strength of 0.05, and unknowns that are themselves TLS services rather than a different modality. The degradation reported for label smoothing may depend on the OOD data being far from the training distribution, which near-unknown services are not. Reproducing the geometric analysis of those papers on this dataset would settle the point and is left for future work.
+
+\emph{Distribution distillation.} Ensemble distribution distillation and its descendants report students that match or exceed their teacher ensembles at uncertainty estimation~\cite{logitendd,selfdistdist,credalendd}. Our EnDD student is the worst unknown detector in the grid with the energy score. Three differences matter. We used the proxy-Dirichlet objective rather than maximum-likelihood EnDD, because the latter was unstable with 102 classes in our pilot; the proxy target caps the precision at $10^4$, which makes the loss dominated by matching the total concentration, that is, the logit scale, rather than the members' disagreement; and our teacher ensemble's members disagree little (their mean energy AUROC is within 0.015 of the ensemble's), so there is little epistemic signal to distil. A negative result under these conditions should be read as ``proxy EnDD did not preserve detection for a low-diversity ensemble on a 100-class task'', not as a refutation of distribution distillation.
+
+\subsubsection*{Limitations}
+Novelty is simulated: no service first appears mid-year in CESNET-TLS-Year22, so unknown services are held out, and the near/far split is by the dataset's own category labels. The study is one dataset, one network, one year; the teacher family is a single architecture at two widths. The shortcut experiment plants a synthetic feature and runs on the validation week; natural shortcut fields (server IP, ASN, JA3) were excluded from the inputs rather than tested. H1's support rests more on \kd{kdB4} than on \kd{kdA4}, and the latter's null at start date 11 is unexplained. Baselines and the deployment cost were measured on the validation week and a laptop CPU. The pre-registration was frozen on validation data that had already informed eight design decisions, all documented; the test windows and their unknown services were not touched until the freeze, and the public registration certifies the same document one day later.
+
+\section{Conclusion}
+
+Asked what a distilled traffic classifier inherits, the answer is: its teacher's habits, not its teacher's abilities. The per-flow score pattern transfers, it transfers from the specific teacher used, and it carries that teacher's over-confidence and its blind spots along with it. What a network operator would want from distillation---unknown-traffic detection that holds up, calibration that can be trusted, robustness to shortcuts---a directly trained small model already has to the same degree, and keeps at least as well over a year of drift. If the goal is a small model that detects unknown traffic, this study finds no reason to train a large one first.
+
+\section*{Reproducibility}
+Code, the frozen service split, per-flow scores for every model and test window, the analysis, and the pre-registration (OSF \url{https://osf.io/rts6n}) are released with the paper. \draftnote{Repository URL to be added.}
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

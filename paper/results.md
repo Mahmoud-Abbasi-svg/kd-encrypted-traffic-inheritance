@@ -109,7 +109,20 @@ In the teacher-only setting, the student never sees the feature and can be influ
 
 ## 5. Baselines and cost (validation week; exploratory)
 
-XGBoost on the 44 flow statistics reaches macro-F1 0.883 and energy-margin AUROC 0.855 on the validation week, against 0.964 and 0.837 for Teacher A: the gradient-boosted model is 8 points less accurate but a slightly better detector of unknown services, and clearly better on near unknowns (0.875 vs 0.828). k-NN on packet sequences reaches 0.712 / 0.745. CPU latency and memory measurements are pending.
+XGBoost on the 44 flow statistics reaches macro-F1 0.883 and energy-margin AUROC 0.855 on the validation week, against 0.964 and 0.837 for Teacher A: the gradient-boosted model is 8 points less accurate but a slightly better detector of unknown services, and clearly better on near unknowns (0.875 vs 0.828). k-NN on packet sequences reaches 0.712 / 0.745.
+
+**CPU cost** (laptop, AMD Ryzen 7 5800H, single thread, batch 1; `results/cpu_cost/20260920-014955_S_train11-14`):
+
+| Model | Params | Weights | p50 latency | p99 | Flows/s, 1 thread | Flows/s, all cores |
+|---|---|---|---|---|---|---|
+| Student, ONNX Runtime | 101k | 0.4 MB | 0.082 ms | 0.160 ms | 21,201 | — |
+| Student, PyTorch | 101k | 0.4 MB | 0.501 ms | 1.026 ms | 10,604 | 39,418 |
+| Teacher A, one member | 2.3M | 9.1 MB | 3.56 ms | 5.35 ms | 812 | 3,875 |
+| Teacher A, ensemble | 11.3M | 45.4 MB | 19.1 ms | 27.4 ms | 161 | 789 |
+| Teacher B | 10.3M | 41.3 MB | 12.3 ms | 17.2 ms | 218 | 1,153 |
+| XGBoost, 300 rounds × 102 classes | — | 244 MB | 41.6 ms | 53.0 ms | 1,369 | 11,078 |
+
+The student in ONNX Runtime is 230× faster per flow than the ensemble. XGBoost, often assumed to be the cheap option, is 500× slower than the student per flow at this class count (30,600 trees) and 600× larger on disk; it recovers only in large batches on all cores. The teachers could not be exported to ONNX Runtime (an unsupported operator in the `cesnet-models` architecture), so they are timed in PyTorch.
 
 ## Figures
 
