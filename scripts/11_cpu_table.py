@@ -29,19 +29,18 @@ def main(run: Path, out: Path = PROJECT_ROOT / "paper" / "cpu_table.tex") -> Non
         rows.append(f"{label} & {params} & {r.weights_mb:.1f} & {r.latency_ms_p50:.3f} & {r.latency_ms_p99:.3f} & "
                     f"{r.flows_per_s_1thread:,.0f} & {all_thr} \\\\")
     body = "\n".join(rows)
-    out.write_text(rf"""\begin{{table}}[t]
+    out.write_text(rf"""\begin{{table*}}[t]
 \centering
 \caption{{Inference cost on a laptop CPU (AMD Ryzen 7 5800H, 8 cores), used as a stand-in for an edge device. Latency is per flow at batch size 1 on one thread; throughput is at batch size 1,024. Weights are the serialised model size. The teachers could not be exported to ONNX Runtime.}}
 \label{{tab:cpu}}
-\small
 \begin{{tabular}}{{lrrrrrr}}
 \toprule
-Model & Params & MB & p50 (ms) & p99 (ms) & flows/s, 1 thr & flows/s, all \\
+Model & Parameters & Weights (MB) & Latency p50 (ms) & Latency p99 (ms) & Flows/s, 1 thread & Flows/s, all cores \\
 \midrule
 {body}
 \bottomrule
 \end{{tabular}}
-\end{{table}}
+\end{{table*}}
 """, encoding="utf-8")
     print(f"wrote {out} from {run}")
 

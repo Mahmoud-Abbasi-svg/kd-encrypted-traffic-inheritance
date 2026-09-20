@@ -1,11 +1,10 @@
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Inference cost on a laptop CPU (AMD Ryzen 7 5800H, 8 cores), used as a stand-in for an edge device. Latency is per flow at batch size 1 on one thread; throughput is at batch size 1,024. Weights are the serialised model size. The teachers could not be exported to ONNX Runtime.}
 \label{tab:cpu}
-\small
 \begin{tabular}{lrrrrrr}
 \toprule
-Model & Params & MB & p50 (ms) & p99 (ms) & flows/s, 1 thr & flows/s, all \\
+Model & Parameters & Weights (MB) & Latency p50 (ms) & Latency p99 (ms) & Flows/s, 1 thread & Flows/s, all cores \\
 \midrule
 Student, ONNX Runtime & 101k & 0.4 & 0.082 & 0.160 & 21,201 & --- \\
 Student, PyTorch & 101k & 0.4 & 0.501 & 1.026 & 10,604 & 39,418 \\
@@ -15,4 +14,4 @@ Teacher B & 10.3M & 41.3 & 12.262 & 17.213 & 218 & 1,153 \\
 XGBoost (flow statistics) & --- & 244.4 & 41.606 & 53.011 & 1,369 & 11,078 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
