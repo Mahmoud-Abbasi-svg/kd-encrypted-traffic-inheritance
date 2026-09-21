@@ -30,6 +30,16 @@ def agreement(pred_a: np.ndarray, pred_b: np.ndarray) -> float:
     return float(np.mean(pred_a == pred_b)) if len(pred_a) else NAN
 
 
+def predictions(outputs: Outputs) -> np.ndarray:
+    """Top-1 predictions, whether `probs` holds the (N, C) matrix or already just the (N,) argmax.
+
+    Callers that keep many models in memory at once may store predictions instead of full
+    probability matrices; the values are identical either way.
+    """
+    probs = outputs.probs
+    return probs.argmax(axis=1) if probs.ndim == 2 else probs
+
+
 def inheritance_row(student: str, teacher: str, split: str, y: np.ndarray, student_out: Outputs,
                     teacher_out: Outputs) -> dict:
     known = y >= 0
@@ -39,7 +49,7 @@ def inheritance_row(student: str, teacher: str, split: str, y: np.ndarray, stude
         s, t = student_out.scores[score], teacher_out.scores[score]
         row[f"spearman_{score}"] = rank_correlation(s, t)
         row[f"spearman_{score}_unknown"] = rank_correlation(s[~known], t[~known])
-    pred_s, pred_t = student_out.probs.argmax(axis=1), teacher_out.probs.argmax(axis=1)
+    pred_s, pred_t = predictions(student_out), predictions(teacher_out)
     row["top1_agreement_known"] = agreement(pred_s[known], pred_t[known])
     row["error_jaccard_known"] = error_overlap(pred_s[known], pred_t[known], y[known])
     return row

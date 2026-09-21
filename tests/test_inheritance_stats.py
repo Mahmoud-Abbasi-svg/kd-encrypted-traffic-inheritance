@@ -3,7 +3,8 @@ import pytest
 
 from kdtraffic.data import LOW_COVERAGE_WEEKS, evaluation_windows, period_name
 from kdtraffic.evaluation import from_logits
-from kdtraffic.inheritance import agreement, error_overlap, inheritance_row, rank_correlation
+from kdtraffic.evaluation import Outputs
+from kdtraffic.inheritance import agreement, error_overlap, inheritance_row, predictions, rank_correlation
 from kdtraffic.stats import cluster_bootstrap, cluster_ids
 
 
@@ -20,6 +21,19 @@ def test_error_overlap_and_agreement():
     assert error_overlap(np.array([1, 1, 2, 3]), np.array([0, 1, 2, 0]), y) == pytest.approx(0.0)
     assert np.isnan(error_overlap(y, y, y))
     assert agreement(np.array([0, 1]), np.array([0, 2])) == pytest.approx(0.5)
+
+
+def test_stored_predictions_give_the_same_row_as_full_probabilities():
+    """A teacher kept as top-1 predictions must score exactly like one kept as a probability matrix."""
+    rng = np.random.default_rng(3)
+    y = rng.integers(-1, 5, size=300)
+    student = from_logits(rng.normal(size=(300, 5)).astype(np.float32))
+    teacher = from_logits(rng.normal(size=(300, 5)).astype(np.float32))
+    compact = Outputs(teacher.probs.argmax(axis=1).astype(np.int16), teacher.scores)
+    assert np.array_equal(predictions(compact), predictions(teacher))
+    full_row = inheritance_row("s", "t", "val", y, student, teacher)
+    compact_row = inheritance_row("s", "t", "val", y, student, compact)
+    assert full_row == compact_row
 
 
 def test_inheritance_row_identical_models():

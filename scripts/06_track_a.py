@@ -46,7 +46,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from kdtraffic.cli import RunLogger, add_data_args, make_run_dir, spec_from_args, write_json  # noqa: E402
 from kdtraffic.data import build_bundle, evaluation_windows, load_window, sequence_keys  # noqa: E402
-from kdtraffic.distill import DirichletProxyAccumulator, HintonKD, ProxyDirichletKL, softmax_chunked  # noqa: E402
+from kdtraffic.distill import (DirichletProxyAccumulator, HardLabelCE, HintonKD,  # noqa: E402
+                               ProxyDirichletKL, softmax_chunked)
 from kdtraffic.evaluation import Outputs, ensemble_log_probs, from_ensemble, from_logits, report_rows  # noqa: E402
 from kdtraffic.inheritance import inheritance_row  # noqa: E402
 from kdtraffic.metrics import fit_temperature  # noqa: E402
@@ -54,7 +55,10 @@ from kdtraffic.models import build_model, count_parameters  # noqa: E402
 from kdtraffic.splits import load_splits  # noqa: E402
 from kdtraffic.train import TrainConfig, predict_logits, resolve_device, train_classifier  # noqa: E402
 
-CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA", "kdA4", "kdB4")
+CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA", "kdA4", "kdB4",
+              # added in revision, exploratory: single-teacher swaps, a different-family teacher,
+              # and a label-copying anchor. All use the conventional temperature.
+              "kdM0", "kdM1", "kdC", "hardA")
 HPARAMS_FILE = PROJECT_ROOT / "configs" / "student_hparams.json"  # written by scripts/09_tune_students.py
 
 
@@ -123,8 +127,14 @@ def main() -> None:
                         help="temperature of the kdA4 / kdB4 conditions (conventional KD)")
     parser.add_argument("--conditions", default=",".join(CONDITIONS),
                         help="student conditions to train in this run (the rest are left to other runs)")
+    parser.add_argument("--condition-suffix", default="",
+                        help="appended to condition and model names (e.g. _w16 for a student-width sweep), "
+                             "so that runs of the same start date do not reuse each other's names. "
+                             "Must not start with 's' followed by digits.")
     parser.add_argument("--teacher-b-from", type=Path, default=None,
                         help="teacherB_wide.pt from an earlier run with the same data settings")
+    parser.add_argument("--teacher-c-from", type=Path, default=None,
+                        help="teacherC_transformer.pt from an earlier run with the same data settings")
     parser.add_argument("--endd-max-precision", type=float, default=1e4,
                         help="upper bound on the proxy Dirichlet precision")
     parser.add_argument("--window-known-size", default="100000")
@@ -218,6 +228,11 @@ def main() -> None:
         torch.save(model.state_dict(), models_dir / f"{name}.pt")
         return model
 
+    conditions = [c for c in args.conditions.split(",") if c]
+    unknown_conditions = sorted(set(conditions) - set(CONDITIONS))
+    if unknown_conditions:
+        raise SystemExit(f"Unknown conditions {unknown_conditions}; choose from {list(CONDITIONS)}")
+
     # Teachers ---------------------------------------------------------------------------------
     reuse = reusable_teachers(args.teachers_from, bundle.cache_dir, log)
     members = []
@@ -246,30 +261,65 @@ def main() -> None:
             log(f"WARNING: cannot reuse {b_source}; Teacher B will be retrained")
         teacher_b = train("teacherB_wide", "wide_teacher", args.seed + 500, base)
 
-    conditions = [c for c in args.conditions.split(",") if c]
-    unknown_conditions = sorted(set(conditions) - set(CONDITIONS))
-    if unknown_conditions:
-        raise SystemExit(f"Unknown conditions {unknown_conditions}; choose from {list(CONDITIONS)}")
-    temperature_of = {"kdA": args.kd_temperature, "kdB": args.kd_temperature,
-                      "kdA4": args.kd_temperature_alt, "kdB4": args.kd_temperature_alt}
-    needed = {t for c, t in temperature_of.items() if c in conditions and c.startswith("kdA")}
-    needed_b = {t for c, t in temperature_of.items() if c in conditions and c.startswith("kdB")}
+    # Teacher C (revision, exploratory): a transformer, so that a swap can vary the model family
+    # rather than only its width. Trained only when a condition needs it.
+    teacher_c = None
+    if "kdC" in conditions:
+        c_source = args.teacher_c_from
+        if c_source is not None and c_source.exists() and reusable_teachers(c_source.parent.parent, bundle.cache_dir, log):
+            teacher_c = build_model("transformer_teacher", num_classes, flow_dim)
+            teacher_c.load_state_dict(torch.load(c_source, map_location="cpu"))
+            teacher_c.to(device)
+            training["teacherC_transformer"] = {"loaded_from": str(c_source)}
+            log(f"Loaded teacherC_transformer from {c_source}")
+        else:
+            if c_source is not None:
+                log(f"WARNING: cannot reuse {c_source}; Teacher C will be trained")
+            teacher_c = train("teacherC_transformer", "transformer_teacher", args.seed + 700, base)
 
-    log(f"Teacher targets on the training set (A at T {sorted(needed)}, B at T {sorted(needed_b)})")
+    # The exploratory conditions (kdM0, kdM1, kdC, hardA) always use the conventional temperature:
+    # they exist to study inheritance, which the accuracy-tuned temperature does not transmit.
+    temperature_of = {"kdA": args.kd_temperature, "kdB": args.kd_temperature,
+                      "kdA4": args.kd_temperature_alt, "kdB4": args.kd_temperature_alt,
+                      "kdM0": args.kd_temperature_alt, "kdM1": args.kd_temperature_alt,
+                      "kdC": args.kd_temperature_alt}
+    needed = {temperature_of[c] for c in conditions if c in ("kdA", "kdA4")}
+    needed_b = {temperature_of[c] for c in conditions if c in ("kdB", "kdB4")}
+    needed_members = {int(c[-1]): temperature_of[c] for c in conditions if c.startswith("kdM")}
+    needed_c = {temperature_of[c] for c in conditions if c == "kdC"}
+    want_hard_labels = "hardA" in conditions
+    if needed_members and max(needed_members) >= len(members):
+        raise SystemExit(f"Conditions {sorted(needed_members)} need at least {max(needed_members) + 1} "
+                         f"ensemble members, but only {len(members)} were loaded")
+
+    log(f"Teacher targets on the training set (A at T {sorted(needed)}, B at T {sorted(needed_b)}"
+        + (f", members {sorted(needed_members)} at T {sorted(set(needed_members.values()))}" if needed_members else "")
+        + (", A argmax labels" if want_hard_labels else "") + ")")
     targets_a = {t: np.zeros((len(bundle.train), num_classes), dtype=np.float32) for t in needed}
+    targets_members: dict[int, np.ndarray] = {}
+    mean_probs = np.zeros((len(bundle.train), num_classes), dtype=np.float32) if want_hard_labels else None
     proxy = DirichletProxyAccumulator(len(bundle.train), num_classes) if "enddA" in conditions else None
-    for model in members:
+    for i, model in enumerate(members):
         logits = predict_logits(model, bundle.train, device, amp)
         for t in needed:
             targets_a[t] += softmax_chunked(logits, t) / len(members)
+        if want_hard_labels:
+            mean_probs += softmax_chunked(logits, 1.0) / len(members)
+        if i in needed_members:
+            targets_members[i] = softmax_chunked(logits, needed_members[i])
         if proxy is not None:
             proxy.add(logits)
         del logits
+    hard_labels = mean_probs.argmax(axis=1).astype(np.int64) if want_hard_labels else None
+    del mean_probs
     dirichlet_targets = proxy.concentrations(args.endd_max_precision) if proxy is not None else None
     del proxy
     b_logits_train = predict_logits(teacher_b, bundle.train, device, amp) if needed_b else None
     targets_b = {t: softmax_chunked(b_logits_train, t) for t in needed_b}
     del b_logits_train
+    c_logits_train = predict_logits(teacher_c, bundle.train, device, amp) if needed_c else None
+    targets_c = {t: softmax_chunked(c_logits_train, t) for t in needed_c}
+    del c_logits_train
 
     log("Evaluating teachers")
     val_member_logits = [predict_logits(m, bundle.val, device, amp) for m in members]
@@ -277,6 +327,8 @@ def main() -> None:
     ensemble_t = fit_temperature(ensemble_log_probs([l[val_known] for l in val_member_logits]), y_val_known)
     val_b_logits = predict_logits(teacher_b, bundle.val, device, amp)
     b_t = fit_temperature(val_b_logits[val_known], y_val_known)
+    val_c_logits = predict_logits(teacher_c, bundle.val, device, amp) if teacher_c is not None else None
+    c_t = fit_temperature(val_c_logits[val_known], y_val_known) if teacher_c is not None else None
     teacher_outputs: dict[str, dict[str, Outputs]] = {}
     for split, arrays in eval_sets.items():
         member_logits = val_member_logits if split == "val" else [predict_logits(m, arrays, device, amp) for m in members]
@@ -287,42 +339,65 @@ def main() -> None:
         b_logits = val_b_logits if split == "val" else predict_logits(teacher_b, arrays, device, amp)
         out_b = from_logits(b_logits, b_t)
         record("teacherB", "teacherB", "", split, out_b)
-        # keep only what the inheritance comparison needs
-        teacher_outputs[split] = {"A": Outputs(out_a.probs, out_a.scores), "B": Outputs(out_b.probs, out_b.scores)}
+        if teacher_c is not None:
+            c_logits = val_c_logits if split == "val" else predict_logits(teacher_c, arrays, device, amp)
+            record("teacherC", "teacherC", "", split, from_logits(c_logits, c_t))
+            del c_logits
+        # keep only what the inheritance comparison needs: its top-1 predictions and its scores.
+        # Storing predictions rather than the (N, C) probability matrix is ~200x smaller per teacher
+        # and split, which matters once several teachers are evaluated in one run.
+        teacher_outputs[split] = {
+            "A": Outputs(out_a.probs.argmax(axis=1).astype(np.int16), out_a.scores),
+            "B": Outputs(out_b.probs.argmax(axis=1).astype(np.int16), out_b.scores),
+        }
         del member_logits, b_logits, out_a, out_b
-    del val_member_logits, val_b_logits
+    del val_member_logits, val_b_logits, val_c_logits
 
     # Students ---------------------------------------------------------------------------------
+    # Objectives are built lazily, one at a time: every Hinton KD objective moves an
+    # (N_train x classes) float32 target matrix onto the GPU, so holding them all at once costs
+    # hundreds of megabytes per condition and does not fit once more conditions are added.
+    # Construction consumes no randomness, so building later leaves every model's seed untouched.
     student_base = replace(base, epochs=args.student_epochs)
-    kd = lambda targets, t: HintonKD(targets[t], t, args.kd_alpha, device)  # noqa: E731
+    kd = lambda targets, t: (lambda: HintonKD(targets[t], t, args.kd_alpha, device))  # noqa: E731
+    # member targets are keyed by member index, not by temperature, so they need their own lookup
+    member_kd = lambda i: (lambda: HintonKD(targets_members[i], temperature_of[f"kdM{i}"],  # noqa: E731
+                                            args.kd_alpha, device))
     objectives = {
         "direct": (student_base, None),
         "ls": (replace(student_base, label_smoothing=args.label_smoothing), None),
-        "kdA": (student_base, kd(targets_a, args.kd_temperature) if "kdA" in conditions else None),
-        "kdB": (student_base, kd(targets_b, args.kd_temperature) if "kdB" in conditions else None),
-        "kdA4": (student_base, kd(targets_a, args.kd_temperature_alt) if "kdA4" in conditions else None),
-        "kdB4": (student_base, kd(targets_b, args.kd_temperature_alt) if "kdB4" in conditions else None),
-        "enddA": (student_base, ProxyDirichletKL(dirichlet_targets, device) if "enddA" in conditions else None),
+        "kdA": (student_base, kd(targets_a, args.kd_temperature)),
+        "kdB": (student_base, kd(targets_b, args.kd_temperature)),
+        "kdA4": (student_base, kd(targets_a, args.kd_temperature_alt)),
+        "kdB4": (student_base, kd(targets_b, args.kd_temperature_alt)),
+        "enddA": (student_base, lambda: ProxyDirichletKL(dirichlet_targets, device)),
+        "kdM0": (student_base, member_kd(0)),
+        "kdM1": (student_base, member_kd(1)),
+        "kdC": (student_base, kd(targets_c, args.kd_temperature_alt)),
+        "hardA": (student_base, lambda: HardLabelCE(hard_labels, device)),
     }
     for seed in range(args.seeds):
         for condition in conditions:
-            cfg, objective = objectives[condition]
-            name = f"student_{condition}_s{seed}"
+            cfg, make_objective = objectives[condition]
+            objective = make_objective() if make_objective is not None else None
+            labelled = condition + args.condition_suffix  # what the outputs are named after
+            name = f"student_{labelled}_s{seed}"
             model = train(name, "student", args.seed + 1000 + 10 * seed, cfg, objective)
             val_logits = predict_logits(model, bundle.val, device, amp)
             temperature = fit_temperature(val_logits[val_known], y_val_known)
             for split, arrays in eval_sets.items():
                 logits = val_logits if split == "val" else predict_logits(model, arrays, device, amp)
-                variants = [(name, condition, from_logits(logits, temperature))]
+                variants = [(name, labelled, from_logits(logits, temperature))]
                 if condition == "direct":
-                    variants.append((f"student_directTS_s{seed}", "directTS", from_logits(logits / temperature)))
+                    variants.append((f"student_directTS{args.condition_suffix}_s{seed}",
+                                     "directTS" + args.condition_suffix, from_logits(logits / temperature)))
                 for variant, variant_condition, outputs in variants:
                     record(variant, variant_condition, seed, split, outputs)
                     for teacher, teacher_out in teacher_outputs[split].items():
                         row = inheritance_row(variant, teacher, split, arrays.y, outputs, teacher_out)
                         inheritance.append({**row, "start": args.start, "condition": variant_condition,
                                             "seed": seed, "weeks_since": weeks_since[split]})
-            del model, val_logits
+            del model, val_logits, objective
             if device.startswith("cuda"):
                 torch.cuda.empty_cache()
 

@@ -1,0 +1,104 @@
+[15:48:04] 20260919-113607_S_train11-14: start 11, splits ['test_w16-19', 'test_w20-23', 'test_w24-27', 'test_w28-31', 'test_w32-35', 'test_w36-39', 'test_w40-43', 'test_w44-47', 'test_w48-51']
+[15:48:04] 20260919-131820_S_train24-27: start 24, splits ['test_w29-32', 'test_w33-36', 'test_w37-40', 'test_w41-44', 'test_w45-48', 'test_w49-51']
+[15:48:04] 20260919-143354_S_train37-40: start 37, splits ['test_w42-45', 'test_w46-49', 'test_w51-51']
+[15:48:21] primary: 18 units, 3,543,579 flows, 29,346 day x service clusters
+[15:49:01] 20260919-113607_S_train11-14: start 11, splits ['test_w16-19', 'test_w20-23', 'test_w24-27', 'test_w28-31', 'test_w32-35', 'test_w36-39', 'test_w40-43', 'test_w44-47', 'test_w48-51']
+[15:49:01] 20260919-131820_S_train24-27: start 24, splits ['test_w29-32', 'test_w33-36', 'test_w37-40', 'test_w41-44', 'test_w45-48', 'test_w49-51']
+[15:49:01] 20260919-143354_S_train37-40: start 37, splits ['test_w42-45', 'test_w46-49', 'test_w51-51']
+[15:49:19] primary: 18 units, 3,543,579 flows, 29,346 day x service clusters
+[15:53:37]   bootstrap 100/1000
+[15:54:38]   bootstrap 100/1000
+[15:59:03]   bootstrap 200/1000
+[15:59:52]   bootstrap 200/1000
+[16:04:41]   bootstrap 300/1000
+[16:05:24]   bootstrap 300/1000
+[16:10:30]   bootstrap 400/1000
+[16:10:58]   bootstrap 400/1000
+[16:16:24]   bootstrap 500/1000
+[16:16:34]   bootstrap 500/1000
+[16:21:51]   bootstrap 600/1000
+[16:21:52]   bootstrap 600/1000
+[16:27:07]   bootstrap 700/1000
+[16:27:18]   bootstrap 700/1000
+[16:32:41]   bootstrap 800/1000
+[16:33:05]   bootstrap 800/1000
+[16:38:01]   bootstrap 900/1000
+[16:38:33]   bootstrap 900/1000
+[16:43:24]   bootstrap 1000/1000
+[16:43:24] primary: done in 3263s
+[16:43:43] drop_duplicates: 18 units, 3,479,820 flows, 29,320 day x service clusters
+[16:44:11]   bootstrap 1000/1000
+[16:44:11] primary: done in 3366s
+[16:44:31] drop_duplicates: 18 units, 3,479,820 flows, 29,320 day x service clusters
+[16:49:08]   bootstrap 100/1000
+[16:50:04]   bootstrap 100/1000
+[16:54:25]   bootstrap 200/1000
+[16:55:30]   bootstrap 200/1000
+[16:59:31]   bootstrap 300/1000
+[17:00:48]   bootstrap 300/1000
+[17:04:55]   bootstrap 400/1000
+[17:06:19]   bootstrap 400/1000
+[17:10:21]   bootstrap 500/1000
+[17:11:56]   bootstrap 500/1000
+[17:16:05]   bootstrap 600/1000
+[17:17:44]   bootstrap 600/1000
+[17:21:54]   bootstrap 700/1000
+[17:23:29]   bootstrap 700/1000
+[17:27:05]   bootstrap 800/1000
+[17:28:49]   bootstrap 800/1000
+[17:32:08]   bootstrap 900/1000
+[17:34:02]   bootstrap 900/1000
+[17:37:17]   bootstrap 1000/1000
+[17:37:17] drop_duplicates: done in 3234s
+[17:37:37] ge5_packets: 18 units, 3,332,073 flows, 29,331 day x service clusters
+[17:39:30]   bootstrap 1000/1000
+[17:39:30] drop_duplicates: done in 3320s
+[17:39:51] ge5_packets: 18 units, 3,332,073 flows, 29,331 day x service clusters
+[17:42:43]   bootstrap 100/1000
+[17:45:06]   bootstrap 100/1000
+[17:47:41]   bootstrap 200/1000
+[17:50:22]   bootstrap 200/1000
+[17:53:07]   bootstrap 300/1000
+[17:55:57]   bootstrap 300/1000
+[17:58:17]   bootstrap 400/1000
+[18:01:03]   bootstrap 400/1000
+[18:03:06]   bootstrap 500/1000
+[18:06:03]   bootstrap 500/1000
+[18:07:52]   bootstrap 600/1000
+[18:10:56]   bootstrap 600/1000
+[18:12:42]   bootstrap 700/1000
+[18:15:57]   bootstrap 700/1000
+[18:17:42]   bootstrap 800/1000
+[18:21:15]   bootstrap 800/1000
+[18:22:55]   bootstrap 900/1000
+[18:26:44]   bootstrap 900/1000
+[18:28:11]   bootstrap 1000/1000
+[18:28:11] ge5_packets: done in 3053s
+[18:28:13] Hypotheses:
+hypothesis     p_iut   p_holm  supported
+        H1  0.000999 0.008991       True
+H2[energy]         1        1      False
+   H2[msp]         1        1      False
+H3[energy]     0.993        1      False
+   H3[msp]         1        1      False
+       H4a    0.9193        1      False
+      H4b1 0.0004731 0.004731       True
+      H4b2    0.9984        1      False
+H5[energy]         1        1      False
+   H5[msp]         1        1      False
+[18:28:13] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\CONFIRMATORY\report.md
+[18:31:10]   bootstrap 1000/1000
+[18:31:10] ge5_packets: done in 3100s
+[18:31:11] Hypotheses:
+hypothesis     p_iut   p_holm  supported
+        H1  0.000999 0.008991       True
+H2[energy]         1        1      False
+   H2[msp]         1        1      False
+H3[energy]     0.993        1      False
+   H3[msp]         1        1      False
+       H4a    0.9193        1      False
+      H4b1 0.0004731 0.004731       True
+      H4b2    0.9984        1      False
+H5[energy]         1        1      False
+   H5[msp]         1        1      False
+[18:31:11] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\CONFIRMATORY\report.md

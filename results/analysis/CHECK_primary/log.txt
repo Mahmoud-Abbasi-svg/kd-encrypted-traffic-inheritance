@@ -1,0 +1,5 @@
+[13:20:09] 20260919-113607_S_train11-14: start 11, splits ['test_w16-19', 'test_w20-23', 'test_w24-27', 'test_w28-31', 'test_w32-35', 'test_w36-39', 'test_w40-43', 'test_w44-47', 'test_w48-51']
+[13:20:09] 20260919-131820_S_train24-27: start 24, splits ['test_w29-32', 'test_w33-36', 'test_w37-40', 'test_w41-44', 'test_w45-48', 'test_w49-51']
+[13:20:09] 20260919-143354_S_train37-40: start 37, splits ['test_w42-45', 'test_w46-49', 'test_w51-51']
+[13:20:28] primary: 18 units, 3,543,579 flows, 29,346 day x service clusters
+[13:27:01]   bootstrap 100/1000

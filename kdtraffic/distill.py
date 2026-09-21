@@ -22,6 +22,22 @@ def softmax_chunked(logits: np.ndarray, temperature: float = 1.0, dtype=np.float
     return out
 
 
+class HardLabelCE:
+    """Cross-entropy against the teacher's top-1 prediction instead of the true label.
+
+    The anchor for the teacher-swap test: a student trained this way copies the teacher's decisions
+    but receives none of the soft-target information distillation is supposed to convey. Whatever
+    shift toward its own teacher it shows is the part explained by label agreement alone.
+    """
+
+    def __init__(self, teacher_labels: np.ndarray, device: str):
+        self.labels = torch.from_numpy(np.ascontiguousarray(teacher_labels, dtype=np.int64)).to(device)
+
+    def __call__(self, logits: torch.Tensor, labels: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
+        target = self.labels[idx.to(self.labels.device)].to(logits.device)
+        return F.cross_entropy(logits, target)
+
+
 class HintonKD:
     """alpha * T^2 * KL(teacher_T || student_T) + (1 - alpha) * CE(student, labels).
 
