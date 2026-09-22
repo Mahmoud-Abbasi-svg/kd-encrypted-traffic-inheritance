@@ -1,0 +1,28 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Mahmoud Abbasi
+
+The non-software contents of this repository -- the result tables under `results/`, the figures, the
+frozen service split in `configs/splits.json`, the pre-registration in `docs/`, and the manuscript
+sources under `paper/` -- are licensed under the Creative Commons Attribution 4.0 International
+License.
+
+You are free to share and adapt this material for any purpose, including commercially, provided you
+give appropriate credit, link to the licence, and indicate if changes were made.
+
+Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+Summary:          https://creativecommons.org/licenses/by/4.0/
+
+The software in this repository is licensed separately under the MIT License; see LICENSE.
+
+NOTE ON THE UNDERLYING DATASET
+------------------------------
+This licence covers only the material produced by this study. It does not cover CESNET-TLS-Year22
+itself, which is published by its own authors under its own terms:
+
+    Luxemburk, J., Plesnik, K., and Hynek, K. CESNET-TLS-Year22: A year-spanning TLS network traffic
+    dataset from backbone lines. Scientific Data 11 (2024). https://doi.org/10.1038/s41597-024-03927-4
+
+No raw traffic from that dataset is redistributed here. The files released with this study are
+derived quantities -- per-flow model scores, aggregate metrics and the service split -- and anyone
+reproducing the work obtains the dataset from its original source under its own licence.
