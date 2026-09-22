@@ -37,9 +37,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from kdtraffic.analysis import assign_clusters, student  # noqa: E402
 from kdtraffic.cli import RunLogger, write_json  # noqa: E402
-from kdtraffic.exploratory import (build_unit, calendar_overlap, cluster_bootstrap_table,  # noqa: E402
-                                   drift_by_member, merge_scores, seeds_of, shift, slopes_per_start,
-                                   teacher_preference_null)
+from kdtraffic.exploratory import (SCORES, build_unit, calendar_overlap, cluster_bootstrap_many,  # noqa: E402
+                                   detection_shift, drift_by_member, merge_scores, seeds_of, shift,
+                                   slopes_per_start, teacher_advantage, teacher_preference_null)
 
 MEMBERS = [f"teacherA_{i}" for i in range(5)]
 BASE_CONDITIONS = ("direct", "directTS", "ls", "kdA", "kdB", "kdA4", "kdB4", "enddA")
@@ -163,19 +163,27 @@ def main() -> None:
         f"{np.median(null):.4f}, 95th percentile {np.quantile(null, 0.95):.4f} (n={len(null)})")
 
     # 4. Teacher-swap shifts --------------------------------------------------------------------
-    rows = []
+    # Every swap row that covers the same units is bootstrapped in one pass: the draws are shared,
+    # so this costs one resampling loop rather than one per row.
+    wanted = []
     for label, condition, own, other, note in SWAPS:
         if condition not in conditions_seen:
             continue
         available = [u for u in units if own in u.rank and other in u.rank
                      and any(student(condition, s) in u.rank for s in u.seeds)]
-        if not available:
-            continue
-        log(f"  {label} ({len(available)} units)")
-        stat = cluster_bootstrap_table(available, lambda u, w, c=condition, o=own, x=other: shift(u, c, o, x, w),
-                                       n_clusters, args.n_boot, args.seed, progress=None)
-        rows.append({"label": label, "condition": condition, "own": own, "other": other,
-                     "units": len(available), **stat, "note": note})
+        if available:
+            wanted.append((label, condition, own, other, note, available))
+    rows = []
+    for signature in sorted({tuple(sorted(id(u) for u in a)) for *_, a in wanted}):
+        group = [w for w in wanted if tuple(sorted(id(u) for u in w[-1])) == signature]
+        available = group[0][-1]
+        log(f"  {len(group)} swap comparison(s) over {len(available)} units")
+        statistics = {w[0]: (lambda u, weights, sc, cache, c=w[1], o=w[2], x=w[3]: shift(u, c, o, x, weights, sc))
+                      for w in group}
+        found = cluster_bootstrap_many(available, statistics, n_clusters, args.n_boot, args.seed)
+        for label, condition, own, other, note, _ in group:
+            rows.append({"label": label, "condition": condition, "own": own, "other": other,
+                         "units": len(available), **found[label], "note": note})
     swaps = pd.DataFrame(rows)
     swaps.to_csv(out / "swaps.csv", index=False)
     if len(swaps):
@@ -183,21 +191,68 @@ def main() -> None:
             + swaps[["label", "estimate", "ci_low", "ci_high", "p_one_sided"]]
             .to_string(index=False, float_format=lambda v: f"{v:+.4f}"))
 
+    # 5. Detection advantage by scoring rule ----------------------------------------------------
+    # The reviewer's central objection is that the logit scores leave no teacher advantage to inherit.
+    # With the feature-space scores present, the same comparisons can be made where an advantage does
+    # exist. Student-versus-student rows are the clean ones: identical architecture, so the teacher's
+    # larger feature space is not a confound.
+    # All of these share one bootstrap loop and one per-draw AUROC cache. Computed separately they
+    # would repeat the same per-unit AUROCs dozens of times per draw.
+    statistics, described = {}, {}
+    for score in SCORES:
+        present = [u for u in units if any(k.startswith(f"{score}:") for k in u.detect)]
+        if not present:
+            continue
+        for teacher in ("teacherA", "teacherB"):
+            if not any(f"{score}:{teacher}" in u.detect for u in present):
+                continue
+            key = f"{score}|{teacher}"
+            statistics[key] = (lambda u, w, sc, cache, t=teacher, s=score:
+                               teacher_advantage(u, t, "direct", s, w, sc, cache))
+            described[key] = {"score": score, "comparison": f"{teacher} - direct student", "kind": "teacher"}
+        for condition in sorted(conditions_seen - {"direct", "directTS"}):
+            if not any(f"{score}:{student(condition, s)}" in u.detect for u in present for s in u.seeds):
+                continue
+            key = f"{score}|{condition}"
+            statistics[key] = (lambda u, w, sc, cache, c=condition, s=score:
+                               detection_shift(u, c, "direct", s, w, sc, cache))
+            described[key] = {"score": score, "comparison": f"{condition} - direct student", "kind": "student"}
+    rows = []
+    if statistics:
+        log(f"  {len(statistics)} detection comparisons over {len(units)} units, one bootstrap loop")
+        found = cluster_bootstrap_many(units, statistics, n_clusters, args.n_boot, args.seed,
+                                       progress=log)
+        rows = [{**described[key], "units": len(units), **found[key]} for key in statistics]
+    advantage = pd.DataFrame(rows)
+    advantage.to_csv(out / "detection_advantage.csv", index=False)
+    if len(advantage):
+        log("Unknown-detection advantage over the directly trained student, by scoring rule:\n"
+            + advantage[["score", "comparison", "estimate", "ci_low", "ci_high"]]
+            .to_string(index=False, float_format=lambda v: f"{v:+.4f}"))
+
+    # Fenced plain text rather than pipe tables: `to_markdown` needs `tabulate`, and the analysis
+    # environment is the one that reproduces the frozen results, so it gains no new dependency here.
+    def block(frame: pd.DataFrame, digits: int = 5, index: bool = False) -> str:
+        text = frame.to_string(index=index, float_format=lambda v: f"{v:+.{digits}f}")
+        return "```\n" + text + "\n```"
+
     report = [f"# Exploratory analyses: {name}", "",
               "Added during revision at the reviewer's request. **Not pre-registered**; the ten "
               "confirmatory hypotheses and their numbers are unchanged and were produced by "
               "`scripts/08_analyze.py`.", "",
               f"- Windows: `{args.windows}`; units: {len(units)}; bootstrap resamples: {args.n_boot}",
               "", "## Does the ensemble age faster than its members?", "",
-              member_slopes.pivot_table(index="model", columns="score", values="slope_per_week")
-              .to_markdown(floatfmt="+.5f"), "",
-              "## Time trend per start date", "", h3.to_markdown(index=False) if len(h3) else "_not available_", "",
-              "## Calendar overlap between start dates", "", overlap.to_markdown(index=False), "",
+              block(member_slopes.pivot_table(index="model", columns="score", values="slope_per_week"),
+                    index=True), "",
+              "## Time trend per start date", "", block(h3) if len(h3) else "_not available_", "",
+              "## Calendar overlap between start dates", "", block(overlap, digits=0), "",
               "## Chance-level teacher preference", "",
               f"An undistilled student's |ρ difference| between two Teacher A members: median "
               f"{np.median(null):.4f}, 95th percentile {np.quantile(null, 0.95):.4f} over {len(null)} pairs.", "",
               "## Teacher-swap shifts", "",
-              swaps.drop(columns=["note"]).to_markdown(index=False, floatfmt="+.4f") if len(swaps) else "_none_"]
+              block(swaps.drop(columns=["note"]), digits=4) if len(swaps) else "_none_", "",
+              "## Detection advantage over the direct student, by scoring rule", "",
+              block(advantage, digits=4) if len(advantage) else "_no scores loaded_"]
     (out / "report.md").write_text("\n".join(report) + "\n", encoding="utf-8")
     log(f"Report: {out / 'report.md'}")
 

@@ -3,3 +3,26 @@
 [13:20:09] 20260919-143354_S_train37-40: start 37, splits ['test_w42-45', 'test_w46-49', 'test_w51-51']
 [13:20:28] primary: 18 units, 3,543,579 flows, 29,346 day x service clusters
 [13:27:01]   bootstrap 100/1000
+[13:33:37]   bootstrap 200/1000
+[13:40:58]   bootstrap 300/1000
+[13:48:05]   bootstrap 400/1000
+[13:54:59]   bootstrap 500/1000
+[14:02:10]   bootstrap 600/1000
+[14:09:07]   bootstrap 700/1000
+[14:15:56]   bootstrap 800/1000
+[14:23:25]   bootstrap 900/1000
+[14:29:55]   bootstrap 1000/1000
+[14:29:56] primary: done in 4187s
+[14:29:58] Hypotheses:
+hypothesis     p_iut   p_holm  supported
+        H1  0.000999 0.008991       True
+H2[energy]         1        1      False
+   H2[msp]         1        1      False
+H3[energy]     0.993        1      False
+   H3[msp]         1        1      False
+       H4a    0.9193        1      False
+      H4b1 0.0004731 0.004731       True
+      H4b2    0.9984        1      False
+H5[energy]         1        1      False
+   H5[msp]         1        1      False
+[14:29:58] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\analysis\CHECK_primary\report.md

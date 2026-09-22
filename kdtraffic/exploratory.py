@@ -25,13 +25,18 @@ from the same day x service cluster bootstrap.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from kdtraffic.analysis import RankedScore, fixed_effects_slope, ranks, student, weighted_pearson
 
-SCORES = ("energy", "msp")
+# The two pre-registered scores, plus the two feature-space scores added in revision. This constant is
+# deliberately NOT the frozen `analysis.SCORES`: that one sets the size of the Holm family, so adding
+# to it would change every corrected p-value in the confirmatory table. Here nothing is corrected
+# across scores, and a score simply absent from a run's files is skipped.
+SCORES = ("energy", "msp", "maha", "knnfeat")
 
 
 # Loading ---------------------------------------------------------------------------------------
@@ -65,13 +70,19 @@ def seeds_of(keys, condition: str) -> list[int]:
     return sorted(out)
 
 
-def merge_scores(paths, require=("y", "day")) -> dict[str, np.ndarray]:
+def merge_scores(paths, require=("y", "day"), tolerance: float = 1e-3) -> dict[str, np.ndarray]:
     """Per-flow arrays for one split, merging several files that describe the same flows.
 
-    Unlike the frozen loader this refuses to overwrite: two files may not define the same array,
-    because that silently discards one of them.
+    Unlike the frozen loader this never silently overwrites. Two files may define the same array only
+    if they agree: every run of `06_track_a.py` re-scores the same teachers on the same windows, so
+    the teacher arrays legitimately appear in several files and must match. An array that is present
+    twice with *different* values means the files describe different models under the same name, which
+    would corrupt every statistic computed from them, and stops the analysis.
+
+    Scores are stored as float16, so agreement is checked to `tolerance` rather than exactly.
     """
     data: dict[str, np.ndarray] = {}
+    source: dict[str, str] = {}
     shared = {"y", "app", "day", "duplicate", "ppi_len"}
     for path in paths:
         with np.load(path, allow_pickle=False) as npz:
@@ -79,11 +90,18 @@ def merge_scores(paths, require=("y", "day")) -> dict[str, np.ndarray]:
         if data:
             if not np.array_equal(data["y"], part["y"]):
                 raise SystemExit(f"{path} describes different flows than the other files of this split")
-            clash = sorted((set(part) - shared) & set(data))
-            if clash:
-                raise SystemExit(f"{path} redefines {len(clash)} arrays already loaded "
-                                 f"(first: {clash[:4]}); give the runs distinct condition names")
-        data.update({k: v for k, v in part.items() if k not in data})
+            for key in sorted((set(part) - shared) & set(data)):
+                old, new = np.asarray(data[key], dtype=np.float64), np.asarray(part[key], dtype=np.float64)
+                if old.shape != new.shape or not np.allclose(old, new, rtol=0.0, atol=tolerance,
+                                                             equal_nan=True):
+                    worst = float(np.nanmax(np.abs(old - new))) if old.shape == new.shape else float("nan")
+                    raise SystemExit(
+                        f"'{key}' is defined by both {Path(source[key]).name} and {Path(path).name} "
+                        f"with different values (largest difference {worst:.4g}). The same name "
+                        f"refers to two different models; give the runs distinct condition names.")
+        for key, value in part.items():
+            if key not in data:
+                data[key], source[key] = value, str(path)
     missing = [k for k in require if k not in data]
     if missing:
         raise SystemExit(f"{paths[0]} and its companions lack {missing}")
@@ -117,23 +135,96 @@ def auroc(unit: ExUnit, model: str, score: str, weights: np.ndarray) -> float:
 
 
 def shift(unit: ExUnit, condition: str, own: str, other: str, weights: np.ndarray,
-          baseline: str = "direct") -> float:
+          seed_counts: np.ndarray | None = None, baseline: str = "direct") -> float:
     """Difference in differences: how much more `condition` follows `own` than `other` does,
     relative to the directly trained student, averaged over seeds.
 
-    This is the H1 statistic, generalised to arbitrary teacher pairs.
+    This is the H1 statistic, generalised to arbitrary teacher pairs. `seed_counts` gives each seed's
+    multiplicity, as `unit_statistics` does in the frozen code, so that a bootstrap resample can vary
+    the seeds as well as the flows; `None` weights every seed equally.
     """
-    values = []
-    for seed in unit.seeds:
+    counts = np.ones(len(unit.seeds)) if seed_counts is None else np.asarray(seed_counts, dtype=float)
+    total = counts.sum()
+    if total <= 0:
+        return float("nan")
+    value, used = 0.0, 0.0
+    for seed, count in zip(unit.seeds, counts):
         s, b = student(condition, seed), student(baseline, seed)
-        if s not in unit.rank or b not in unit.rank or own not in unit.rank or other not in unit.rank:
+        if count <= 0 or any(k not in unit.rank for k in (s, b, own, other)):
             continue
         distilled = weighted_pearson(unit.rank[s], unit.rank[own], weights) - \
             weighted_pearson(unit.rank[s], unit.rank[other], weights)
         plain = weighted_pearson(unit.rank[b], unit.rank[own], weights) - \
             weighted_pearson(unit.rank[b], unit.rank[other], weights)
-        values.append(distilled - plain)
-    return float(np.mean(values)) if values else float("nan")
+        value += count * (distilled - plain)
+        used += count
+    return value / used if used > 0 else float("nan")
+
+
+def _seed_weights(unit: ExUnit, seed_counts: np.ndarray | None) -> np.ndarray:
+    return np.ones(len(unit.seeds)) if seed_counts is None else np.asarray(seed_counts, dtype=float)
+
+
+def _auroc(unit: ExUnit, key: str, weights: np.ndarray, cache: dict | None) -> float:
+    """AUROC of one ranked score, memoised within a bootstrap draw.
+
+    Several comparisons share the same models - every student condition is compared against
+    `direct`, and every score against the same teacher - so without this each draw would recompute
+    the same AUROCs a dozen times over. The cache is keyed by unit and score and is cleared by
+    `cluster_bootstrap_many` whenever the weights change.
+    """
+    ranked = unit.detect.get(key)
+    if ranked is None:
+        return float("nan")
+    if cache is None:
+        return ranked.auroc(weights)
+    entry = (id(unit), key)
+    value = cache.get(entry)
+    if value is None:
+        value = cache[entry] = ranked.auroc(weights)
+    return value
+
+
+def detection_shift(unit: ExUnit, condition: str, baseline: str, score: str, weights: np.ndarray,
+                    seed_counts: np.ndarray | None = None, cache: dict | None = None) -> float:
+    """Seed-averaged AUROC(`condition`) - AUROC(`baseline`) under one scoring rule.
+
+    Used to ask, under the feature-space scores, the question H2 and H5 ask under the logit scores:
+    does a distilled student detect unknown traffic better than the same student trained otherwise?
+    Both models are the same architecture, so this comparison is free of the feature-dimensionality
+    difference that makes a teacher-versus-student comparison awkward.
+    """
+    value, used = 0.0, 0.0
+    for seed, count in zip(unit.seeds, _seed_weights(unit, seed_counts)):
+        if count <= 0:
+            continue
+        a = _auroc(unit, f"{score}:{student(condition, seed)}", weights, cache)
+        b = _auroc(unit, f"{score}:{student(baseline, seed)}", weights, cache)
+        if not (np.isfinite(a) and np.isfinite(b)):
+            continue
+        value += count * (a - b)
+        used += count
+    return value / used if used > 0 else float("nan")
+
+
+def teacher_advantage(unit: ExUnit, teacher: str, baseline: str, score: str, weights: np.ndarray,
+                      seed_counts: np.ndarray | None = None, cache: dict | None = None) -> float:
+    """Seed-averaged AUROC(`teacher`) - AUROC(the `baseline` student) under one scoring rule.
+
+    This is the quantity a reviewer means by "is there a teacher advantage to inherit at all?".
+    Across models of different feature dimensionality it should be read with care.
+    """
+    teacher_auroc = _auroc(unit, f"{score}:{teacher}", weights, cache)
+    if not np.isfinite(teacher_auroc):
+        return float("nan")
+    value, used = 0.0, 0.0
+    for seed, count in zip(unit.seeds, _seed_weights(unit, seed_counts)):
+        b = _auroc(unit, f"{score}:{student(baseline, seed)}", weights, cache)
+        if count <= 0 or not np.isfinite(b):
+            continue
+        value += count * (teacher_auroc - b)
+        used += count
+    return value / used if used > 0 else float("nan")
 
 
 def teacher_preference_null(unit: ExUnit, members: list[str], weights: np.ndarray,
@@ -220,21 +311,55 @@ def calendar_overlap(units: list[ExUnit]) -> pd.DataFrame:
 
 def cluster_bootstrap_table(units: list[ExUnit], statistic, n_clusters: int, n_boot: int = 300,
                             seed: int = 2022, alpha: float = 0.05, progress=None) -> dict[str, float]:
-    """Pooled mean of `statistic(unit, weights)` over units, with a day x service cluster bootstrap.
+    """Pooled mean of `statistic(unit, weights, seed_counts)` over units, resampling day x service
+    clusters and training seeds exactly as `pooled_bootstrap` does in the frozen code.
 
-    Seeds are averaged inside `statistic`; this resamples clusters only, which is the cheaper half of
-    the frozen procedure and adequate for exploratory intervals.
+    The draws are generated in the frozen order - clusters first, then one seed resample per start
+    date - so that an exploratory interval is built the same way as the confirmatory ones and the two
+    can be compared. With the same units, seed and number of resamples, the H1 replication row
+    reproduces the confirmatory interval as well as the point estimate.
     """
-    point = float(np.nanmean([statistic(u, np.ones(len(u))) for u in units]))
+    return cluster_bootstrap_many(units, {"value": statistic}, n_clusters, n_boot, seed,
+                                  alpha, progress)["value"]
+
+
+def cluster_bootstrap_many(units: list[ExUnit], statistics: dict, n_clusters: int, n_boot: int = 300,
+                           seed: int = 2022, alpha: float = 0.05, progress=None) -> dict[str, dict]:
+    """Bootstrap many statistics together, resampling once per draw instead of once per statistic.
+
+    Every statistic sees the same resampled clusters and seeds, which is both far cheaper and the
+    way `pooled_bootstrap` works in the frozen code: one table per draw, all components derived
+    from it. Statistics are called as `fn(unit, weights, seed_counts, cache)`, where `cache` is
+    cleared between draws and lets them share repeated AUROC computations; a statistic that does not
+    want it may accept and ignore the argument.
+    """
+    starts = sorted({u.start for u in units})
+    seeds_by_start = {s: next(u.seeds for u in units if u.start == s) for s in starts}
+    ones = {s: np.ones(len(v)) for s, v in seeds_by_start.items()}
+
+    def pooled(weights_of, seed_counts_of, cache) -> dict[str, float]:
+        return {name: float(np.nanmean([fn(u, weights_of(u), seed_counts_of(u), cache) for u in units]))
+                for name, fn in statistics.items()}
+
+    point = pooled(lambda u: np.ones(len(u)), lambda u: ones[u.start], {})
     rng = np.random.default_rng(seed)
-    draws = np.empty(n_boot)
+    draws = {name: np.empty(n_boot) for name in statistics}
     for b in range(n_boot):
         counts = np.bincount(rng.integers(0, n_clusters, size=n_clusters), minlength=n_clusters)
-        draws[b] = np.nanmean([statistic(u, counts[u.cluster]) for u in units])
+        seed_counts = {s: np.bincount(rng.integers(0, len(v), size=len(v)), minlength=len(v))
+                       for s, v in seeds_by_start.items()}
+        values = pooled(lambda u: counts[u.cluster], lambda u: seed_counts[u.start], {})
+        for name, value in values.items():
+            draws[name][b] = value
         if progress and (b + 1) % max(1, n_boot // 5) == 0:
             progress(f"    bootstrap {b + 1}/{n_boot}")
-    finite = draws[np.isfinite(draws)]
-    low, high = np.quantile(finite, [alpha / 2, 1 - alpha / 2]) if len(finite) else (np.nan, np.nan)
-    return {"estimate": point, "ci_low": float(low), "ci_high": float(high),
-            "p_one_sided": float((1 + np.sum(finite <= 0)) / (len(finite) + 1)) if len(finite) else float("nan"),
-            "n_boot": int(len(finite))}
+
+    out = {}
+    for name, series in draws.items():
+        finite = series[np.isfinite(series)]
+        low, high = np.quantile(finite, [alpha / 2, 1 - alpha / 2]) if len(finite) else (np.nan, np.nan)
+        out[name] = {"estimate": point[name], "ci_low": float(low), "ci_high": float(high),
+                     "p_one_sided": (float((1 + np.sum(finite <= 0)) / (len(finite) + 1))
+                                     if len(finite) else float("nan")),
+                     "n_boot": int(len(finite))}
+    return out

@@ -1,0 +1,149 @@
+[12:49:38] Feature-space open-set scores; device cuda; start week 37
+[12:49:38] Loading cached arrays from C:\datasets\cache\tls-year22_S_be7560e0c3ee
+[12:49:40]   test W-2022-42-45: loading cached window
+[12:49:40]   test W-2022-46-49: loading cached window
+[12:49:40]   test W-2022-51-51: loading cached window
+[12:49:41] Evaluation sets: val (254,382), test_w42-45 (200,000), test_w46-49 (200,000), test_w51-51 (143,579)
+[12:49:41] Scoring 27 models: teacherA_0, teacherA_1, teacherA_2, teacherA_3, teacherA_4, teacherB, student_direct_s0, student_direct_s1, student_direct_s2, student_ls_s0, student_ls_s1, student_ls_s2, student_kdA_s0, student_kdA_s1, student_kdA_s2, student_kdB_s0, student_kdB_s1, student_kdB_s2, student_kdA4_s0, student_kdA4_s1, student_kdA4_s2, student_kdB4_s0, student_kdB4_s1, student_kdB4_s2, student_enddA_s0, student_enddA_s1, student_enddA_s2
+[12:51:09]   teacherA_0: 600-d features, 89s
+[12:52:35]   teacherA_1: 600-d features, 86s
+[12:54:03]   teacherA_2: 600-d features, 88s
+[12:55:32]   teacherA_3: 600-d features, 88s
+[12:57:00]   teacherA_4: 600-d features, 88s
+[13:00:22]   teacherB: 1200-d features, 203s
+[13:00:47]   student_direct_s0: 128-d features, 25s
+[13:01:11]   student_direct_s1: 128-d features, 24s
+[13:01:36]   student_direct_s2: 128-d features, 25s
+[13:02:00]   student_ls_s0: 128-d features, 24s
+[13:02:25]   student_ls_s1: 128-d features, 24s
+[13:02:49]   student_ls_s2: 128-d features, 24s
+[13:03:14]   student_kdA_s0: 128-d features, 25s
+[13:03:38]   student_kdA_s1: 128-d features, 24s
+[13:04:03]   student_kdA_s2: 128-d features, 24s
+[13:04:27]   student_kdB_s0: 128-d features, 24s
+[13:04:51]   student_kdB_s1: 128-d features, 24s
+[13:05:15]   student_kdB_s2: 128-d features, 24s
+[13:05:40]   student_kdA4_s0: 128-d features, 24s
+[13:06:04]   student_kdA4_s1: 128-d features, 24s
+[13:06:28]   student_kdA4_s2: 128-d features, 24s
+[13:06:52]   student_kdB4_s0: 128-d features, 24s
+[13:07:17]   student_kdB4_s1: 128-d features, 24s
+[13:07:41]   student_kdB4_s2: 128-d features, 24s
+[13:08:05]   student_enddA_s0: 128-d features, 24s
+[13:08:29]   student_enddA_s1: 128-d features, 24s
+[13:08:54]   student_enddA_s2: 128-d features, 25s
+[13:08:56] AUROC by feature-space score (all flows, all unknowns):
+                               auroc_maha  auroc_knnfeat
+split       model                                       
+test_w42-45 student_direct_s0      0.7608         0.8099
+            student_direct_s1      0.7514         0.8095
+            student_direct_s2      0.7531         0.8083
+            student_enddA_s0       0.8385         0.8508
+            student_enddA_s1       0.8270         0.8418
+            student_enddA_s2       0.8315         0.8441
+            student_kdA4_s0        0.8317         0.8397
+            student_kdA4_s1        0.8286         0.8334
+            student_kdA4_s2        0.8289         0.8325
+            student_kdA_s0         0.7604         0.8093
+            student_kdA_s1         0.7596         0.8095
+            student_kdA_s2         0.7655         0.8072
+            student_kdB4_s0        0.8119         0.8237
+            student_kdB4_s1        0.8163         0.8172
+            student_kdB4_s2        0.8178         0.8223
+            student_kdB_s0         0.7534         0.8044
+            student_kdB_s1         0.7563         0.8107
+            student_kdB_s2         0.7712         0.8082
+            student_ls_s0          0.8344         0.8410
+            student_ls_s1          0.8386         0.8449
+            student_ls_s2          0.8370         0.8428
+            teacherA               0.8191         0.8392
+            teacherA_0             0.8073         0.8343
+            teacherA_1             0.8077         0.8334
+            teacherA_2             0.8060         0.8343
+            teacherA_3             0.8052         0.8308
+            teacherA_4             0.8113         0.8359
+            teacherB               0.7979         0.8413
+test_w46-49 student_direct_s0      0.7374         0.7857
+            student_direct_s1      0.7242         0.7850
+            student_direct_s2      0.7287         0.7864
+            student_enddA_s0       0.8196         0.8361
+            student_enddA_s1       0.8071         0.8236
+            student_enddA_s2       0.8104         0.8277
+            student_kdA4_s0        0.8102         0.8174
+            student_kdA4_s1        0.8056         0.8106
+            student_kdA4_s2        0.8050         0.8080
+            student_kdA_s0         0.7370         0.7836
+            student_kdA_s1         0.7323         0.7869
+            student_kdA_s2         0.7432         0.7822
+            student_kdB4_s0        0.7892         0.7987
+            student_kdB4_s1        0.7928         0.7913
+            student_kdB4_s2        0.7920         0.7964
+            student_kdB_s0         0.7297         0.7802
+            student_kdB_s1         0.7317         0.7875
+            student_kdB_s2         0.7485         0.7827
+            student_ls_s0          0.8141         0.8224
+            student_ls_s1          0.8194         0.8308
+            student_ls_s2          0.8170         0.8234
+            teacherA               0.7941         0.8126
+            teacherA_0             0.7815         0.8076
+            teacherA_1             0.7832         0.8073
+            teacherA_2             0.7776         0.8064
+            teacherA_3             0.7808         0.8013
+            teacherA_4             0.7893         0.8106
+            teacherB               0.7666         0.8109
+test_w51-51 student_direct_s0      0.7452         0.7813
+            student_direct_s1      0.7197         0.7754
+            student_direct_s2      0.7293         0.7784
+            student_enddA_s0       0.8004         0.8203
+            student_enddA_s1       0.7918         0.8063
+            student_enddA_s2       0.7944         0.8085
+            student_kdA4_s0        0.7977         0.8030
+            student_kdA4_s1        0.7990         0.7986
+            student_kdA4_s2        0.8017         0.7981
+            student_kdA_s0         0.7285         0.7712
+            student_kdA_s1         0.7272         0.7768
+            student_kdA_s2         0.7376         0.7680
+            student_kdB4_s0        0.7844         0.7889
+            student_kdB4_s1        0.7856         0.7799
+            student_kdB4_s2        0.7827         0.7835
+            student_kdB_s0         0.7242         0.7710
+            student_kdB_s1         0.7335         0.7783
+            student_kdB_s2         0.7465         0.7725
+            student_ls_s0          0.8026         0.8084
+            student_ls_s1          0.8090         0.8152
+            student_ls_s2          0.8074         0.8065
+            teacherA               0.7914         0.8067
+            teacherA_0             0.7778         0.7996
+            teacherA_1             0.7827         0.8004
+            teacherA_2             0.7750         0.8001
+            teacherA_3             0.7815         0.7982
+            teacherA_4             0.7920         0.8096
+            teacherB               0.7603         0.7965
+val         student_direct_s0      0.7405         0.8330
+            student_direct_s1      0.7552         0.8402
+            student_direct_s2      0.7324         0.8278
+            student_enddA_s0       0.7892         0.8339
+            student_enddA_s1       0.7781         0.8253
+            student_enddA_s2       0.7822         0.8284
+            student_kdA4_s0        0.8186         0.8410
+            student_kdA4_s1        0.8002         0.8336
+            student_kdA4_s2        0.8037         0.8346
+            student_kdA_s0         0.7310         0.8359
+            student_kdA_s1         0.7421         0.8372
+            student_kdA_s2         0.7562         0.8391
+            student_kdB4_s0        0.7961         0.8268
+            student_kdB4_s1        0.7844         0.8208
+            student_kdB4_s2        0.7881         0.8227
+            student_kdB_s0         0.7337         0.8292
+            student_kdB_s1         0.7356         0.8355
+            student_kdB_s2         0.7422         0.8378
+            student_ls_s0          0.7971         0.8286
+            student_ls_s1          0.7881         0.8241
+            student_ls_s2          0.7901         0.8269
+            teacherA               0.8148         0.8506
+            teacherA_0             0.7943         0.8389
+            teacherA_1             0.7972         0.8402
+            teacherA_2             0.8160         0.8548
+            teacherA_3             0.8125         0.8510
+            teacherA_4             0.7955         0.8369
+            teacherB               0.7811         0.8495

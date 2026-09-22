@@ -4,6 +4,10 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# Regenerable model artefacts too large for a git host (GitHub rejects files over 100 MB).
+# `scripts/10_cpu_cost.py` rebuilds xgb.json from the cached arrays whenever it is run.
+results/**/xgb.json
+
 # Laptop smoke runs (meaningless numbers)
 results/**/*_smoke/
 results/**/*_stopped/

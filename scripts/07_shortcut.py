@@ -29,6 +29,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import torch
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -93,10 +94,16 @@ def main() -> None:
 
     rows, reliance = [], []
 
+    models_dir = run_dir / "models"
+    models_dir.mkdir(exist_ok=True)
+
     def train(name, architecture, dim, train_arrays, val_arrays, seed, objective=None):
         model = build_model(architecture, num_classes, dim, student_width=args.student_width)
         epochs = args.student_epochs if architecture == "student" else args.epochs
         train_classifier(model, train_arrays, val_arrays, replace(base, seed=seed, epochs=epochs), log, name, objective)
+        # Keep every checkpoint: the first version of this experiment discarded them, so re-analysing
+        # it at another student size meant retraining the teachers from scratch.
+        torch.save(model.state_dict(), models_dir / f"{name}.pt")
         return model
 
     def report(name, rho, seed, setting, arrays, logits):

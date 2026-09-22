@@ -1,0 +1,11 @@
+hypothesis,p_iut,p_holm,supported
+H1,0.000999000999000999,0.008991008991008992,True
+H2[energy],1.0,1.0,False
+H2[msp],1.0,1.0,False
+H3[energy],0.993006993006993,1.0,False
+H3[msp],1.0,1.0,False
+H4a,0.9193305994568942,1.0,False
+H4b1,0.00047310398908084717,0.0047310398908084715,True
+H4b2,0.9983896885403108,1.0,False
+H5[energy],1.0,1.0,False
+H5[msp],1.0,1.0,False
