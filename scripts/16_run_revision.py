@@ -92,6 +92,11 @@ STEPS = [
     ("cpu_retune", "xgboost", cpu_command),
     ("exploratory", "analysis", analysis_command),
     ("tables", "analysis", tables_command),
+    # Deliberately last. Feature distillation is the arm the exploratory feature-space result makes
+    # pressing, but its training code is new and its loss weight is untuned, so it runs after the
+    # results above are safely on disk. Re-run this script with `--only featurekd` to repeat it, and
+    # `--only analysis --redo exploratory tables` afterwards to fold it into the tables.
+    ("featurekd", "featurekd", lambda: track_a(11, "kdF", [])),
 ]
 
 

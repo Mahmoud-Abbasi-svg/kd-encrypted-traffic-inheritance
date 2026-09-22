@@ -47,7 +47,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from kdtraffic.cli import RunLogger, add_data_args, make_run_dir, spec_from_args, write_json  # noqa: E402
 from kdtraffic.data import build_bundle, evaluation_windows, load_window, sequence_keys  # noqa: E402
 from kdtraffic.distill import (DirichletProxyAccumulator, HardLabelCE, HintonKD,  # noqa: E402
-                               ProxyDirichletKL, softmax_chunked)
+                               ProxyDirichletKL, SimilarityPreservingKD, softmax_chunked)
 from kdtraffic.evaluation import Outputs, ensemble_log_probs, from_ensemble, from_logits, report_rows  # noqa: E402
 from kdtraffic.inheritance import inheritance_row  # noqa: E402
 from kdtraffic.metrics import fit_temperature  # noqa: E402
@@ -57,8 +57,9 @@ from kdtraffic.train import TrainConfig, predict_logits, resolve_device, train_c
 
 CONDITIONS = ("direct", "ls", "kdA", "kdB", "enddA", "kdA4", "kdB4",
               # added in revision, exploratory: single-teacher swaps, a different-family teacher,
-              # and a label-copying anchor. All use the conventional temperature.
-              "kdM0", "kdM1", "kdC", "hardA")
+              # a label-copying anchor, and feature distillation. All use the conventional
+              # temperature. kdF distils member 0's representation, kdM0 its outputs.
+              "kdM0", "kdM1", "kdC", "hardA", "kdF")
 HPARAMS_FILE = PROJECT_ROOT / "configs" / "student_hparams.json"  # written by scripts/09_tune_students.py
 
 
@@ -137,6 +138,8 @@ def main() -> None:
                         help="teacherC_transformer.pt from an earlier run with the same data settings")
     parser.add_argument("--endd-max-precision", type=float, default=1e4,
                         help="upper bound on the proxy Dirichlet precision")
+    parser.add_argument("--sp-beta", type=float, default=100.0,
+                        help="weight of the similarity-preserving feature loss in kdF (untuned)")
     parser.add_argument("--window-known-size", default="100000")
     parser.add_argument("--window-unknown-size", default="100000")
     parser.add_argument("--preregistration", type=Path, default=PROJECT_ROOT / "docs" / "preregistration.md")
@@ -288,6 +291,9 @@ def main() -> None:
     needed_members = {int(c[-1]): temperature_of[c] for c in conditions if c.startswith("kdM")}
     needed_c = {temperature_of[c] for c in conditions if c == "kdC"}
     want_hard_labels = "hardA" in conditions
+    # kdF distils the representation of member 0, the same teacher kdM0 distils the outputs of, so
+    # the two arms differ only in what is transferred
+    want_features = "kdF" in conditions
     if needed_members and max(needed_members) >= len(members):
         raise SystemExit(f"Conditions {sorted(needed_members)} need at least {max(needed_members) + 1} "
                          f"ensemble members, but only {len(members)} were loaded")
@@ -299,8 +305,16 @@ def main() -> None:
     targets_members: dict[int, np.ndarray] = {}
     mean_probs = np.zeros((len(bundle.train), num_classes), dtype=np.float32) if want_hard_labels else None
     proxy = DirichletProxyAccumulator(len(bundle.train), num_classes) if "enddA" in conditions else None
+    member_features: np.ndarray | None = None
     for i, model in enumerate(members):
-        logits = predict_logits(model, bundle.train, device, amp)
+        if i == 0 and want_features:
+            # float16 keeps the training window's 600-d features near 2 GB; the objective moves one
+            # batch at a time to the GPU, where they would not fit beside the student
+            logits, feats = predict_logits(model, bundle.train, device, amp, with_features=True)
+            member_features = feats.astype(np.float16)
+            del feats
+        else:
+            logits = predict_logits(model, bundle.train, device, amp)
         for t in needed:
             targets_a[t] += softmax_chunked(logits, t) / len(members)
         if want_hard_labels:
@@ -375,6 +389,7 @@ def main() -> None:
         "kdM1": (student_base, member_kd(1)),
         "kdC": (student_base, kd(targets_c, args.kd_temperature_alt)),
         "hardA": (student_base, lambda: HardLabelCE(hard_labels, device)),
+        "kdF": (student_base, lambda: SimilarityPreservingKD(member_features, args.sp_beta, device)),
     }
     for seed in range(args.seeds):
         for condition in conditions:

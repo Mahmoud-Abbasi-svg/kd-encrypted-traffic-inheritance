@@ -95,6 +95,9 @@ def train_classifier(model: nn.Module, train: Arrays, val: Arrays, cfg: TrainCon
     generator = torch.Generator().manual_seed(cfg.seed)
     val_known = val.subset(np.flatnonzero(val.y >= 0))
 
+    # A feature-distillation objective needs the penultimate activations as well as the logits and
+    # declares so with `needs_features`; nothing else changes for the other objectives.
+    wants_features = getattr(objective, "needs_features", False)
     best_score, best_state, best_epoch, history = float("inf"), None, 0, []
     started = time.time()
     for epoch in range(1, cfg.epochs + 1):
@@ -105,9 +108,17 @@ def train_classifier(model: nn.Module, train: Arrays, val: Arrays, cfg: TrainCon
         for step in range(steps_per_epoch):
             idx = order[step * batch_size:(step + 1) * batch_size]
             with autocast(device, cfg.amp):
-                logits = model(ppi[idx], stats[idx])
+                if wants_features:
+                    # only a feature-distillation objective takes this path; every other condition
+                    # calls the model exactly as before, so their results are unaffected
+                    hidden = model.forward_features(ppi[idx], stats[idx])
+                    logits = model.forward_head(hidden)
+                else:
+                    logits = model(ppi[idx], stats[idx])
             if objective is None:
                 loss = loss_fn(logits.float(), labels[idx])
+            elif wants_features:
+                loss = objective(logits.float(), labels[idx], idx, hidden.float())
             else:
                 loss = objective(logits.float(), labels[idx], idx)
             optimizer.zero_grad(set_to_none=True)

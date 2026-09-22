@@ -1,0 +1,223 @@
+[14:37:31] Run directory: results\track_a_exploratory\20260922-143731_S_train37-40; device cuda; start week 37
+[14:37:31] Student settings: KD T=1 (alt T=4), alpha=0.9; label smoothing 0.05; 20 epochs (teachers 10); conditions kdM0,kdM1,hardA (from student_hparams.json)
+[14:37:31] Loading cached arrays from C:\datasets\cache\tls-year22_S_be7560e0c3ee
+[14:37:33]   test W-2022-42-45: loading cached window
+[14:37:33]   test W-2022-46-49: loading cached window
+[14:37:33]   test W-2022-51-51: loading cached window
+[14:37:34] Evaluation sets: val (254,382), test_w42-45 (200,000), test_w46-49 (200,000), test_w51-51 (143,579)
+[14:37:34] Loaded teacherA_0 from results\track_a\20260918-132337_S_train37-40\models\teacherA_0.pt
+[14:37:34] Loaded teacherA_1 from results\track_a\20260918-132337_S_train37-40\models\teacherA_1.pt
+[14:37:34] Loaded teacherA_2 from results\track_a\20260918-132337_S_train37-40\models\teacherA_2.pt
+[14:37:34] Loaded teacherA_3 from results\track_a\20260918-132337_S_train37-40\models\teacherA_3.pt
+[14:37:34] Loaded teacherA_4 from results\track_a\20260918-132337_S_train37-40\models\teacherA_4.pt
+[14:37:34] Loaded teacherB_wide from results\track_a\20260918-132337_S_train37-40\models\teacherB_wide.pt
+[14:37:34] Teacher targets on the training set (A at T [], B at T [], members [0, 1] at T [4.0], A argmax labels)
+[14:39:16] Evaluating teachers
+[14:41:59] Training student_kdM0_s0 (student, 101,190 parameters, seed 1000)
+[14:42:13] student_kdM0_s0 epoch 1/20: train_loss=17.97, seconds=10.2, val_loss=0.993, val_macro_f1=0.6633
+[14:42:22] student_kdM0_s0 epoch 2/20: train_loss=4.816, seconds=9.5, val_loss=0.5576, val_macro_f1=0.8165
+[14:42:32] student_kdM0_s0 epoch 3/20: train_loss=3.301, seconds=9.3, val_loss=0.4686, val_macro_f1=0.8487
+[14:42:42] student_kdM0_s0 epoch 4/20: train_loss=2.819, seconds=9.5, val_loss=0.4, val_macro_f1=0.8678
+[14:42:52] student_kdM0_s0 epoch 5/20: train_loss=2.568, seconds=9.5, val_loss=0.3876, val_macro_f1=0.8731
+[14:43:02] student_kdM0_s0 epoch 6/20: train_loss=2.408, seconds=9.6, val_loss=0.3706, val_macro_f1=0.8791
+[14:43:12] student_kdM0_s0 epoch 7/20: train_loss=2.29, seconds=10, val_loss=0.3404, val_macro_f1=0.8849
+[14:43:23] student_kdM0_s0 epoch 8/20: train_loss=2.199, seconds=10.3, val_loss=0.3357, val_macro_f1=0.8879
+[14:43:34] student_kdM0_s0 epoch 9/20: train_loss=2.119, seconds=10.4, val_loss=0.3166, val_macro_f1=0.8934
+[14:43:43] student_kdM0_s0 epoch 10/20: train_loss=2.055, seconds=9, val_loss=0.3108, val_macro_f1=0.8963
+[14:43:53] student_kdM0_s0 epoch 11/20: train_loss=1.997, seconds=8.9, val_loss=0.3049, val_macro_f1=0.8968
+[14:44:01] student_kdM0_s0 epoch 12/20: train_loss=1.947, seconds=8.4, val_loss=0.3014, val_macro_f1=0.9003
+[14:44:11] student_kdM0_s0 epoch 13/20: train_loss=1.906, seconds=8.8, val_loss=0.2949, val_macro_f1=0.8999
+[14:44:20] student_kdM0_s0 epoch 14/20: train_loss=1.866, seconds=8.5, val_loss=0.2912, val_macro_f1=0.901
+[14:44:30] student_kdM0_s0 epoch 15/20: train_loss=1.834, seconds=9.7, val_loss=0.2855, val_macro_f1=0.9038
+[14:44:40] student_kdM0_s0 epoch 16/20: train_loss=1.807, seconds=9.7, val_loss=0.285, val_macro_f1=0.9044
+[14:44:49] student_kdM0_s0 epoch 17/20: train_loss=1.785, seconds=8.5, val_loss=0.2807, val_macro_f1=0.9051
+[14:44:59] student_kdM0_s0 epoch 18/20: train_loss=1.769, seconds=9.6, val_loss=0.2797, val_macro_f1=0.9051
+[14:45:10] student_kdM0_s0 epoch 19/20: train_loss=1.758, seconds=10.7, val_loss=0.279, val_macro_f1=0.9053
+[14:45:21] student_kdM0_s0 epoch 20/20: train_loss=1.752, seconds=11, val_loss=0.2794, val_macro_f1=0.9054
+[14:45:39] Training student_kdM1_s0 (student, 101,190 parameters, seed 1000)
+[14:45:49] student_kdM1_s0 epoch 1/20: train_loss=17.98, seconds=9.3, val_loss=0.9665, val_macro_f1=0.6695
+[14:45:59] student_kdM1_s0 epoch 2/20: train_loss=4.758, seconds=9.7, val_loss=0.5361, val_macro_f1=0.8242
+[14:46:09] student_kdM1_s0 epoch 3/20: train_loss=3.229, seconds=9.3, val_loss=0.4428, val_macro_f1=0.8553
+[14:46:19] student_kdM1_s0 epoch 4/20: train_loss=2.75, seconds=9.3, val_loss=0.3911, val_macro_f1=0.8685
+[14:46:29] student_kdM1_s0 epoch 5/20: train_loss=2.499, seconds=9.4, val_loss=0.3529, val_macro_f1=0.8794
+[14:46:38] student_kdM1_s0 epoch 6/20: train_loss=2.34, seconds=9.4, val_loss=0.3379, val_macro_f1=0.8852
+[14:46:48] student_kdM1_s0 epoch 7/20: train_loss=2.224, seconds=9.4, val_loss=0.3224, val_macro_f1=0.8887
+[14:46:58] student_kdM1_s0 epoch 8/20: train_loss=2.133, seconds=9.8, val_loss=0.3149, val_macro_f1=0.8896
+[14:47:09] student_kdM1_s0 epoch 9/20: train_loss=2.058, seconds=10.4, val_loss=0.3049, val_macro_f1=0.8935
+[14:47:21] student_kdM1_s0 epoch 10/20: train_loss=1.994, seconds=11, val_loss=0.3018, val_macro_f1=0.8945
+[14:47:31] student_kdM1_s0 epoch 11/20: train_loss=1.94, seconds=10.3, val_loss=0.2914, val_macro_f1=0.8984
+[14:47:42] student_kdM1_s0 epoch 12/20: train_loss=1.891, seconds=9.7, val_loss=0.2828, val_macro_f1=0.9013
+[14:47:53] student_kdM1_s0 epoch 13/20: train_loss=1.85, seconds=10.6, val_loss=0.2762, val_macro_f1=0.9036
+[14:48:04] student_kdM1_s0 epoch 14/20: train_loss=1.814, seconds=10.8, val_loss=0.272, val_macro_f1=0.9044
+[14:48:13] student_kdM1_s0 epoch 15/20: train_loss=1.782, seconds=8.8, val_loss=0.2699, val_macro_f1=0.9046
+[14:48:25] student_kdM1_s0 epoch 16/20: train_loss=1.756, seconds=11.1, val_loss=0.2671, val_macro_f1=0.9046
+[14:48:38] student_kdM1_s0 epoch 17/20: train_loss=1.733, seconds=13.3, val_loss=0.2659, val_macro_f1=0.9058
+[14:48:47] student_kdM1_s0 epoch 18/20: train_loss=1.717, seconds=8.8, val_loss=0.2647, val_macro_f1=0.9061
+[14:48:56] student_kdM1_s0 epoch 19/20: train_loss=1.706, seconds=8.6, val_loss=0.2637, val_macro_f1=0.9063
+[14:49:05] student_kdM1_s0 epoch 20/20: train_loss=1.7, seconds=8.4, val_loss=0.2626, val_macro_f1=0.9063
+[14:49:19] Training student_hardA_s0 (student, 101,190 parameters, seed 1000)
+[14:49:27] student_hardA_s0 epoch 1/20: train_loss=1.951, seconds=7.6, val_loss=0.6386, val_macro_f1=0.7468
+[14:49:35] student_hardA_s0 epoch 2/20: train_loss=0.4703, seconds=7.4, val_loss=0.4066, val_macro_f1=0.8424
+[14:49:44] student_hardA_s0 epoch 3/20: train_loss=0.3219, seconds=8.9, val_loss=0.3427, val_macro_f1=0.8696
+[14:49:54] student_hardA_s0 epoch 4/20: train_loss=0.2676, seconds=9.6, val_loss=0.2984, val_macro_f1=0.8856
+[14:50:03] student_hardA_s0 epoch 5/20: train_loss=0.2372, seconds=9, val_loss=0.2751, val_macro_f1=0.8947
+[14:50:12] student_hardA_s0 epoch 6/20: train_loss=0.2159, seconds=8.2, val_loss=0.2638, val_macro_f1=0.8994
+[14:50:20] student_hardA_s0 epoch 7/20: train_loss=0.1994, seconds=8, val_loss=0.2536, val_macro_f1=0.9036
+[14:50:29] student_hardA_s0 epoch 8/20: train_loss=0.1856, seconds=8.1, val_loss=0.2416, val_macro_f1=0.9099
+[14:50:38] student_hardA_s0 epoch 9/20: train_loss=0.1727, seconds=8.8, val_loss=0.229, val_macro_f1=0.913
+[14:50:46] student_hardA_s0 epoch 10/20: train_loss=0.1629, seconds=7.4, val_loss=0.2218, val_macro_f1=0.9185
+[14:50:54] student_hardA_s0 epoch 11/20: train_loss=0.1528, seconds=7.4, val_loss=0.2139, val_macro_f1=0.9206
+[14:51:03] student_hardA_s0 epoch 12/20: train_loss=0.1431, seconds=8.7, val_loss=0.2083, val_macro_f1=0.9227
+[14:51:11] student_hardA_s0 epoch 13/20: train_loss=0.1356, seconds=7.4, val_loss=0.2032, val_macro_f1=0.9252
+[14:51:19] student_hardA_s0 epoch 14/20: train_loss=0.1282, seconds=7.3, val_loss=0.2013, val_macro_f1=0.9269
+[14:51:26] student_hardA_s0 epoch 15/20: train_loss=0.1217, seconds=7.4, val_loss=0.1967, val_macro_f1=0.9284
+[14:51:34] student_hardA_s0 epoch 16/20: train_loss=0.1157, seconds=7.3, val_loss=0.194, val_macro_f1=0.9308
+[14:51:42] student_hardA_s0 epoch 17/20: train_loss=0.1113, seconds=7.4, val_loss=0.1936, val_macro_f1=0.9305
+[14:51:50] student_hardA_s0 epoch 18/20: train_loss=0.1078, seconds=7.4, val_loss=0.1917, val_macro_f1=0.9318
+[14:51:57] student_hardA_s0 epoch 19/20: train_loss=0.1057, seconds=7.3, val_loss=0.1918, val_macro_f1=0.9319
+[14:52:05] student_hardA_s0 epoch 20/20: train_loss=0.1045, seconds=7.3, val_loss=0.1912, val_macro_f1=0.9321
+[14:52:21] Training student_kdM0_s1 (student, 101,190 parameters, seed 1010)
+[14:52:29] student_kdM0_s1 epoch 1/20: train_loss=17.7, seconds=7.7, val_loss=0.9828, val_macro_f1=0.6643
+[14:52:37] student_kdM0_s1 epoch 2/20: train_loss=4.681, seconds=7.7, val_loss=0.5437, val_macro_f1=0.8237
+[14:52:46] student_kdM0_s1 epoch 3/20: train_loss=3.19, seconds=7.8, val_loss=0.4351, val_macro_f1=0.8542
+[14:52:54] student_kdM0_s1 epoch 4/20: train_loss=2.718, seconds=7.7, val_loss=0.3893, val_macro_f1=0.8703
+[14:53:02] student_kdM0_s1 epoch 5/20: train_loss=2.478, seconds=7.7, val_loss=0.3666, val_macro_f1=0.8787
+[14:53:10] student_kdM0_s1 epoch 6/20: train_loss=2.325, seconds=7.8, val_loss=0.3315, val_macro_f1=0.8843
+[14:53:18] student_kdM0_s1 epoch 7/20: train_loss=2.203, seconds=7.7, val_loss=0.3277, val_macro_f1=0.8884
+[14:53:26] student_kdM0_s1 epoch 8/20: train_loss=2.118, seconds=7.6, val_loss=0.3207, val_macro_f1=0.893
+[14:53:34] student_kdM0_s1 epoch 9/20: train_loss=2.041, seconds=7.8, val_loss=0.2995, val_macro_f1=0.8954
+[14:53:42] student_kdM0_s1 epoch 10/20: train_loss=1.981, seconds=7.7, val_loss=0.3033, val_macro_f1=0.898
+[14:53:50] student_kdM0_s1 epoch 11/20: train_loss=1.924, seconds=7.7, val_loss=0.2865, val_macro_f1=0.9006
+[14:53:58] student_kdM0_s1 epoch 12/20: train_loss=1.878, seconds=7.6, val_loss=0.2824, val_macro_f1=0.9028
+[14:54:06] student_kdM0_s1 epoch 13/20: train_loss=1.837, seconds=7.6, val_loss=0.2807, val_macro_f1=0.9042
+[14:54:14] student_kdM0_s1 epoch 14/20: train_loss=1.799, seconds=7.6, val_loss=0.2731, val_macro_f1=0.9044
+[14:54:22] student_kdM0_s1 epoch 15/20: train_loss=1.768, seconds=7.5, val_loss=0.2723, val_macro_f1=0.9054
+[14:54:30] student_kdM0_s1 epoch 16/20: train_loss=1.744, seconds=7.7, val_loss=0.2691, val_macro_f1=0.9057
+[14:54:38] student_kdM0_s1 epoch 17/20: train_loss=1.722, seconds=7.6, val_loss=0.2688, val_macro_f1=0.9064
+[14:54:46] student_kdM0_s1 epoch 18/20: train_loss=1.706, seconds=7.8, val_loss=0.2664, val_macro_f1=0.9072
+[14:54:55] student_kdM0_s1 epoch 19/20: train_loss=1.695, seconds=7.7, val_loss=0.2664, val_macro_f1=0.9072
+[14:55:03] student_kdM0_s1 epoch 20/20: train_loss=1.69, seconds=7.7, val_loss=0.2659, val_macro_f1=0.9078
+[14:55:16] Training student_kdM1_s1 (student, 101,190 parameters, seed 1010)
+[14:55:25] student_kdM1_s1 epoch 1/20: train_loss=18.12, seconds=7.8, val_loss=1.03, val_macro_f1=0.6604
+[14:55:33] student_kdM1_s1 epoch 2/20: train_loss=4.893, seconds=7.6, val_loss=0.5821, val_macro_f1=0.8172
+[14:55:41] student_kdM1_s1 epoch 3/20: train_loss=3.36, seconds=7.7, val_loss=0.4648, val_macro_f1=0.8535
+[14:55:49] student_kdM1_s1 epoch 4/20: train_loss=2.865, seconds=7.7, val_loss=0.4155, val_macro_f1=0.8687
+[14:55:57] student_kdM1_s1 epoch 5/20: train_loss=2.614, seconds=8.1, val_loss=0.3768, val_macro_f1=0.8736
+[14:56:06] student_kdM1_s1 epoch 6/20: train_loss=2.452, seconds=8.2, val_loss=0.3626, val_macro_f1=0.8807
+[14:56:14] student_kdM1_s1 epoch 7/20: train_loss=2.329, seconds=7.8, val_loss=0.3427, val_macro_f1=0.8884
+[14:56:22] student_kdM1_s1 epoch 8/20: train_loss=2.235, seconds=7.5, val_loss=0.3328, val_macro_f1=0.8905
+[14:56:30] student_kdM1_s1 epoch 9/20: train_loss=2.155, seconds=7.7, val_loss=0.3213, val_macro_f1=0.8918
+[14:56:38] student_kdM1_s1 epoch 10/20: train_loss=2.091, seconds=7.7, val_loss=0.3174, val_macro_f1=0.8957
+[14:56:46] student_kdM1_s1 epoch 11/20: train_loss=2.03, seconds=7.7, val_loss=0.3034, val_macro_f1=0.8966
+[14:56:54] student_kdM1_s1 epoch 12/20: train_loss=1.98, seconds=7.7, val_loss=0.3021, val_macro_f1=0.8986
+[14:57:03] student_kdM1_s1 epoch 13/20: train_loss=1.937, seconds=7.7, val_loss=0.2952, val_macro_f1=0.901
+[14:57:11] student_kdM1_s1 epoch 14/20: train_loss=1.895, seconds=7.7, val_loss=0.2906, val_macro_f1=0.9031
+[14:57:19] student_kdM1_s1 epoch 15/20: train_loss=1.864, seconds=7.9, val_loss=0.285, val_macro_f1=0.9032
+[14:57:27] student_kdM1_s1 epoch 16/20: train_loss=1.835, seconds=7.5, val_loss=0.2821, val_macro_f1=0.9037
+[14:57:35] student_kdM1_s1 epoch 17/20: train_loss=1.813, seconds=7.6, val_loss=0.2834, val_macro_f1=0.9028
+[14:57:43] student_kdM1_s1 epoch 18/20: train_loss=1.797, seconds=7.7, val_loss=0.2819, val_macro_f1=0.9039
+[14:57:51] student_kdM1_s1 epoch 19/20: train_loss=1.785, seconds=7.7, val_loss=0.2809, val_macro_f1=0.9043
+[14:57:59] student_kdM1_s1 epoch 20/20: train_loss=1.778, seconds=7.6, val_loss=0.2806, val_macro_f1=0.9039
+[14:58:12] Training student_hardA_s1 (student, 101,190 parameters, seed 1010)
+[14:58:20] student_hardA_s1 epoch 1/20: train_loss=1.962, seconds=7.3, val_loss=0.6713, val_macro_f1=0.7354
+[14:58:28] student_hardA_s1 epoch 2/20: train_loss=0.484, seconds=7.3, val_loss=0.4152, val_macro_f1=0.8375
+[14:58:35] student_hardA_s1 epoch 3/20: train_loss=0.3349, seconds=7.3, val_loss=0.3377, val_macro_f1=0.8664
+[14:58:43] student_hardA_s1 epoch 4/20: train_loss=0.278, seconds=7.3, val_loss=0.3048, val_macro_f1=0.8825
+[14:58:51] student_hardA_s1 epoch 5/20: train_loss=0.2455, seconds=7.3, val_loss=0.2857, val_macro_f1=0.8895
+[14:58:58] student_hardA_s1 epoch 6/20: train_loss=0.2243, seconds=7.3, val_loss=0.2677, val_macro_f1=0.8966
+[14:59:06] student_hardA_s1 epoch 7/20: train_loss=0.2061, seconds=7.3, val_loss=0.2539, val_macro_f1=0.9027
+[14:59:14] student_hardA_s1 epoch 8/20: train_loss=0.1916, seconds=7.4, val_loss=0.2456, val_macro_f1=0.9068
+[14:59:22] student_hardA_s1 epoch 9/20: train_loss=0.1787, seconds=7.3, val_loss=0.2325, val_macro_f1=0.9092
+[14:59:29] student_hardA_s1 epoch 10/20: train_loss=0.1679, seconds=7.3, val_loss=0.2245, val_macro_f1=0.9149
+[14:59:37] student_hardA_s1 epoch 11/20: train_loss=0.1576, seconds=7.4, val_loss=0.2177, val_macro_f1=0.918
+[14:59:45] student_hardA_s1 epoch 12/20: train_loss=0.1483, seconds=7.3, val_loss=0.2202, val_macro_f1=0.9197
+[14:59:52] student_hardA_s1 epoch 13/20: train_loss=0.1402, seconds=7.3, val_loss=0.2122, val_macro_f1=0.9209
+[15:00:00] student_hardA_s1 epoch 14/20: train_loss=0.1319, seconds=7.4, val_loss=0.2094, val_macro_f1=0.9235
+[15:00:08] student_hardA_s1 epoch 15/20: train_loss=0.1257, seconds=7.3, val_loss=0.2042, val_macro_f1=0.9245
+[15:00:16] student_hardA_s1 epoch 16/20: train_loss=0.1202, seconds=7.3, val_loss=0.1996, val_macro_f1=0.9267
+[15:00:23] student_hardA_s1 epoch 17/20: train_loss=0.1155, seconds=7.3, val_loss=0.1981, val_macro_f1=0.9271
+[15:00:31] student_hardA_s1 epoch 18/20: train_loss=0.1121, seconds=7.3, val_loss=0.1982, val_macro_f1=0.9277
+[15:00:39] student_hardA_s1 epoch 19/20: train_loss=0.1094, seconds=7.3, val_loss=0.1964, val_macro_f1=0.9285
+[15:00:46] student_hardA_s1 epoch 20/20: train_loss=0.1085, seconds=7.3, val_loss=0.1965, val_macro_f1=0.9286
+[15:01:00] Training student_kdM0_s2 (student, 101,190 parameters, seed 1020)
+[15:01:08] student_kdM0_s2 epoch 1/20: train_loss=17.82, seconds=7.7, val_loss=0.9912, val_macro_f1=0.6661
+[15:01:16] student_kdM0_s2 epoch 2/20: train_loss=4.83, seconds=7.7, val_loss=0.5839, val_macro_f1=0.8172
+[15:01:24] student_kdM0_s2 epoch 3/20: train_loss=3.31, seconds=7.6, val_loss=0.4573, val_macro_f1=0.8487
+[15:01:32] student_kdM0_s2 epoch 4/20: train_loss=2.838, seconds=7.8, val_loss=0.4095, val_macro_f1=0.8637
+[15:01:42] student_kdM0_s2 epoch 5/20: train_loss=2.596, seconds=9, val_loss=0.3755, val_macro_f1=0.8735
+[15:01:51] student_kdM0_s2 epoch 6/20: train_loss=2.437, seconds=9.3, val_loss=0.3559, val_macro_f1=0.8823
+[15:02:01] student_kdM0_s2 epoch 7/20: train_loss=2.316, seconds=9.5, val_loss=0.346, val_macro_f1=0.8829
+[15:02:12] student_kdM0_s2 epoch 8/20: train_loss=2.224, seconds=9.8, val_loss=0.3327, val_macro_f1=0.8873
+[15:02:22] student_kdM0_s2 epoch 9/20: train_loss=2.145, seconds=10, val_loss=0.3347, val_macro_f1=0.8878
+[15:02:33] student_kdM0_s2 epoch 10/20: train_loss=2.079, seconds=10.2, val_loss=0.3203, val_macro_f1=0.8929
+[15:02:44] student_kdM0_s2 epoch 11/20: train_loss=2.016, seconds=10.8, val_loss=0.3195, val_macro_f1=0.8953
+[15:02:54] student_kdM0_s2 epoch 12/20: train_loss=1.968, seconds=10.1, val_loss=0.3057, val_macro_f1=0.8972
+[15:03:04] student_kdM0_s2 epoch 13/20: train_loss=1.923, seconds=9.6, val_loss=0.2958, val_macro_f1=0.8979
+[15:03:15] student_kdM0_s2 epoch 14/20: train_loss=1.885, seconds=9.9, val_loss=0.2936, val_macro_f1=0.8986
+[15:03:24] student_kdM0_s2 epoch 15/20: train_loss=1.852, seconds=8.9, val_loss=0.2889, val_macro_f1=0.901
+[15:03:33] student_kdM0_s2 epoch 16/20: train_loss=1.824, seconds=8.3, val_loss=0.2849, val_macro_f1=0.9025
+[15:03:41] student_kdM0_s2 epoch 17/20: train_loss=1.802, seconds=7.8, val_loss=0.2849, val_macro_f1=0.9032
+[15:03:49] student_kdM0_s2 epoch 18/20: train_loss=1.786, seconds=8, val_loss=0.2843, val_macro_f1=0.903
+[15:03:58] student_kdM0_s2 epoch 19/20: train_loss=1.775, seconds=8.2, val_loss=0.2834, val_macro_f1=0.9027
+[15:04:06] student_kdM0_s2 epoch 20/20: train_loss=1.769, seconds=8.2, val_loss=0.2824, val_macro_f1=0.9029
+[15:04:22] Training student_kdM1_s2 (student, 101,190 parameters, seed 1020)
+[15:04:32] student_kdM1_s2 epoch 1/20: train_loss=18.21, seconds=8.3, val_loss=0.988, val_macro_f1=0.6638
+[15:04:41] student_kdM1_s2 epoch 2/20: train_loss=4.825, seconds=8.6, val_loss=0.6027, val_macro_f1=0.8148
+[15:04:50] student_kdM1_s2 epoch 3/20: train_loss=3.319, seconds=8.2, val_loss=0.4629, val_macro_f1=0.8514
+[15:04:59] student_kdM1_s2 epoch 4/20: train_loss=2.837, seconds=8.6, val_loss=0.4282, val_macro_f1=0.8669
+[15:05:09] student_kdM1_s2 epoch 5/20: train_loss=2.58, seconds=9.5, val_loss=0.3823, val_macro_f1=0.877
+[15:05:19] student_kdM1_s2 epoch 6/20: train_loss=2.415, seconds=9.6, val_loss=0.352, val_macro_f1=0.884
+[15:05:29] student_kdM1_s2 epoch 7/20: train_loss=2.295, seconds=9.9, val_loss=0.3467, val_macro_f1=0.8856
+[15:05:41] student_kdM1_s2 epoch 8/20: train_loss=2.201, seconds=11.5, val_loss=0.3372, val_macro_f1=0.8892
+[15:05:51] student_kdM1_s2 epoch 9/20: train_loss=2.121, seconds=10.1, val_loss=0.3344, val_macro_f1=0.8908
+[15:06:02] student_kdM1_s2 epoch 10/20: train_loss=2.056, seconds=10.4, val_loss=0.313, val_macro_f1=0.8957
+[15:06:12] student_kdM1_s2 epoch 11/20: train_loss=1.998, seconds=9.1, val_loss=0.3062, val_macro_f1=0.8968
+[15:06:22] student_kdM1_s2 epoch 12/20: train_loss=1.946, seconds=9.8, val_loss=0.3009, val_macro_f1=0.8987
+[15:06:32] student_kdM1_s2 epoch 13/20: train_loss=1.902, seconds=9.7, val_loss=0.2889, val_macro_f1=0.9008
+[15:06:43] student_kdM1_s2 epoch 14/20: train_loss=1.864, seconds=10.6, val_loss=0.2876, val_macro_f1=0.9027
+[15:06:54] student_kdM1_s2 epoch 15/20: train_loss=1.832, seconds=10.3, val_loss=0.2819, val_macro_f1=0.9033
+[15:07:04] student_kdM1_s2 epoch 16/20: train_loss=1.804, seconds=10.1, val_loss=0.2804, val_macro_f1=0.9042
+[15:07:16] student_kdM1_s2 epoch 17/20: train_loss=1.782, seconds=11, val_loss=0.2773, val_macro_f1=0.905
+[15:07:26] student_kdM1_s2 epoch 18/20: train_loss=1.767, seconds=10.1, val_loss=0.2768, val_macro_f1=0.9054
+[15:07:36] student_kdM1_s2 epoch 19/20: train_loss=1.755, seconds=9.2, val_loss=0.2756, val_macro_f1=0.9057
+[15:07:46] student_kdM1_s2 epoch 20/20: train_loss=1.749, seconds=9.3, val_loss=0.2751, val_macro_f1=0.9056
+[15:08:00] Training student_hardA_s2 (student, 101,190 parameters, seed 1020)
+[15:08:08] student_hardA_s2 epoch 1/20: train_loss=1.998, seconds=7.5, val_loss=0.6571, val_macro_f1=0.7408
+[15:08:16] student_hardA_s2 epoch 2/20: train_loss=0.4782, seconds=7.3, val_loss=0.4094, val_macro_f1=0.8385
+[15:08:23] student_hardA_s2 epoch 3/20: train_loss=0.3303, seconds=7.3, val_loss=0.3519, val_macro_f1=0.8679
+[15:08:31] student_hardA_s2 epoch 4/20: train_loss=0.2745, seconds=7.3, val_loss=0.3102, val_macro_f1=0.8832
+[15:08:39] student_hardA_s2 epoch 5/20: train_loss=0.2431, seconds=7.4, val_loss=0.2882, val_macro_f1=0.8876
+[15:08:47] student_hardA_s2 epoch 6/20: train_loss=0.2209, seconds=7.9, val_loss=0.2649, val_macro_f1=0.9027
+[15:08:56] student_hardA_s2 epoch 7/20: train_loss=0.2038, seconds=8.7, val_loss=0.2574, val_macro_f1=0.9022
+[15:09:04] student_hardA_s2 epoch 8/20: train_loss=0.1893, seconds=7.4, val_loss=0.2467, val_macro_f1=0.9095
+[15:09:12] student_hardA_s2 epoch 9/20: train_loss=0.177, seconds=7.3, val_loss=0.2358, val_macro_f1=0.9139
+[15:09:19] student_hardA_s2 epoch 10/20: train_loss=0.1665, seconds=7.3, val_loss=0.2336, val_macro_f1=0.9145
+[15:09:27] student_hardA_s2 epoch 11/20: train_loss=0.1563, seconds=7.3, val_loss=0.2212, val_macro_f1=0.9189
+[15:09:35] student_hardA_s2 epoch 12/20: train_loss=0.1476, seconds=7.3, val_loss=0.2205, val_macro_f1=0.9205
+[15:09:42] student_hardA_s2 epoch 13/20: train_loss=0.1394, seconds=7.3, val_loss=0.2175, val_macro_f1=0.9235
+[15:09:51] student_hardA_s2 epoch 14/20: train_loss=0.1319, seconds=8.2, val_loss=0.21, val_macro_f1=0.9263
+[15:09:59] student_hardA_s2 epoch 15/20: train_loss=0.1252, seconds=8, val_loss=0.2079, val_macro_f1=0.9268
+[15:10:08] student_hardA_s2 epoch 16/20: train_loss=0.1194, seconds=7.9, val_loss=0.2052, val_macro_f1=0.9284
+[15:10:16] student_hardA_s2 epoch 17/20: train_loss=0.1149, seconds=8, val_loss=0.2035, val_macro_f1=0.929
+[15:10:25] student_hardA_s2 epoch 18/20: train_loss=0.1113, seconds=8.1, val_loss=0.2019, val_macro_f1=0.9303
+[15:10:33] student_hardA_s2 epoch 19/20: train_loss=0.1095, seconds=8, val_loss=0.2011, val_macro_f1=0.9304
+[15:10:41] student_hardA_s2 epoch 20/20: train_loss=0.108, seconds=8, val_loss=0.2008, val_macro_f1=0.9301
+[15:10:59] val: 5.0% of flows have an exact packet-sequence duplicate in the training window
+[15:11:00] test_w42-45: 2.6% of flows have an exact packet-sequence duplicate in the training window
+[15:11:00] test_w46-49: 1.9% of flows have an exact packet-sequence duplicate in the training window
+[15:11:01] test_w51-51: 2.7% of flows have an exact packet-sequence duplicate in the training window
+[15:11:01] Validation week, mean over seeds / members:
+                 macro_f1  auroc_energy  auroc_msp  fpr95_energy    ece  ece_ts   aurc
+condition                                                                             
+hardA              0.9302        0.8552     0.8965        0.6095 0.0108  0.0054 0.0040
+kdM0               0.9053        0.8375     0.8784        0.6188 0.0323  0.0057 0.0051
+kdM1               0.9053        0.8488     0.8777        0.6134 0.0324  0.0053 0.0051
+teacherA           0.9687        0.8883     0.9357        0.4434 0.0022  0.0035 0.0008
+teacherA_member    0.9652        0.8713     0.9155        0.4645 0.0062  0.0028 0.0010
+teacherB           0.9681        0.8976     0.9206        0.4524 0.0068  0.0027 0.0009
+[15:11:01] Energy-score rank correlation with each teacher on the validation week (own_minus_other = A - B, except B - A for kdB):
+teacher        A      B  own_minus_other
+condition                               
+hardA     0.4997 0.4693           0.0304
+kdM0      0.8751 0.8064           0.0687
+kdM1      0.8805 0.8093           0.0712

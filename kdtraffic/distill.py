@@ -38,6 +38,42 @@ class HardLabelCE:
         return F.cross_entropy(logits, target)
 
 
+class SimilarityPreservingKD:
+    """Feature distillation by matching batch-wise feature similarity (Tung and Mori, ICCV 2019).
+
+    Added in revision. Every other objective here distils the teacher's *outputs*; this one distils
+    the geometry of its penultimate representation, which is where the exploratory feature-space
+    detectors find the teacher's advantage. For each batch it forms the pairwise similarity matrix of
+    the teacher's features and of the student's, row-normalises both, and penalises their squared
+    difference:
+
+        L = CE(student, labels) + beta * (1/b^2) * || G_teacher - G_student ||_F^2
+
+    Unlike a FitNets hint loss this needs no projection between the teacher's 600 dimensions and the
+    student's 128, and adds no trainable parameters, so the training loop and optimiser are unchanged.
+
+    `beta` is not tuned. The study's tuning budget was spent before the pre-registration was frozen
+    and is not reopened here, so this arm is a single-setting probe: it can show that feature
+    distillation transfers something, but a null result at one beta is weak evidence of absence.
+    """
+
+    needs_features = True
+
+    def __init__(self, teacher_features: np.ndarray, beta: float, device: str):
+        # Kept on the CPU in float16: the training window's features are ~2 GB, which would not fit
+        # beside the model on a 4 GB card. One batch at a time is moved across.
+        self.features = torch.from_numpy(np.ascontiguousarray(teacher_features, dtype=np.float16))
+        self.beta = beta
+
+    def __call__(self, logits: torch.Tensor, labels: torch.Tensor, idx: torch.Tensor,
+                 features: torch.Tensor) -> torch.Tensor:
+        teacher = self.features[idx.cpu()].to(features.device, torch.float32)
+        gram_t = F.normalize(teacher @ teacher.T, p=2, dim=1)
+        gram_s = F.normalize(features @ features.T, p=2, dim=1)
+        # mse_loss averages over the b*b entries, which is exactly the (1/b^2) Frobenius term above
+        return F.cross_entropy(logits, labels) + self.beta * F.mse_loss(gram_s, gram_t)
+
+
 class HintonKD:
     """alpha * T^2 * KL(teacher_T || student_T) + (1 - alpha) * CE(student, labels).
 
