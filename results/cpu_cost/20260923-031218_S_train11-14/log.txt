@@ -1,0 +1,36 @@
+[03:12:18] Loading cached arrays from C:\datasets\cache\tls-year22_S_121012501890
+[03:12:19] CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD; 16 logical cores; torch 2.14.0+cu130
+[03:12:20] student: 101,190 parameters, 0.4 MB of weights
+[03:12:23]   torch: p50 0.407 ms, p99 0.530 ms, 12,646 flows/s (1 thread), 44,910 flows/s (all threads)
+[03:12:25]   onnx: p50 0.072 ms, p99 0.114 ms, 23,857 flows/s (1 thread)
+[03:12:25] teacherA_member: 2,261,878 parameters, 9.1 MB of weights
+[03:13:01]   torch: p50 3.111 ms, p99 3.849 ms, 969 flows/s (1 thread), 4,576 flows/s (all threads)
+[03:13:05]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:13:05] teacherA_ensemble: 11,309,390 parameters, 45.4 MB of weights
+[03:16:03]   torch: p50 16.116 ms, p99 17.442 ms, 197 flows/s (1 thread), 932 flows/s (all threads)
+[03:16:04]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:16:04]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:16:05]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:16:05]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:16:06]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:16:06] teacherB_wide: 10,321,003 parameters, 41.3 MB of weights
+[03:18:12]   torch: p50 10.120 ms, p99 10.960 ms, 267 flows/s (1 thread), 1,414 flows/s (all threads)
+[03:18:12]   ONNX export/session failed (TorchExportError: Failed to export the model with torch.export. [96mThis is step 1/3[0m of exporting the model to ONNX. Next steps:
+- Mo); PyTorch numbers only
+[03:18:13] Training XGBoost on flow statistics for the CPU timing
+[03:20:10]   trained in 116s
+[03:20:31]   xgboost: p50 14.434 ms, 3,778 flows/s (1 thread), model file 73.2 MB
+[03:20:31] 
+           system backend     parameters  weights_mb  latency_ms_p50  latency_ms_p99  flows_per_s_1thread  flows_per_s_all_threads  peak_rss_mb
+          student   torch    101,190.000       0.407           0.407           0.530           12,646.191               44,909.819    2,166.919
+          student    onnx    101,190.000       0.407           0.072           0.114           23,857.202                      NaN    2,239.738
+  teacherA_member   torch  2,261,878.000       9.073           3.111           3.849              968.595                4,576.083    2,321.932
+teacherA_ensemble   torch 11,309,390.000      45.366          16.116          17.442              197.089                  932.066    2,447.913
+    teacherB_wide   torch 10,321,003.000      41.345          10.120          10.960              266.670                1,413.796    2,583.859
+xgboost_flowstats xgboost            NaN      73.203          14.434          16.429            3,777.591               26,064.369    3,786.179

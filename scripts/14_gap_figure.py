@@ -58,21 +58,24 @@ def main() -> None:
     if gaps.empty:
         raise SystemExit(f"No teacherA/student rows found in {args.analysis / 'per_window.csv'}")
 
-    fig, axes = plt.subplots(1, 3, figsize=(7.16, 2.5), sharex=True)
-    for ax, group, title in ((axes[0], CLOSING, "Gap closes"), (axes[1], PERSISTING, "Gap persists")):
+    plt.rcParams["mathtext.fontset"] = "dejavusans"
+    fig, axes = plt.subplots(1, 3, figsize=(7.16, 2.2), sharex=True)
+    for ax, group, title in ((axes[0], CLOSING, "(a) Gap closes"),
+                             (axes[1], PERSISTING, "(b) Gap persists")):
         for condition in group:
             for start, part in gaps[gaps.condition == condition].groupby("start"):
                 part = part.sort_values("weeks_since")
                 ax.plot(part.weeks_since, part.gap, STYLE[start], color=COLOUR[condition], linewidth=1.3,
                         label=LABEL[condition] if start == 11 else None)
         ax.axhline(0.0, color="0.4", linewidth=0.8, zorder=0)
-        ax.set(title=title, xlabel="weeks since training")
-        ax.legend(fontsize=7, frameon=False)
-    axes[0].set_ylabel("Teacher A $-$ student\nenergy AUROC")
-    shared = (min(a.get_ylim()[0] for a in axes[:2]), max(a.get_ylim()[1] for a in axes[:2]))
-    for ax in axes[:2]:
-        ax.set_ylim(shared)  # the two panels are only comparable on one scale
-    axes[1].tick_params(labelleft=False)
+        ax.set_title(title, fontsize=8, pad=4)
+        ax.set_xlabel("weeks since training", fontsize=7.5)
+        ax.legend(fontsize=6.8, frameon=False)
+    axes[0].set_ylabel("Teacher A $-$ student\nenergy AUROC", fontsize=7.5)
+    # Each panel keeps its own vertical scale. On one shared scale the closing gaps, which never
+    # exceed 0.02, collapse onto the zero line under curves six times larger; the caption says that
+    # the scales differ.
+    axes[1].set_ylabel("Teacher A $-$ student\nenergy AUROC", fontsize=7.5)
 
     students = per_window[(per_window.flows == "all") & (per_window.unknown == "all")
                           & (per_window.condition.isin(CLOSING + PERSISTING))]
@@ -81,9 +84,13 @@ def main() -> None:
             series = series.sort_values("weeks_since")
             axes[2].plot(series.weeks_since, series.macro_f1_mean, STYLE[start], color=COLOUR[condition],
                          linewidth=1.3)
-    axes[2].set(title="Student accuracy", xlabel="weeks since training", ylabel="macro-F1")
+    axes[2].set_title("(c) Student accuracy", fontsize=8, pad=4)
+    axes[2].set_xlabel("weeks since training", fontsize=7.5)
+    axes[2].set_ylabel("macro-F1", fontsize=7.5)
     lines = [plt.Line2D([], [], color="0.3", linestyle=STYLE[s], label=f"start wk {s}") for s in sorted(STYLE)]
-    axes[2].legend(handles=lines, fontsize=7, frameon=False)
+    axes[2].legend(handles=lines, fontsize=6.8, frameon=False)
+    for ax in axes:
+        ax.tick_params(labelsize=7)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()

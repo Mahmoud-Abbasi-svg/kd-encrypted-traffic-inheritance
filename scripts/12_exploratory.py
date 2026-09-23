@@ -217,6 +217,23 @@ def main() -> None:
             statistics[key] = (lambda u, w, sc, cache, c=condition, s=score:
                                detection_shift(u, c, "direct", s, w, sc, cache))
             described[key] = {"score": score, "comparison": f"{condition} - direct student", "kind": "student"}
+    # Condition-against-condition, not both against `direct`. Two intervals that overlap do not
+    # establish that their difference includes zero, and the claim that label smoothing transfers
+    # more than distillation is a claim about that difference, so it is bootstrapped directly.
+    for first, second in (("ls", "kdA4"), ("enddA", "kdA"), ("kdA4", "kdA"), ("hardA", "kdA4")):
+        if not {first, second} <= conditions_seen:
+            continue
+        for score in SCORES:
+            present = [u for u in units
+                       if any(f"{score}:{student(first, s)}" in u.detect for s in u.seeds)
+                       and any(f"{score}:{student(second, s)}" in u.detect for s in u.seeds)]
+            if not present:
+                continue
+            key = f"{score}|{first}|{second}"
+            statistics[key] = (lambda u, w, sc, cache, a=first, b=second, s=score:
+                               detection_shift(u, a, b, s, w, sc, cache))
+            described[key] = {"score": score, "comparison": f"{first} - {second}", "kind": "pair"}
+
     rows = []
     if statistics:
         log(f"  {len(statistics)} detection comparisons over {len(units)} units, one bootstrap loop")

@@ -1,0 +1,138 @@
+[23:45:15] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[23:45:15] 20260919-113607_S_train11-14: start 11, 9 test splits
+[23:45:15] 20260919-131820_S_train24-27: start 24, 6 test splits
+[23:45:15] 20260919-143354_S_train37-40: start 37, 3 test splits
+[23:45:15] 20260922-130934_S_train11-14: start 11, 9 test splits
+[23:45:15] 20260922-135956_S_train24-27: start 24, 6 test splits
+[23:45:15] 20260922-143731_S_train37-40: start 37, 3 test splits
+[23:46:14] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[23:46:14] 20260919-113607_S_train11-14: start 11, 9 test splits
+[23:46:14] 20260919-131820_S_train24-27: start 24, 6 test splits
+[23:46:14] 20260919-143354_S_train37-40: start 37, 3 test splits
+[23:46:14] 20260922-130934_S_train11-14: start 11, 9 test splits
+[23:46:14] 20260922-135956_S_train24-27: start 24, 6 test splits
+[23:46:14] 20260922-143731_S_train37-40: start 37, 3 test splits
+[23:46:14] 20260922-111224_S_train11-14: start 11, 9 test splits
+[23:46:14] 20260922-115815_S_train24-27: start 24, 6 test splits
+[23:46:14] 20260922-124938_S_train37-40: start 37, 3 test splits
+[23:48:44] 18 units, 3,543,579 flows, 29,346 day x service clusters
+[23:48:44] Student conditions found: direct, directTS, enddA, hardA, kdA, kdA4, kdB, kdB4, kdM0, kdM1, ls
+[23:48:52] Ageing of the ensemble vs its members (AUROC per week; more negative = ages faster):
+score         energy  knnfeat     maha      msp
+model                                          
+ensemble    -0.00285 -0.00349 -0.00354 -0.00306
+member_mean -0.00285 -0.00350 -0.00353 -0.00282
+teacherA_0  -0.00278 -0.00340 -0.00350 -0.00282
+teacherA_1  -0.00306 -0.00343 -0.00359 -0.00291
+teacherA_2  -0.00261 -0.00347 -0.00347 -0.00270
+teacherA_3  -0.00289 -0.00370 -0.00370 -0.00283
+teacherA_4  -0.00291 -0.00349 -0.00337 -0.00287
+[23:48:54] Teacher A - student energy-AUROC gap, trend per start date:
+ start  n_windows  slope_per_week    first      last condition  score
+    11          9       -0.000495 0.015267 -0.008444       kdA energy
+    24          6        0.000139 0.001736  0.005750       kdA energy
+    37          3       -0.001518 0.002967 -0.008793       kdA energy
+    11          9       -0.000439 0.031778  0.016948      kdA4 energy
+    24          6       -0.000552 0.033989  0.024121      kdA4 energy
+    37          3       -0.001120 0.032105  0.023518      kdA4 energy
+[23:48:54] Calendar overlap: 15 of 18 units contain at least one week that another start date also tests; 55 unit-weeks in total
+[23:48:58] Undistilled student's preference between two ensemble members: median 0.0057, 95th percentile 0.0156 (n=540)
+[23:48:58]   6 swap comparison(s) over 18 units
+[23:49:25] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[23:49:25] 20260919-113607_S_train11-14: start 11, 9 test splits
+[23:49:25] 20260919-131820_S_train24-27: start 24, 6 test splits
+[23:49:25] 20260919-143354_S_train37-40: start 37, 3 test splits
+[23:49:25] 20260922-130934_S_train11-14: start 11, 9 test splits
+[23:49:25] 20260922-135956_S_train24-27: start 24, 6 test splits
+[23:49:25] 20260922-143731_S_train37-40: start 37, 3 test splits
+[23:49:25] 20260922-111224_S_train11-14: start 11, 9 test splits
+[23:49:25] 20260922-115815_S_train24-27: start 24, 6 test splits
+[23:49:25] 20260922-124938_S_train37-40: start 37, 3 test splits
+[23:59:17] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[23:59:17] 20260919-113607_S_train11-14: start 11, 9 test splits
+[23:59:17] 20260919-131820_S_train24-27: start 24, 6 test splits
+[23:59:17] 20260919-143354_S_train37-40: start 37, 3 test splits
+[23:59:17] 20260922-130934_S_train11-14: start 11, 9 test splits
+[23:59:17] 20260922-135956_S_train24-27: start 24, 6 test splits
+[23:59:17] 20260922-143731_S_train37-40: start 37, 3 test splits
+[23:59:17] 20260922-111224_S_train11-14: start 11, 9 test splits
+[23:59:17] 20260922-115815_S_train24-27: start 24, 6 test splits
+[23:59:17] 20260922-124938_S_train37-40: start 37, 3 test splits
+[00:00:24] 18 units, 3,543,579 flows, 29,346 day x service clusters
+[00:00:24] Student conditions found: direct, directTS, enddA, hardA, kdA, kdA4, kdB, kdB4, kdM0, kdM1, ls
+[00:00:28] Ageing of the ensemble vs its members (AUROC per week; more negative = ages faster):
+score         energy  knnfeat     maha      msp
+model                                          
+ensemble    -0.00285 -0.00349 -0.00354 -0.00306
+member_mean -0.00285 -0.00350 -0.00353 -0.00282
+teacherA_0  -0.00278 -0.00340 -0.00350 -0.00282
+teacherA_1  -0.00306 -0.00343 -0.00359 -0.00291
+teacherA_2  -0.00261 -0.00347 -0.00347 -0.00270
+teacherA_3  -0.00289 -0.00370 -0.00370 -0.00283
+teacherA_4  -0.00291 -0.00349 -0.00337 -0.00287
+[00:00:29] Teacher A - student energy-AUROC gap, trend per start date:
+ start  n_windows  slope_per_week    first      last condition  score
+    11          9       -0.000495 0.015267 -0.008444       kdA energy
+    24          6        0.000139 0.001736  0.005750       kdA energy
+    37          3       -0.001518 0.002967 -0.008793       kdA energy
+    11          9       -0.000439 0.031778  0.016948      kdA4 energy
+    24          6       -0.000552 0.033989  0.024121      kdA4 energy
+    37          3       -0.001120 0.032105  0.023518      kdA4 energy
+[00:00:29] Calendar overlap: 15 of 18 units contain at least one week that another start date also tests; 55 unit-weeks in total
+[00:00:30] Undistilled student's preference between two ensemble members: median 0.0057, 95th percentile 0.0156 (n=540)
+[00:00:30]   6 swap comparison(s) over 18 units
+[00:22:50] Teacher-swap shifts (difference in differences against the direct student):
+                                              label  estimate  ci_low  ci_high  p_one_sided
+                 H1 replication: kdA4 toward A vs B   +0.0071 +0.0046  +0.0091      +0.0033
+                 H1 replication: kdB4 toward B vs A   +0.0255 +0.0235  +0.0280      +0.0033
+single vs single: kdM0 toward member 0 vs Teacher B   +0.0171 +0.0150  +0.0193      +0.0033
+    identity only: kdM0 toward member 0 vs member 1   +0.0224 +0.0207  +0.0242      +0.0033
+    identity only: kdM1 toward member 1 vs member 0   +0.0193 +0.0170  +0.0217      +0.0033
+                        anchor: hardA toward A vs B   -0.0000 -0.0021  +0.0019      +0.5714
+[00:22:50]   38 detection comparisons over 18 units, one bootstrap loop
+[00:30:35]     bootstrap 60/300
+[00:37:59]     bootstrap 120/300
+[00:45:35]     bootstrap 180/300
+[00:53:05]     bootstrap 240/300
+[01:00:51]     bootstrap 300/300
+[01:00:51] Unknown-detection advantage over the directly trained student, by scoring rule:
+  score                comparison  estimate  ci_low  ci_high
+ energy teacherA - direct student   +0.0004 -0.0036  +0.0041
+ energy teacherB - direct student   +0.0051 +0.0012  +0.0090
+ energy    enddA - direct student   -0.0927 -0.1004  -0.0852
+ energy    hardA - direct student   -0.0027 -0.0056  -0.0005
+ energy      kdA - direct student   -0.0007 -0.0025  +0.0010
+ energy     kdA4 - direct student   -0.0261 -0.0299  -0.0226
+ energy      kdB - direct student   -0.0037 -0.0061  -0.0021
+ energy     kdB4 - direct student   -0.0249 -0.0290  -0.0213
+ energy     kdM0 - direct student   -0.0282 -0.0330  -0.0239
+ energy     kdM1 - direct student   -0.0267 -0.0305  -0.0231
+ energy       ls - direct student   -0.0217 -0.0284  -0.0154
+    msp teacherA - direct student   +0.0242 +0.0230  +0.0255
+    msp teacherB - direct student   -0.0071 -0.0089  -0.0055
+    msp    enddA - direct student   -0.0082 -0.0102  -0.0058
+    msp    hardA - direct student   -0.0025 -0.0037  -0.0011
+    msp      kdA - direct student   -0.0006 -0.0015  +0.0002
+    msp     kdA4 - direct student   -0.0270 -0.0294  -0.0246
+    msp      kdB - direct student   -0.0040 -0.0053  -0.0025
+    msp     kdB4 - direct student   -0.0356 -0.0376  -0.0337
+    msp     kdM0 - direct student   -0.0268 -0.0298  -0.0237
+    msp     kdM1 - direct student   -0.0258 -0.0273  -0.0242
+    msp       ls - direct student   -0.0068 -0.0090  -0.0048
+   maha teacherA - direct student   +0.0727 +0.0639  +0.0822
+   maha teacherB - direct student   +0.0320 +0.0230  +0.0415
+   maha    enddA - direct student   +0.0738 +0.0664  +0.0823
+   maha      kdA - direct student   -0.0031 -0.0100  +0.0055
+   maha     kdA4 - direct student   +0.0763 +0.0691  +0.0833
+   maha      kdB - direct student   +0.0023 -0.0049  +0.0091
+   maha     kdB4 - direct student   +0.0531 +0.0442  +0.0610
+   maha       ls - direct student   +0.0876 +0.0815  +0.0942
+knnfeat teacherA - direct student   +0.0338 +0.0280  +0.0395
+knnfeat teacherB - direct student   +0.0259 +0.0199  +0.0315
+knnfeat    enddA - direct student   +0.0440 +0.0376  +0.0498
+knnfeat      kdA - direct student   +0.0011 -0.0052  +0.0062
+knnfeat     kdA4 - direct student   +0.0261 +0.0195  +0.0314
+knnfeat      kdB - direct student   +0.0026 -0.0028  +0.0061
+knnfeat     kdB4 - direct student   +0.0086 +0.0027  +0.0136
+knnfeat       ls - direct student   +0.0426 +0.0373  +0.0483
+[01:00:51] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\exploratory\REVISION\report.md

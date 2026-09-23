@@ -31,7 +31,7 @@ def main(run: Path, out: Path = PROJECT_ROOT / "paper" / "cpu_table.tex") -> Non
     body = "\n".join(rows)
     out.write_text(rf"""\begin{{table*}}[t]
 \centering
-\caption{{Inference cost on a laptop CPU (AMD Ryzen 7 5800H, 8 cores), used as a stand-in for an edge device. Latency is per flow at batch size 1 on one thread; throughput is at batch size 1,024. Weights are the serialised model size. The teachers could not be exported to ONNX Runtime.}}
+\caption{{Inference cost on a laptop CPU (AMD Ryzen 7 5800H, 8 cores) as a stand-in for an edge device. Latency is per flow at batch size 1 on one thread; throughput is at batch size 1,024.}}
 \label{{tab:cpu}}
 \begin{{tabular}}{{lrrrrrr}}
 \toprule
@@ -45,6 +45,11 @@ Model & Parameters & Weights (MB) & Latency p50 (ms) & Latency p99 (ms) & Flows/
     print(f"wrote {out} from {run}")
 
 
+# The run the table reports, pinned rather than taken as the newest. A second cpu_cost run exists: it
+# re-times the *re-tuned* XGBoost (150 rounds, depth 6) for the deployment discussion, and its numbers
+# for every other row differ slightly because it ran on a differently loaded machine. Defaulting to the
+# newest run silently replaced all seven rows and left the text quoting the old ones.
+REPORTED = "20260920-014955_S_train11-14"
+
 if __name__ == "__main__":
-    runs = sorted(p for p in (PROJECT_ROOT / "results" / "cpu_cost").glob("*") if p.is_dir() and not p.name.endswith("smoke"))
-    main(Path(sys.argv[1]) if len(sys.argv) > 1 else runs[-1])
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else PROJECT_ROOT / "results" / "cpu_cost" / REPORTED)

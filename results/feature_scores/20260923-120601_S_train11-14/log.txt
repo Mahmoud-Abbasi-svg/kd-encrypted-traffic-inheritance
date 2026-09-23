@@ -1,0 +1,49 @@
+[12:06:01] Feature-space open-set scores; device cuda; start week 11
+[12:06:01] Loading cached arrays from C:\datasets\cache\tls-year22_S_121012501890
+[12:06:03]   test W-2022-16-19: loading cached window
+[12:06:03]   test W-2022-20-23: loading cached window
+[12:06:04]   test W-2022-24-27: loading cached window
+[12:06:04]   test W-2022-28-31: loading cached window
+[12:06:04]   test W-2022-32-35: loading cached window
+[12:06:04]   test W-2022-36-39: loading cached window
+[12:06:05]   test W-2022-40-43: loading cached window
+[12:06:05]   test W-2022-44-47: loading cached window
+[12:06:05]   test W-2022-48-51-skip50: loading cached window
+[12:06:05] Evaluation sets: val (253,779), test_w16-19 (200,000), test_w20-23 (200,000), test_w24-27 (200,000), test_w28-31 (200,000), test_w32-35 (200,000), test_w36-39 (200,000), test_w40-43 (200,000), test_w44-47 (200,000), test_w48-51 (200,000)
+[12:06:05] Scoring 3 models: student_kdF_s0, student_kdF_s1, student_kdF_s2
+[12:07:08]   student_kdF_s0: 128-d features, 63s
+[12:08:11]   student_kdF_s1: 128-d features, 63s
+[12:09:13]   student_kdF_s2: 128-d features, 62s
+[12:09:13] AUROC by feature-space score (all flows, all unknowns):
+                            auroc_maha  auroc_knnfeat
+split       model                                    
+test_w16-19 student_kdF_s0      0.6839         0.7669
+            student_kdF_s1      0.6982         0.7748
+            student_kdF_s2      0.6993         0.7792
+test_w20-23 student_kdF_s0      0.6852         0.7644
+            student_kdF_s1      0.6963         0.7687
+            student_kdF_s2      0.7000         0.7736
+test_w24-27 student_kdF_s0      0.6867         0.7597
+            student_kdF_s1      0.6969         0.7623
+            student_kdF_s2      0.6927         0.7648
+test_w28-31 student_kdF_s0      0.6893         0.7668
+            student_kdF_s1      0.7020         0.7748
+            student_kdF_s2      0.6971         0.7759
+test_w32-35 student_kdF_s0      0.6869         0.7545
+            student_kdF_s1      0.6970         0.7620
+            student_kdF_s2      0.6918         0.7615
+test_w36-39 student_kdF_s0      0.6573         0.7189
+            student_kdF_s1      0.6638         0.7224
+            student_kdF_s2      0.6646         0.7291
+test_w40-43 student_kdF_s0      0.6610         0.7243
+            student_kdF_s1      0.6709         0.7283
+            student_kdF_s2      0.6704         0.7335
+test_w44-47 student_kdF_s0      0.6324         0.6996
+            student_kdF_s1      0.6442         0.7040
+            student_kdF_s2      0.6461         0.7086
+test_w48-51 student_kdF_s0      0.6254         0.6987
+            student_kdF_s1      0.6400         0.7045
+            student_kdF_s2      0.6422         0.7088
+val         student_kdF_s0      0.7500         0.8338
+            student_kdF_s1      0.7483         0.8396
+            student_kdF_s2      0.7419         0.8328

@@ -218,3 +218,9 @@ Added:
 7. **XGBoost re-tuned** to a deployable size, reported beside the original configuration.
 
 Exploratory intervals are built by the same day × service cluster bootstrap as the confirmatory ones, resampling training seeds in the same order, so that the two can be compared directly.
+
+**23 Sep 2026 — feature distillation added, also exploratory.** An eighth analysis joins the seven above, under the same terms: it was added after the confirmatory results were known, it shares no multiple-comparison family with the ten hypotheses, and it changes nothing already reported.
+
+8. **Feature distillation** (`kdF`) — a student trained with similarity-preserving distillation (Tung and Mori, ICCV 2019) from one member of Teacher A, on start week 11, with three seeds. The pre-registered conditions all distil from the output layer; this one matches the pairwise similarity structure of the penultimate features instead, which is the natural follow-up to analysis 1, since that analysis locates the teacher's advantage in the representation. The loss weight (β = 100) was **not** tuned — no budget was spent searching it — so a null result from this arm is weak evidence of absence and is reported as such. The training code adds `SimilarityPreservingKD` to `kdtraffic/distill.py` and a feature-returning path to `kdtraffic/train.py`, taken only by objectives that declare `needs_features`; every pre-registered condition keeps the original path. The frozen analysis code is untouched.
+
+The feature-space scores of analysis 1 were extended to `kdF`, `hardA`, `kdM0` and `kdM1` on 23 September, with no model retrained, and the exploratory analysis was re-run over the enlarged set (`results/exploratory/REVISION_FULL2/`). The statistics that both passes share are unchanged.

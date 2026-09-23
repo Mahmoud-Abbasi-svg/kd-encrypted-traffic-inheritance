@@ -29,3 +29,6 @@ paper/*.blg
 paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
+
+# Data-deposit archives (multi-GB, uploaded to Zenodo, not stored in git)
+deposit/*.zip

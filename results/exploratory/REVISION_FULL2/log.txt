@@ -1,0 +1,54 @@
+[12:10:07] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[12:10:07] 20260919-113607_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260919-131820_S_train24-27: start 24, 6 test splits
+[12:10:07] 20260919-143354_S_train37-40: start 37, 3 test splits
+[12:10:07] 20260922-130934_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260922-135956_S_train24-27: start 24, 6 test splits
+[12:10:07] 20260922-143731_S_train37-40: start 37, 3 test splits
+[12:10:07] 20260923-013705_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260923-021551_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260923-032036_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260923-051258_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260922-111224_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260922-115815_S_train24-27: start 24, 6 test splits
+[12:10:07] 20260922-124938_S_train37-40: start 37, 3 test splits
+[12:10:07] 20260923-090027_S_train11-14: start 11, 9 test splits
+[12:10:07] 20260923-120601_S_train11-14: start 11, 9 test splits
+[12:11:52] 18 units, 3,543,579 flows, 29,346 day x service clusters
+[12:11:52] Student conditions found: direct, directTS, directTS_w16, directTS_w96, direct_w16, direct_w96, enddA, hardA, kdA, kdA4, kdA4_w16, kdA4_w96, kdB, kdB4, kdC, kdF, kdM0, kdM1, ls
+[12:11:57] Ageing of the ensemble vs its members (AUROC per week; more negative = ages faster):
+score         energy  knnfeat     maha      msp
+model                                          
+ensemble    -0.00285 -0.00349 -0.00354 -0.00306
+member_mean -0.00285 -0.00350 -0.00353 -0.00282
+teacherA_0  -0.00278 -0.00340 -0.00350 -0.00282
+teacherA_1  -0.00306 -0.00343 -0.00359 -0.00291
+teacherA_2  -0.00261 -0.00347 -0.00347 -0.00270
+teacherA_3  -0.00289 -0.00370 -0.00370 -0.00283
+teacherA_4  -0.00291 -0.00349 -0.00337 -0.00287
+[12:11:59] Teacher A - student energy-AUROC gap, trend per start date:
+ start  n_windows  slope_per_week    first      last condition  score
+    11          9       -0.000495 0.015267 -0.008444       kdA energy
+    24          6        0.000139 0.001736  0.005750       kdA energy
+    37          3       -0.001518 0.002967 -0.008793       kdA energy
+    11          9       -0.000439 0.031778  0.016948      kdA4 energy
+    24          6       -0.000552 0.033989  0.024121      kdA4 energy
+    37          3       -0.001120 0.032105  0.023518      kdA4 energy
+[12:11:59] Calendar overlap: 15 of 18 units contain at least one week that another start date also tests; 55 unit-weeks in total
+[12:12:01] Undistilled student's preference between two ensemble members: median 0.0057, 95th percentile 0.0156 (n=540)
+[12:12:01]   6 swap comparison(s) over 18 units
+[12:34:20]   1 swap comparison(s) over 9 units
+[12:35:58] Teacher-swap shifts (difference in differences against the direct student):
+                                              label  estimate  ci_low  ci_high  p_one_sided
+                 H1 replication: kdA4 toward A vs B   +0.0071 +0.0046  +0.0091      +0.0033
+                 H1 replication: kdB4 toward B vs A   +0.0255 +0.0235  +0.0280      +0.0033
+single vs single: kdM0 toward member 0 vs Teacher B   +0.0171 +0.0150  +0.0193      +0.0033
+    identity only: kdM0 toward member 0 vs member 1   +0.0224 +0.0207  +0.0242      +0.0033
+    identity only: kdM1 toward member 1 vs member 0   +0.0193 +0.0170  +0.0217      +0.0033
+                        anchor: hardA toward A vs B   -0.0000 -0.0021  +0.0019      +0.5714
+             family swap: kdC toward Teacher C vs A   +0.0432 +0.0297  +0.0573      +0.0033
+[12:35:58]   78 detection comparisons over 18 units, one bootstrap loop
+[12:59:38]     bootstrap 60/300
+[13:20:36]     bootstrap 120/300
+[13:32:58]     bootstrap 180/300
+[13:50:33]     bootstrap 240/300

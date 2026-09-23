@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "title": "Per-flow unknown-scores and model checkpoints for \"What Does the Student Inherit? Unknown-Traffic Detection, Calibration and Shortcuts in Distilled Traffic Classifiers over Time\"",
+    "upload_type": "dataset",
+    "description": "<p>Derived data for a pre-registered study of knowledge distillation in encrypted-traffic classification. It contains the per-flow unknown-traffic scores of every teacher and student, for every evaluation window, and the trained model weights: 335 files, 8.5 GB in total.</p><p>The models are trained on CESNET-TLS-Year22 at three start dates and evaluated on 18 test windows spanning 35 weeks. Scores are given under the two pre-registered logit-based rules (energy, maximum softmax probability) and, for the checkpoints scored in the revision, under two feature-space rules (Mahalanobis distance and feature-space k-nearest-neighbour distance).</p><p><strong>This deposit does not redistribute CESNET-TLS-Year22.</strong> The scores are derived quantities and the checkpoints are trained weights; neither contains the captured flows. Use of the dataset itself remains subject to its own terms.</p><p>Code and analysis: <a href=\"https://github.com/Mahmoud-Abbasi-svg/kd-encrypted-traffic-inheritance\">https://github.com/Mahmoud-Abbasi-svg/kd-encrypted-traffic-inheritance</a>. Pre-registration: <a href=\"https://osf.io/rts6n\">https://osf.io/rts6n</a>.</p>",
+    "creators": [
+      {
+        "name": "Abbasi, Mahmoud",
+        "affiliation": "University of Salamanca",
+        "orcid": "0000-0002-1886-8284"
+      }
+    ],
+    "license": "cc-by-4.0",
+    "access_right": "open",
+    "keywords": [
+      "encrypted traffic classification",
+      "knowledge distillation",
+      "open-set recognition",
+      "concept drift",
+      "calibration",
+      "shortcut learning",
+      "pre-registration",
+      "CESNET-TLS-Year22"
+    ],
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/Mahmoud-Abbasi-svg/kd-encrypted-traffic-inheritance",
+        "relation": "isSupplementTo",
+        "scheme": "url"
+      },
+      {
+        "identifier": "https://osf.io/rts6n",
+        "relation": "isDocumentedBy",
+        "scheme": "url"
+      }
+    ]
+  }
+}

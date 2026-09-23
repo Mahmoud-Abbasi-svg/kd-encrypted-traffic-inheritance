@@ -1,0 +1,60 @@
+{
+  "args": {
+    "data_root": "C:\\datasets",
+    "cache_dir": null,
+    "splits": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\configs\\splits.json",
+    "size": "S",
+    "train_weeks": "11-14",
+    "val_weeks": "15",
+    "test_weeks": "16-19",
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": "200000",
+    "val_unknown_size": "all",
+    "test_known_size": "400000",
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "data_seed": 420,
+    "workers": 0,
+    "smoke": false,
+    "student": "results\\track_a\\20260919-113607_S_train11-14\\models\\student_direct_s0.pt",
+    "teachers_from": "results\\pilot\\20260916-122627_S_train11-14",
+    "teacher_b": "results\\track_a\\20260916-140053_S_train11-14\\models\\teacherB_wide.pt",
+    "ensemble": 5,
+    "student_width": 48,
+    "batch_size": 1024,
+    "n_latency": 2000,
+    "n_throughput": 20,
+    "xgb_train_size": 500000,
+    "xgb_estimators": 150,
+    "xgb_depth": 6,
+    "skip_xgb": false,
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\cpu_cost",
+    "seed": 0
+  },
+  "spec": {
+    "size": "S",
+    "train_weeks": [
+      11,
+      14
+    ],
+    "val_weeks": [
+      15,
+      15
+    ],
+    "test_weeks": [
+      16,
+      19
+    ],
+    "with_test": false,
+    "train_size": "all",
+    "val_known_size": 200000,
+    "val_unknown_size": "all",
+    "test_known_size": 400000,
+    "test_unknown_size": "all",
+    "min_train_samples": 100,
+    "seed": 420
+  },
+  "cpu": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+  "cores": 16
+}

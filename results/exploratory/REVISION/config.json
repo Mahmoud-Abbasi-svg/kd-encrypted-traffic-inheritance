@@ -1,0 +1,22 @@
+{
+  "args": {
+    "runs": [
+      "results\\track_a\\20260919-113607_S_train11-14",
+      "results\\track_a\\20260919-131820_S_train24-27",
+      "results\\track_a\\20260919-143354_S_train37-40"
+    ],
+    "extra_runs": [
+      "results\\track_a_exploratory\\20260922-130934_S_train11-14",
+      "results\\track_a_exploratory\\20260922-135956_S_train24-27",
+      "results\\track_a_exploratory\\20260922-143731_S_train37-40",
+      "results\\feature_scores\\20260922-111224_S_train11-14",
+      "results\\feature_scores\\20260922-115815_S_train24-27",
+      "results\\feature_scores\\20260922-124938_S_train37-40"
+    ],
+    "windows": "test",
+    "n_boot": 300,
+    "seed": 2022,
+    "out": "C:\\Users\\Mahmoud\\OneDrive\\Desktop\\Knowledge Distillation\\results\\exploratory",
+    "name": "REVISION"
+  }
+}

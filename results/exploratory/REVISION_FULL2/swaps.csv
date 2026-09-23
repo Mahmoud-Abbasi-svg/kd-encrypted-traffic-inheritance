@@ -1,0 +1,8 @@
+label,condition,own,other,units,estimate,ci_low,ci_high,p_one_sided,n_boot,note
+H1 replication: kdA4 toward A vs B,kdA4,teacherA,teacherB,18,0.007133553717419108,0.004584630869482538,0.009099816429769784,0.0033222591362126247,300,reproduces the confirmatory H1 statistic with this code
+H1 replication: kdB4 toward B vs A,kdB4,teacherB,teacherA,18,0.025509022079638722,0.023544133146640833,0.02801696166622035,0.0033222591362126247,300,
+single vs single: kdM0 toward member 0 vs Teacher B,kdM0,teacherA_0,teacherB,18,0.017133132029978973,0.014965004911457578,0.019340454781977837,0.0033222591362126247,300,"both teachers are single models, so the ensemble is no longer a confound"
+identity only: kdM0 toward member 0 vs member 1,kdM0,teacherA_0,teacherA_1,18,0.022409776188332557,0.020730124493070604,0.02420572496574887,0.0033222591362126247,300,the two teachers differ only in random seed
+identity only: kdM1 toward member 1 vs member 0,kdM1,teacherA_1,teacherA_0,18,0.01934077107151825,0.017012441496256987,0.021685042389666898,0.0033222591362126247,300,
+anchor: hardA toward A vs B,hardA,teacherA,teacherB,18,-3.26208670861577e-05,-0.0021122481364976714,0.0019266470814267845,0.5714285714285714,300,"label copying only, no soft targets - an upper bound on what argmax agreement alone produces"
+family swap: kdC toward Teacher C vs A,kdC,teacherC,teacherA,9,0.04323941788298963,0.02969473230638707,0.05729548604721788,0.0033222591362126247,300,the two teachers are different architectures

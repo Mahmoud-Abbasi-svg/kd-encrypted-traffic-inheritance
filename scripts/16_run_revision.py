@@ -14,10 +14,22 @@ the analysis needs whichever ones the earlier steps just produced.
 """
 
 import argparse
+import atexit
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+
+def _alive(pid: int) -> bool:
+    """Whether a process with this id is still running (Windows has no os.kill(pid, 0))."""
+    try:
+        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"],
+                             capture_output=True, text=True, timeout=20).stdout
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return str(pid) in out
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
@@ -36,15 +48,24 @@ TEACHER_B = {11: "results/track_a/20260916-140053_S_train11-14/models/teacherB_w
              37: "results/track_a/20260918-132337_S_train37-40/models/teacherB_wide.pt"}
 
 
+def usable(path: Path) -> bool:
+    """A finished run directory: not a smoke run, and carrying the metrics table readers expect.
+
+    A run that was interrupted - killed, out of memory, or stopped by hand - leaves its directory
+    behind with `config.json` and a partial log but no `metrics.csv`. Treating that as a finished run
+    makes the analysis fail on a missing file, so incomplete directories are skipped here.
+    """
+    return path.is_dir() and "smoke" not in path.name and (path / "metrics.csv").exists()
+
+
 def newest(pattern: str) -> Path | None:
-    """The most recent run directory matching `pattern`, ignoring smoke runs."""
-    found = [p for p in PROJECT_ROOT.glob(pattern) if p.is_dir() and "smoke" not in p.name]
+    """The most recent finished run directory matching `pattern`."""
+    found = [p for p in PROJECT_ROOT.glob(pattern) if usable(p)]
     return max(found, key=lambda p: p.name) if found else None
 
 
 def every(pattern: str) -> list[Path]:
-    return sorted((p for p in PROJECT_ROOT.glob(pattern) if p.is_dir() and "smoke" not in p.name),
-                  key=lambda p: p.name)
+    return sorted((p for p in PROJECT_ROOT.glob(pattern) if usable(p)), key=lambda p: p.name)
 
 
 def track_a(start: int, conditions: str, extra: list[str]) -> list[str]:
@@ -54,14 +75,14 @@ def track_a(start: int, conditions: str, extra: list[str]) -> list[str]:
             "--workers", "0", *extra]
 
 
-def analysis_command() -> list[str] | None:
+def analysis_command(name: str = "REVISION") -> list[str] | None:
     """The exploratory analysis over every run that exists by the time this step is reached."""
     extra = [str(p.relative_to(PROJECT_ROOT)) for p in
              every("results/track_a_exploratory/*") + every("results/feature_scores/*")]
     if not extra:
         return None
     return [PYTHON, "scripts/12_exploratory.py", "--runs", *CONFIRMATORY, "--extra-runs", *extra,
-            "--n-boot", "300", "--name", "REVISION"]
+            "--n-boot", "300", "--name", name]
 
 
 def tables_command() -> list[str]:
@@ -80,8 +101,13 @@ def cpu_command() -> list[str] | None:
 
 # (name, group, how to build the command). A callable is resolved when the step is reached, so it
 # sees directories the earlier steps created.
+# Order matters more than it looks. The analysis runs FIRST, because it produces the bootstrap
+# intervals for claims already written into the paper, and everything after it is a secondary answer
+# to a reviewer point. On the first attempt Teacher C ran first, filled the GPU to 96%, and spent
+# half an hour without finishing an epoch while the steps that mattered waited behind it.
 STEPS = [
-    ("teacherc11", "teacherc", lambda: track_a(11, "kdC", [])),
+    ("exploratory", "analysis", analysis_command),
+    ("tables", "analysis", tables_command),
     ("width16", "widths", lambda: track_a(11, "direct,kdA4", ["--condition-suffix", "_w16",
                                                               "--student-width", "16"])),
     ("width96", "widths", lambda: track_a(11, "direct,kdA4", ["--condition-suffix", "_w96",
@@ -90,13 +116,19 @@ STEPS = [
                                        "--xgb-estimators", "150", "--xgb-depth", "6",
                                        "--skip-knn", "--workers", "0"]),
     ("cpu_retune", "xgboost", cpu_command),
-    ("exploratory", "analysis", analysis_command),
-    ("tables", "analysis", tables_command),
-    # Deliberately last. Feature distillation is the arm the exploratory feature-space result makes
-    # pressing, but its training code is new and its loss weight is untuned, so it runs after the
-    # results above are safely on disk. Re-run this script with `--only featurekd` to repeat it, and
-    # `--only analysis --redo exploratory tables` afterwards to fold it into the tables.
+    # Teacher C trains at batch 256, not the 1024 the other models use. `train_classifier` keeps the
+    # whole training window on the GPU (~1 GB for size S), and a 4-layer transformer's activations at
+    # batch 1024 push a 4 GB card to 96%, at which point Windows spills into shared system memory and
+    # throughput collapses - worse than an outright out-of-memory error, because the run looks
+    # healthy while making almost no progress.
+    ("teacherc11", "teacherc", lambda: track_a(11, "kdC", ["--batch-size", "256"])),
+    # Feature distillation: new training code with an untuned loss weight, so it runs after
+    # everything else is safely on disk.
     ("featurekd", "featurekd", lambda: track_a(11, "kdF", [])),
+    # A second analysis pass folding in whatever the steps above produced (Teacher C, the width
+    # sweep, feature distillation). The first pass already holds the results the paper needs, so a
+    # failure here costs nothing that matters.
+    ("exploratory_full", "analysis2", lambda: analysis_command("REVISION_FULL")),
 ]
 
 
@@ -116,8 +148,27 @@ def main() -> None:
     args = parser.parse_args()
 
     DONE.mkdir(parents=True, exist_ok=True)
+    # One queue at a time. Two instances once ran concurrently by accident, each loading a 5 GB
+    # analysis, and between them they exhausted a 15 GB machine. A stale lock from a killed run is
+    # ignored: the recorded process has to actually be alive for the lock to count.
+    lock = DONE.parent / "revision.lock"
+    if lock.exists() and not args.list:
+        try:
+            owner = int(lock.read_text(encoding="utf-8").strip())
+        except (ValueError, OSError):
+            owner = None
+        if owner is not None and owner != os.getpid() and _alive(owner):
+            raise SystemExit(f"Another revision run is already going (process {owner}). "
+                             f"Wait for it, or stop it and delete {lock}.")
+        lock.unlink(missing_ok=True)
+
+    DONE.mkdir(parents=True, exist_ok=True)
     for name in args.redo:
         (DONE / f"{name}.flag").unlink(missing_ok=True)
+
+    if not args.list:
+        lock.write_text(str(os.getpid()), encoding="utf-8")
+        atexit.register(lambda: lock.unlink(missing_ok=True))
 
     planned = [s for s in STEPS if args.only is None or s[1] in args.only]
     if args.list:
