@@ -42,8 +42,9 @@ their own intervals, and share no multiple-comparison family with the registered
 | `scripts/` | numbered pipeline, run in order; each writes a timestamped directory under `results/` |
 | `configs/splits.json` | the frozen known/unknown service split |
 | `docs/preregistration.md` | the frozen protocol and deviation log |
-| `paper/` | manuscript sources |
+| `paper/` | manuscript sources, and the response to the reviewer |
 | `results/` | per-window metric tables, analysis output, figures |
+| `deposit/` | manifest and metadata for the Zenodo data deposit |
 | `tests/` | `python -m pytest tests` |
 
 ## Reproducing
@@ -64,9 +65,14 @@ frozen.
 
 ## Data availability
 
-Per-flow unknown-scores for every model and evaluation window (58 files, 4.3 GB) and the model
-checkpoints (198 files) are too large for a source repository and are deposited separately; the
-per-window metric tables that the analysis consumes are in `results/`.
+The per-window metric tables the analysis consumes are in `results/`. The per-flow unknown-scores and
+the trained checkpoints behind them are 335 files and 8.5 GB, too large for a source repository, and
+are deposited at [doi.org/10.5281/zenodo.22916038](https://doi.org/10.5281/zenodo.22916038) under
+CC BY 4.0. `scripts/21_build_deposit.py` assembles that deposit and writes its manifest, so what is on
+Zenodo can be regenerated and checked file by file against a SHA-256 digest.
+
+The deposit holds derived quantities only, one floating-point score per flow per model, plus trained
+weights. It does not redistribute CESNET-TLS-Year22.
 
 ## Licence
 
@@ -77,5 +83,6 @@ authors under its own terms; no raw traffic is redistributed here.
 
 ## Citation
 
-Please cite the paper; until it appears, cite this repository and the OSF registration
-(<https://osf.io/rts6n>).
+The manuscript is a preprint and has not been peer reviewed. Cite it together with the OSF
+registration (<https://osf.io/rts6n>), which is what fixes the protocol and the date, and with the
+Zenodo deposit if you use the scores or the checkpoints.

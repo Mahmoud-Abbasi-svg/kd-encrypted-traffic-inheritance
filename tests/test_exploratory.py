@@ -195,6 +195,30 @@ def test_the_draw_cache_does_not_change_a_statistic():
     assert cached == pytest.approx(plain)
 
 
+def test_units_used_counts_only_the_units_a_statistic_could_be_computed_on():
+    """A condition trained on one start date must not be reported over every unit.
+
+    The pooled estimate is a `nanmean`, so an arm that exists on one start date silently contributes
+    only that date's windows. Reporting the length of the unit list beside it overstates the evidence,
+    which is what this asserts against.
+    """
+    rng = np.random.default_rng(17)
+    everywhere = make_unit(scores_for(rng, students=("direct", "kdA4")), start=11)
+    partial = make_unit(scores_for(rng, students=("direct",)), start=24, split="test_w29-32")
+    units = [everywhere, partial]
+    n_clusters = max(int(u.cluster.max()) for u in units) + 1
+    statistics = {
+        "everywhere": lambda u, w, sc, cache: detection_shift(u, "direct", "direct", "energy", w, sc, cache),
+        "one_start": lambda u, w, sc, cache: detection_shift(u, "kdA4", "direct", "energy", w, sc, cache),
+    }
+    found = cluster_bootstrap_many(units, statistics, n_clusters, n_boot=10, seed=3)
+    assert found["everywhere"]["units_used"] == 2
+    assert found["one_start"]["units_used"] == 1
+    # and the estimate is unaffected: it was already averaging over the unit that has the condition
+    assert found["one_start"]["estimate"] == pytest.approx(
+        detection_shift(everywhere, "kdA4", "direct", "energy", np.ones(len(everywhere))))
+
+
 def test_seed_counts_weight_the_seeds_and_a_dropped_seed_is_ignored():
     """A bootstrap resample that drops a seed must equal the statistic over the seeds it kept."""
     rng = np.random.default_rng(11)

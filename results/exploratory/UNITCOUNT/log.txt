@@ -1,0 +1,132 @@
+[14:22:55] Exploratory analyses (not pre-registered; the confirmatory outputs are not touched)
+[14:22:55] 20260919-113607_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260919-131820_S_train24-27: start 24, 6 test splits
+[14:22:55] 20260919-143354_S_train37-40: start 37, 3 test splits
+[14:22:55] 20260922-130934_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260922-135956_S_train24-27: start 24, 6 test splits
+[14:22:55] 20260922-143731_S_train37-40: start 37, 3 test splits
+[14:22:55] 20260923-013705_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260923-021551_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260923-032036_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260923-051258_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260922-111224_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260922-115815_S_train24-27: start 24, 6 test splits
+[14:22:55] 20260922-124938_S_train37-40: start 37, 3 test splits
+[14:22:55] 20260923-090027_S_train11-14: start 11, 9 test splits
+[14:22:55] 20260923-120601_S_train11-14: start 11, 9 test splits
+[14:25:21] 18 units, 3,543,579 flows, 29,346 day x service clusters
+[14:25:21] Student conditions found: direct, directTS, directTS_w16, directTS_w96, direct_w16, direct_w96, enddA, hardA, kdA, kdA4, kdA4_w16, kdA4_w96, kdB, kdB4, kdC, kdF, kdM0, kdM1, ls
+[14:25:26] Ageing of the ensemble vs its members (AUROC per week; more negative = ages faster):
+score         energy  knnfeat     maha      msp
+model                                          
+ensemble    -0.00285 -0.00349 -0.00354 -0.00306
+member_mean -0.00285 -0.00350 -0.00353 -0.00282
+teacherA_0  -0.00278 -0.00340 -0.00350 -0.00282
+teacherA_1  -0.00306 -0.00343 -0.00359 -0.00291
+teacherA_2  -0.00261 -0.00347 -0.00347 -0.00270
+teacherA_3  -0.00289 -0.00370 -0.00370 -0.00283
+teacherA_4  -0.00291 -0.00349 -0.00337 -0.00287
+[14:25:28] Teacher A - student energy-AUROC gap, trend per start date:
+ start  n_windows  slope_per_week    first      last condition  score
+    11          9       -0.000495 0.015267 -0.008444       kdA energy
+    24          6        0.000139 0.001736  0.005750       kdA energy
+    37          3       -0.001518 0.002967 -0.008793       kdA energy
+    11          9       -0.000439 0.031778  0.016948      kdA4 energy
+    24          6       -0.000552 0.033989  0.024121      kdA4 energy
+    37          3       -0.001120 0.032105  0.023518      kdA4 energy
+[14:25:28] Calendar overlap: 15 of 18 units contain at least one week that another start date also tests; 55 unit-weeks in total
+[14:25:30] Undistilled student's preference between two ensemble members: median 0.0057, 95th percentile 0.0156 (n=540)
+[14:25:30]   1 swap comparison(s) over 9 units
+[14:25:32]   6 swap comparison(s) over 18 units
+[14:25:44] Teacher-swap shifts (difference in differences against the direct student):
+                                              label  estimate  ci_low  ci_high  p_one_sided
+             family swap: kdC toward Teacher C vs A   +0.0432 +0.0429  +0.0429      +0.5000
+                 H1 replication: kdA4 toward A vs B   +0.0071 +0.0077  +0.0077      +0.5000
+                 H1 replication: kdB4 toward B vs A   +0.0255 +0.0249  +0.0249      +0.5000
+single vs single: kdM0 toward member 0 vs Teacher B   +0.0171 +0.0183  +0.0183      +0.5000
+    identity only: kdM0 toward member 0 vs member 1   +0.0224 +0.0234  +0.0234      +0.5000
+    identity only: kdM1 toward member 1 vs member 0   +0.0193 +0.0190  +0.0190      +0.5000
+                        anchor: hardA toward A vs B   -0.0000 +0.0004  +0.0004      +0.5000
+[14:25:44]   78 detection comparisons over up to 18 units, one bootstrap loop
+[14:27:19]     bootstrap 1/1
+[14:27:19] Unknown-detection advantage over the directly trained student, by scoring rule:
+  score                    comparison  estimate  ci_low  ci_high
+ energy     teacherA - direct student   +0.0004 +0.0013  +0.0013
+ energy     teacherB - direct student   +0.0051 +0.0059  +0.0059
+ energy directTS_w16 - direct student   -0.0241 -0.0247  -0.0247
+ energy directTS_w96 - direct student   +0.0008 +0.0005  +0.0005
+ energy   direct_w16 - direct student   -0.0240 -0.0246  -0.0246
+ energy   direct_w96 - direct student   +0.0016 +0.0013  +0.0013
+ energy        enddA - direct student   -0.0927 -0.0951  -0.0951
+ energy        hardA - direct student   -0.0027 -0.0035  -0.0035
+ energy          kdA - direct student   -0.0007 -0.0016  -0.0016
+ energy         kdA4 - direct student   -0.0261 -0.0270  -0.0270
+ energy     kdA4_w16 - direct student   -0.0538 -0.0549  -0.0549
+ energy     kdA4_w96 - direct student   -0.0157 -0.0162  -0.0162
+ energy          kdB - direct student   -0.0037 -0.0046  -0.0046
+ energy         kdB4 - direct student   -0.0249 -0.0259  -0.0259
+ energy          kdC - direct student   +0.0043 +0.0042  +0.0042
+ energy          kdF - direct student   +0.0034 +0.0035  +0.0035
+ energy         kdM0 - direct student   -0.0282 -0.0292  -0.0292
+ energy         kdM1 - direct student   -0.0267 -0.0278  -0.0278
+ energy           ls - direct student   -0.0217 -0.0202  -0.0202
+    msp     teacherA - direct student   +0.0242 +0.0254  +0.0254
+    msp     teacherB - direct student   -0.0071 -0.0064  -0.0064
+    msp directTS_w16 - direct student   -0.0074 -0.0078  -0.0078
+    msp directTS_w96 - direct student   +0.0005 +0.0003  +0.0003
+    msp   direct_w16 - direct student   -0.0076 -0.0080  -0.0080
+    msp   direct_w96 - direct student   -0.0029 -0.0030  -0.0030
+    msp        enddA - direct student   -0.0082 -0.0086  -0.0086
+    msp        hardA - direct student   -0.0025 -0.0033  -0.0033
+    msp          kdA - direct student   -0.0006 -0.0007  -0.0007
+    msp         kdA4 - direct student   -0.0270 -0.0275  -0.0275
+    msp     kdA4_w16 - direct student   -0.0511 -0.0511  -0.0511
+    msp     kdA4_w96 - direct student   -0.0155 -0.0146  -0.0146
+    msp          kdB - direct student   -0.0040 -0.0042  -0.0042
+    msp         kdB4 - direct student   -0.0356 -0.0353  -0.0353
+    msp          kdC - direct student   -0.0308 -0.0298  -0.0298
+    msp          kdF - direct student   +0.0005 +0.0005  +0.0005
+    msp         kdM0 - direct student   -0.0268 -0.0272  -0.0272
+    msp         kdM1 - direct student   -0.0258 -0.0255  -0.0255
+    msp           ls - direct student   -0.0068 -0.0071  -0.0071
+   maha     teacherA - direct student   +0.0727 +0.0720  +0.0720
+   maha     teacherB - direct student   +0.0320 +0.0324  +0.0324
+   maha        enddA - direct student   +0.0738 +0.0724  +0.0724
+   maha        hardA - direct student   +0.0182 +0.0180  +0.0180
+   maha          kdA - direct student   -0.0031 -0.0044  -0.0044
+   maha         kdA4 - direct student   +0.0763 +0.0734  +0.0734
+   maha          kdB - direct student   +0.0023 +0.0002  +0.0002
+   maha         kdB4 - direct student   +0.0531 +0.0506  +0.0506
+   maha          kdF - direct student   +0.0137 +0.0134  +0.0134
+   maha         kdM0 - direct student   +0.0776 +0.0758  +0.0758
+   maha         kdM1 - direct student   +0.0705 +0.0690  +0.0690
+   maha           ls - direct student   +0.0876 +0.0828  +0.0828
+knnfeat     teacherA - direct student   +0.0338 +0.0342  +0.0342
+knnfeat     teacherB - direct student   +0.0259 +0.0264  +0.0264
+knnfeat        enddA - direct student   +0.0440 +0.0447  +0.0447
+knnfeat        hardA - direct student   +0.0169 +0.0164  +0.0164
+knnfeat          kdA - direct student   +0.0011 +0.0003  +0.0003
+knnfeat         kdA4 - direct student   +0.0261 +0.0256  +0.0256
+knnfeat          kdB - direct student   +0.0026 +0.0021  +0.0021
+knnfeat         kdB4 - direct student   +0.0086 +0.0080  +0.0080
+knnfeat          kdF - direct student   +0.0176 +0.0171  +0.0171
+knnfeat         kdM0 - direct student   +0.0270 +0.0255  +0.0255
+knnfeat         kdM1 - direct student   +0.0220 +0.0207  +0.0207
+knnfeat           ls - direct student   +0.0426 +0.0410  +0.0410
+ energy                     ls - kdA4   +0.0044 +0.0068  +0.0068
+    msp                     ls - kdA4   +0.0202 +0.0204  +0.0204
+   maha                     ls - kdA4   +0.0113 +0.0094  +0.0094
+knnfeat                     ls - kdA4   +0.0166 +0.0154  +0.0154
+ energy                   enddA - kdA   -0.0920 -0.0935  -0.0935
+    msp                   enddA - kdA   -0.0076 -0.0078  -0.0078
+   maha                   enddA - kdA   +0.0769 +0.0768  +0.0768
+knnfeat                   enddA - kdA   +0.0429 +0.0444  +0.0444
+ energy                    kdA4 - kdA   -0.0254 -0.0254  -0.0254
+    msp                    kdA4 - kdA   -0.0264 -0.0267  -0.0267
+   maha                    kdA4 - kdA   +0.0794 +0.0779  +0.0779
+knnfeat                    kdA4 - kdA   +0.0249 +0.0253  +0.0253
+ energy                  hardA - kdA4   +0.0233 +0.0235  +0.0235
+    msp                  hardA - kdA4   +0.0246 +0.0242  +0.0242
+   maha                  hardA - kdA4   -0.0647 -0.0632  -0.0632
+knnfeat                  hardA - kdA4   -0.0115 -0.0106  -0.0106
+[14:27:19] Report: C:\Users\Mahmoud\OneDrive\Desktop\Knowledge Distillation\results\exploratory\UNITCOUNT\report.md

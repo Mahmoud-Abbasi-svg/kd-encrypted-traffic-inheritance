@@ -341,7 +341,17 @@ def cluster_bootstrap_many(units: list[ExUnit], statistics: dict, n_clusters: in
         return {name: float(np.nanmean([fn(u, weights_of(u), seed_counts_of(u), cache) for u in units]))
                 for name, fn in statistics.items()}
 
-    point = pooled(lambda u: np.ones(len(u)), lambda u: ones[u.start], {})
+    # The point estimate is a nanmean, so a statistic whose condition was never trained at a given
+    # start date simply skips those units. That is the intended behaviour, but it makes the number of
+    # units a property of the statistic rather than of the list: an arm run on one start date pools
+    # over nine windows while the registered arms pool over eighteen. Counting here, where every
+    # statistic is evaluated on every unit anyway, costs nothing and keeps the caller from guessing.
+    cache: dict = {}
+    per_unit = {name: np.array([fn(u, np.ones(len(u)), ones[u.start], cache) for u in units],
+                               dtype=float)
+                for name, fn in statistics.items()}
+    point = {name: float(np.nanmean(values)) for name, values in per_unit.items()}
+    used = {name: int(np.isfinite(values).sum()) for name, values in per_unit.items()}
     rng = np.random.default_rng(seed)
     draws = {name: np.empty(n_boot) for name in statistics}
     for b in range(n_boot):
@@ -361,5 +371,5 @@ def cluster_bootstrap_many(units: list[ExUnit], statistics: dict, n_clusters: in
         out[name] = {"estimate": point[name], "ci_low": float(low), "ci_high": float(high),
                      "p_one_sided": (float((1 + np.sum(finite <= 0)) / (len(finite) + 1))
                                      if len(finite) else float("nan")),
-                     "n_boot": int(len(finite))}
+                     "n_boot": int(len(finite)), "units_used": used[name]}
     return out

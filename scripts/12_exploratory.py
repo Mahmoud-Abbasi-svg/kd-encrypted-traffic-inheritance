@@ -220,7 +220,13 @@ def main() -> None:
     # Condition-against-condition, not both against `direct`. Two intervals that overlap do not
     # establish that their difference includes zero, and the claim that label smoothing transfers
     # more than distillation is a claim about that difference, so it is bootstrapped directly.
-    for first, second in (("ls", "kdA4"), ("enddA", "kdA"), ("kdA4", "kdA"), ("hardA", "kdA4")):
+    # `kdF` against `kdM0` is the pairing the feature-distillation question needs. Both distil from
+    # ensemble member 0 and differ only in what they match, its representation or its logits, and both
+    # ran on start date 11 alone, so the paired statistic is evaluated on the nine windows they share
+    # rather than against arms that pool eighteen. `kdA4` is included as the registered arm at the
+    # same temperature.
+    for first, second in (("ls", "kdA4"), ("enddA", "kdA"), ("kdA4", "kdA"), ("hardA", "kdA4"),
+                          ("kdF", "kdM0"), ("kdF", "kdA4")):
         if not {first, second} <= conditions_seen:
             continue
         for score in SCORES:
@@ -236,10 +242,14 @@ def main() -> None:
 
     rows = []
     if statistics:
-        log(f"  {len(statistics)} detection comparisons over {len(units)} units, one bootstrap loop")
+        log(f"  {len(statistics)} detection comparisons over up to {len(units)} units, "
+            "one bootstrap loop")
         found = cluster_bootstrap_many(units, statistics, n_clusters, args.n_boot, args.seed,
                                        progress=log)
-        rows = [{**described[key], "units": len(units), **found[key]} for key in statistics]
+        # Not `len(units)`: the conditions added at review run on one start date, so they pool over
+        # the nine windows that start date tests, and the bootstrap reports how many it actually used.
+        rows = [{**described[key], **found[key], "units": found[key]["units_used"]}
+                for key in statistics]
     advantage = pd.DataFrame(rows)
     advantage.to_csv(out / "detection_advantage.csv", index=False)
     if len(advantage):

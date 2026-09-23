@@ -49,8 +49,34 @@ class Draft:
         self.record, self.session = record, requests.Session()
         self.session.headers["Authorization"] = f"Bearer {token}"
         response = self.session.get(f"{BASE}/records/{record}/draft", timeout=60)
-        if response.status_code == 404:
+        # 404 means the draft predates the current interface. A 5xx means the newer endpoint could not
+        # serialise it, which happens when an interrupted browser upload leaves a file entry with no
+        # size and no checksum; the older endpoint renders the same draft and is worth trying before
+        # giving up.
+        if response.status_code == 404 or response.status_code >= 500:
+            first = response.status_code
             response = self.session.get(f"{BASE}/deposit/depositions/{record}", timeout=60)
+            if first >= 500 and response.ok:
+                print(f"note: the draft endpoint answered HTTP {first}; using the older deposit API.")
+        # A bad token and a draft belonging to someone else both answer 401/403, and a raw traceback
+        # says neither. The three causes below are the ones that actually happen.
+        if response.status_code in (401, 403):
+            raise SystemExit(
+                f"Zenodo refused the token for record {record} (HTTP {response.status_code}).\n"
+                "  - Is ZENODO_TOKEN the token itself, not a placeholder or a quoted copy of one?\n"
+                "  - Was it created with the scopes deposit:write and deposit:actions?\n"
+                "  - Does the account that owns the token also own this draft?")
+        if response.status_code == 404:
+            raise SystemExit(f"Zenodo has no draft {record} for this account. Check the id in the "
+                             "draft's URL: https://zenodo.org/uploads/<id>")
+        if response.status_code >= 500:
+            raise SystemExit(
+                f"Zenodo failed on its side for draft {record} (HTTP {response.status_code}), on both "
+                "APIs.\nAn upload interrupted in the browser can leave a file entry with no size and "
+                "no checksum,\nwhich the draft cannot be rendered with. Delete any file showing "
+                "'Checksum not yet calculated'\nat https://zenodo.org/uploads/" + record +
+                " and run this again. Otherwise it is a Zenodo outage;\nthe upload is resumable, so "
+                "waiting costs nothing.")
         response.raise_for_status()
         self.data = response.json()
         self.bucket = self.data.get("links", {}).get("bucket")
