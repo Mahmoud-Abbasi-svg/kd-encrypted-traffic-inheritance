@@ -189,11 +189,33 @@ eight design decisions.
 
 ## 8. "Only logit distillation is studied."
 
-Accepted as a limitation rather than answered. Feature-based distillation (FitNets and successors) may
-well transfer what logit matching does not — that is a real possibility our design cannot exclude. The
-contribution and conclusion are scoped to logit-based distillation throughout, and Section VII states
-this as the most important open question. We are willing to add a feature-distillation arm on one start
-date if the editor considers it necessary.
+We have added a feature-distillation arm rather than leaving this as a limitation, though it answers the
+concern only partly and we say so in the paper.
+
+`kdF` is trained with similarity-preserving distillation (Tung and Mori, ICCV 2019) from ensemble member
+0, at three seeds on start date 11. We chose that teacher because `kdM0` already distils the *logits* of
+the same model, so the two arms differ in what they match and in nothing else, and the pair can be
+compared directly.
+
+The result runs against the expectation the reviewer's concern sets up. Matching the teacher's
+representation transferred *less* of the teacher's representation-space advantage than matching its
+logits did. Paired over the nine windows both arms share, `kdF` is 0.064 Mahalanobis AUROC below `kdM0`
+(95% CI −0.071 to −0.053) and 0.009 below it under the feature k-NN score. Against the directly trained
+student it gains +0.014 Mahalanobis AUROC with an interval spanning zero, where the teacher has +0.073
+available. It does avoid the cost logit distillation pays under the logit-based scores, sitting +0.033
+above `kdM0` under energy, so across all four scoring rules it behaves close to a student trained with no
+teacher at all. Section V-G reports this, and offers one explanation: the objective fixes a
+row-normalised Gram matrix, which leaves invariant exactly the rotations and rescalings of the feature
+space that a Mahalanobis distance to class means is not invariant to.
+
+Where this falls short of a full answer: the loss weight was fixed at β = 100 and never tuned, because
+the tuning budget was spent before the pre-registration was frozen and we did not reopen it. A single
+setting cannot separate "feature distillation does not transfer this" from "β was wrong". The training
+loss shows the penalty was active (0.257 against the direct student's 0.182) but not that it was near a
+value that would matter. We therefore report the arm as a probe, keep the contribution and conclusion
+scoped to logit distillation, and state in Section VII and in the conclusion what a proper test would
+need: a tuned weight, more than one start date, and objectives that constrain the absolute arrangement
+of the representation rather than only its pairwise similarities.
 
 ## 9. "No dedicated open-set baseline; the XGBoost latency comparison is unfair."
 

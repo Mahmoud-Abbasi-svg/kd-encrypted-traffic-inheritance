@@ -150,7 +150,10 @@ TABLE_ORDER = ["direct_w16 - direct student", "direct_w96 - direct student",
                "directTS_w16 - direct student", "directTS_w96 - direct student",
                "kdA4_w16 - direct student", "kdA4_w96 - direct student",
                "kdM0 - direct student", "kdM1 - direct student", "kdC - direct student",
-               "hardA - direct student", "kdF - direct student", "hardA - kdA4"]
+               "hardA - direct student", "kdF - direct student",
+               # kept beside kdF, because the paired rows are what the feature-distillation
+               # comparison rests on: its own row pools over nine windows and kdM0's over eighteen.
+               "kdF - kdM0", "kdF - kdA4", "hardA - kdA4"]
 
 
 def remaining_table(directory: Path) -> str:
@@ -178,10 +181,11 @@ def remaining_table(directory: Path) -> str:
     # Four columns of estimate-plus-interval do not fit one column of a two-column layout.
     wide_float = len(scores) > 2
     lines = [r"\begin{table*}[t]" if wide_float else r"\begin{table}[t]", r"\centering",
-             r"\caption{Detection advantage of the exploratory conditions, each minus \kd{direct} "
-             r"except the last, which compares two distilled students. A dash marks a score that was "
-             r"not computed. Intervals are 95\% cluster bootstrap intervals over 18 test windows, or "
-             r"nine for the conditions that run on one start date.}",
+             r"\caption{Detection advantage of the exploratory conditions. A row naming one condition "
+             r"is that condition minus \kd{direct}; a row naming two is their paired difference. A "
+             r"dash marks a score that was not computed. Intervals are 95\% cluster bootstrap "
+             r"intervals over the 18 test windows, or over the nine of start date 11 for the "
+             r"conditions trained there alone (the width sweep, \kd{kdC} and \kd{kdF}).}",
              r"\label{tab:logitscores}", r"\footnotesize", r"\setlength{\tabcolsep}{4pt}",
              r"\begin{tabular}{@{}l" + "r" * len(scores) + "@{}}", r"\toprule",
              "Comparison & " + " & ".join(SCORE_HEADER[s] for s in scores) + r" \\", r"\midrule"]

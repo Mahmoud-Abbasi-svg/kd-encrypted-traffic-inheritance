@@ -32,3 +32,6 @@ paper/*.synctex.gz
 
 # Data-deposit archives (multi-GB, uploaded to Zenodo, not stored in git)
 deposit/*.zip
+
+# arXiv submission bundles, rebuilt from paper/ by scripts/23_arxiv_bundle.py
+dist/
