@@ -7,7 +7,7 @@ distilled encrypted-traffic classifier inherits from its teacher.
 - Code and analysis: https://github.com/Mahmoud-Abbasi-svg/kd-encrypted-traffic-inheritance
 - Pre-registration: https://osf.io/rts6n. The OSF project also archives the frozen protocol and
   the service split the study was registered with, and links to this deposit.
-- Dataset: CESNET-TLS-Year22 (Luxemburk, Plesnik and Hynek, *Scientific Data* 11, 2024),
+- Dataset: CESNET-TLS-Year22 (Hynek, Luxemburk, Pesek, Cejka and Siska, *Scientific Data* 11, 1156, 2024),
   obtained through `cesnet-datazoo`. **This deposit does not redistribute it.** The scores here
   are derived quantities, one floating-point value per flow per model, and the checkpoints are
   trained weights; neither contains the captured flows.

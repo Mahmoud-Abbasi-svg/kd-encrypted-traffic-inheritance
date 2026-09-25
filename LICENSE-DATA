@@ -20,8 +20,9 @@ NOTE ON THE UNDERLYING DATASET
 This licence covers only the material produced by this study. It does not cover CESNET-TLS-Year22
 itself, which is published by its own authors under its own terms:
 
-    Luxemburk, J., Plesnik, K., and Hynek, K. CESNET-TLS-Year22: A year-spanning TLS network traffic
-    dataset from backbone lines. Scientific Data 11 (2024). https://doi.org/10.1038/s41597-024-03927-4
+    Hynek, K., Luxemburk, J., Pesek, J., Cejka, T., and Siska, P. CESNET-TLS-Year22: A year-spanning
+    TLS network traffic dataset from backbone lines. Scientific Data 11, 1156 (2024).
+    https://doi.org/10.1038/s41597-024-03927-4
 
 No raw traffic from that dataset is redistributed here. The files released with this study are
 derived quantities -- per-flow model scores, aggregate metrics and the service split -- and anyone

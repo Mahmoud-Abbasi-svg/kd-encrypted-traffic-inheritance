@@ -3,7 +3,7 @@
 
 \begin{table*}[t]
 \centering
-\caption{Detection advantage of the exploratory conditions. A row naming one condition is that condition minus \kd{direct}; a row naming two is their paired difference. A dash marks a score that was not computed. Intervals are 95\% cluster bootstrap intervals over the 18 test windows, or over the nine of start date 11 for the conditions trained there alone (the width sweep, \kd{kdC} and \kd{kdF}).}
+\caption{Detection advantage of the exploratory conditions. A row naming one condition is that condition minus \kd{direct}; a row naming two is their paired difference. A dash marks a score that was not computed. Intervals are 95\% cluster bootstrap intervals over the 18 test windows, except for cells marked $\dagger$, which pool over the nine windows of start date 11 because the condition was trained, or in the feature-space columns scored, there alone. A marked cell and an unmarked one are measured on different calendars and should not be read against each other.}
 \label{tab:logitscores}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -11,20 +11,20 @@
 \toprule
 Comparison & Energy & MSP & Mahalanobis & Feature $k$-NN \\
 \midrule
-\kd{direct\_w16} & $-0.024$ \tiny($-0.033$, $-0.018$) & $-0.008$ \tiny($-0.017$, $+0.005$) & --- & --- \\
-\kd{direct\_w96} & $+0.002$ \tiny($-0.002$, $+0.005$) & $-0.003$ \tiny($-0.006$, $-0.001$) & --- & --- \\
-\kd{directTS\_w16} & $-0.024$ \tiny($-0.033$, $-0.018$) & $-0.007$ \tiny($-0.017$, $+0.005$) & --- & --- \\
-\kd{directTS\_w96} & $+0.001$ \tiny($-0.003$, $+0.004$) & $+0.000$ \tiny($-0.002$, $+0.003$) & --- & --- \\
-\kd{kdA4\_w16} & $-0.054$ \tiny($-0.062$, $-0.045$) & $-0.051$ \tiny($-0.054$, $-0.048$) & --- & --- \\
-\kd{kdA4\_w96} & $-0.016$ \tiny($-0.020$, $-0.012$) & $-0.015$ \tiny($-0.018$, $-0.013$) & --- & --- \\
-\kd{kdM0} & $-0.028$ \tiny($-0.033$, $-0.024$) & $-0.027$ \tiny($-0.030$, $-0.024$) & $+0.078$ \tiny($+0.061$, $+0.089$) & $+0.027$ \tiny($+0.016$, $+0.037$) \\
-\kd{kdM1} & $-0.027$ \tiny($-0.031$, $-0.023$) & $-0.026$ \tiny($-0.027$, $-0.024$) & $+0.071$ \tiny($+0.050$, $+0.091$) & $+0.022$ \tiny($+0.008$, $+0.033$) \\
-\kd{kdC} & $+0.004$ \tiny($+0.001$, $+0.008$) & $-0.031$ \tiny($-0.033$, $-0.029$) & --- & --- \\
-\kd{hardA} & $-0.003$ \tiny($-0.006$, $-0.001$) & $-0.002$ \tiny($-0.004$, $-0.001$) & $+0.018$ \tiny($+0.004$, $+0.033$) & $+0.017$ \tiny($+0.005$, $+0.029$) \\
-\kd{kdF} & $+0.003$ \tiny($-0.001$, $+0.007$) & $+0.001$ \tiny($-0.001$, $+0.002$) & $+0.014$ \tiny($-0.010$, $+0.033$) & $+0.018$ \tiny($+0.001$, $+0.028$) \\
-\kd{kdF} $-$ \kd{kdM0} & $+0.033$ \tiny($+0.029$, $+0.037$) & $+0.030$ \tiny($+0.023$, $+0.037$) & $-0.064$ \tiny($-0.071$, $-0.053$) & $-0.009$ \tiny($-0.016$, $-0.004$) \\
-\kd{kdF} $-$ \kd{kdA4} & $+0.030$ \tiny($+0.028$, $+0.033$) & $+0.030$ \tiny($+0.026$, $+0.035$) & $-0.069$ \tiny($-0.081$, $-0.061$) & $-0.011$ \tiny($-0.015$, $-0.006$) \\
-\kd{hardA} $-$ \kd{kdA4} & $+0.023$ \tiny($+0.020$, $+0.026$) & $+0.025$ \tiny($+0.023$, $+0.026$) & $-0.065$ \tiny($-0.069$, $-0.060$) & $-0.011$ \tiny($-0.018$, $-0.004$) \\
+\kd{direct\_w16} & $-0.024^{\dagger}$ \tiny($-0.033$, $-0.018$) & $-0.008^{\dagger}$ \tiny($-0.017$, $+0.005$) & --- & --- \\
+\kd{direct\_w96} & $+0.002^{\dagger}$ \tiny($-0.002$, $+0.005$) & $-0.003^{\dagger}$ \tiny($-0.006$, $-0.001$) & --- & --- \\
+\kd{directTS\_w16} & $-0.024^{\dagger}$ \tiny($-0.033$, $-0.018$) & $-0.007^{\dagger}$ \tiny($-0.017$, $+0.005$) & --- & --- \\
+\kd{directTS\_w96} & $+0.001^{\dagger}$ \tiny($-0.003$, $+0.004$) & $+0.000^{\dagger}$ \tiny($-0.002$, $+0.003$) & --- & --- \\
+\kd{kdA4\_w16} & $-0.054^{\dagger}$ \tiny($-0.062$, $-0.045$) & $-0.051^{\dagger}$ \tiny($-0.054$, $-0.048$) & --- & --- \\
+\kd{kdA4\_w96} & $-0.016^{\dagger}$ \tiny($-0.020$, $-0.012$) & $-0.015^{\dagger}$ \tiny($-0.018$, $-0.013$) & --- & --- \\
+\kd{kdM0} & $-0.028$ \tiny($-0.033$, $-0.024$) & $-0.027$ \tiny($-0.030$, $-0.024$) & $+0.078^{\dagger}$ \tiny($+0.061$, $+0.089$) & $+0.027^{\dagger}$ \tiny($+0.016$, $+0.037$) \\
+\kd{kdM1} & $-0.027$ \tiny($-0.031$, $-0.023$) & $-0.026$ \tiny($-0.027$, $-0.024$) & $+0.071^{\dagger}$ \tiny($+0.050$, $+0.091$) & $+0.022^{\dagger}$ \tiny($+0.008$, $+0.033$) \\
+\kd{kdC} & $+0.004^{\dagger}$ \tiny($+0.001$, $+0.008$) & $-0.031^{\dagger}$ \tiny($-0.033$, $-0.029$) & --- & --- \\
+\kd{hardA} & $-0.003$ \tiny($-0.006$, $-0.001$) & $-0.002$ \tiny($-0.004$, $-0.001$) & $+0.018^{\dagger}$ \tiny($+0.004$, $+0.033$) & $+0.017^{\dagger}$ \tiny($+0.005$, $+0.029$) \\
+\kd{kdF} & $+0.003^{\dagger}$ \tiny($-0.001$, $+0.007$) & $+0.001^{\dagger}$ \tiny($-0.001$, $+0.002$) & $+0.014^{\dagger}$ \tiny($-0.010$, $+0.033$) & $+0.018^{\dagger}$ \tiny($+0.001$, $+0.028$) \\
+\kd{kdF} $-$ \kd{kdM0} & $+0.033^{\dagger}$ \tiny($+0.029$, $+0.037$) & $+0.030^{\dagger}$ \tiny($+0.023$, $+0.037$) & $-0.064^{\dagger}$ \tiny($-0.071$, $-0.053$) & $-0.009^{\dagger}$ \tiny($-0.016$, $-0.004$) \\
+\kd{kdF} $-$ \kd{kdA4} & $+0.030^{\dagger}$ \tiny($+0.028$, $+0.033$) & $+0.030^{\dagger}$ \tiny($+0.026$, $+0.035$) & $-0.069^{\dagger}$ \tiny($-0.081$, $-0.061$) & $-0.011^{\dagger}$ \tiny($-0.015$, $-0.006$) \\
+\kd{hardA} $-$ \kd{kdA4} & $+0.023$ \tiny($+0.020$, $+0.026$) & $+0.025$ \tiny($+0.023$, $+0.026$) & $-0.065^{\dagger}$ \tiny($-0.069$, $-0.060$) & $-0.011^{\dagger}$ \tiny($-0.018$, $-0.004$) \\
 \bottomrule
 \end{tabular}
 \end{table*}

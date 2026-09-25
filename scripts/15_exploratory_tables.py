@@ -176,6 +176,14 @@ def remaining_table(directory: Path) -> str:
     wide = frame.pivot_table(index="comparison", columns="score", values="estimate")
     lows = frame.pivot_table(index="comparison", columns="score", values="ci_low")
     highs = frame.pivot_table(index="comparison", columns="score", values="ci_high")
+    # How many windows each CELL pools over, not each row. A condition can be trained at all three
+    # start dates and yet have been feature-scored at only one, so the same row can hold an 18-window
+    # logit estimate beside a 9-window Mahalanobis one. Reading those against each other, or against
+    # another row's 18-window figure, compares different calendars: on the nine windows `kdM0` has,
+    # the teacher and `kdA4` both score higher than `kdM0` does, while the pooled columns put `kdM0`
+    # above both. The mark is generated from the data so a new arm cannot quietly go unmarked.
+    units = frame.pivot_table(index="comparison", columns="score", values="units")
+    full = int(frame.units.max())
     present = wide.reindex(ordered).notna().any()
     scores = [s for s in ALL_SCORES if s in present.index and present[s]]
     # Four columns of estimate-plus-interval do not fit one column of a two-column layout.
@@ -184,8 +192,10 @@ def remaining_table(directory: Path) -> str:
              r"\caption{Detection advantage of the exploratory conditions. A row naming one condition "
              r"is that condition minus \kd{direct}; a row naming two is their paired difference. A "
              r"dash marks a score that was not computed. Intervals are 95\% cluster bootstrap "
-             r"intervals over the 18 test windows, or over the nine of start date 11 for the "
-             r"conditions trained there alone (the width sweep, \kd{kdC} and \kd{kdF}).}",
+             + f"intervals over the {full} test windows, except for cells marked $\\dagger$, which pool "
+             r"over the nine windows of start date 11 because the condition was trained, or in the "
+             r"feature-space columns scored, there alone. A marked cell and an unmarked one are "
+             r"measured on different calendars and should not be read against each other.}",
              r"\label{tab:logitscores}", r"\footnotesize", r"\setlength{\tabcolsep}{4pt}",
              r"\begin{tabular}{@{}l" + "r" * len(scores) + "@{}}", r"\toprule",
              "Comparison & " + " & ".join(SCORE_HEADER[s] for s in scores) + r" \\", r"\midrule"]
@@ -197,7 +207,9 @@ def remaining_table(directory: Path) -> str:
                 cells.append("---")
                 continue
             low, high = lows.loc[comparison, score], highs.loc[comparison, score]
-            cells.append(f"${estimate:+.3f}$ \\tiny(${low:+.3f}$, ${high:+.3f}$)")
+            n = units.loc[comparison, score] if score in units.columns else full
+            mark = "^{\\dagger}" if pd.notna(n) and int(n) < full else ""
+            cells.append(f"${estimate:+.3f}{mark}$ \\tiny(${low:+.3f}$, ${high:+.3f}$)")
         # Almost every row is against `direct`; spelling that out in each label overflows the column,
         # so the caption says it once and only the exceptions carry both names.
         left, _, right = comparison.partition(" - ")
