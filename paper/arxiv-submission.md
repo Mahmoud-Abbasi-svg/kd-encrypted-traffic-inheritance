@@ -61,9 +61,14 @@ article*. It leaves every journal option open. A CC licence would not, and canno
 
 ## 4. Endorsement
 
-`cs.NI` needs an endorsement from first-time submitters. Registering the arXiv account with
-**mahmoudabbasi@usal.es** should satisfy it automatically, since usal.es is a recognised academic
-domain. If the form asks for an endorsement code anyway, it will name the process.
+`cs.NI` needs an endorsement from first-time submitters, and arXiv grants it automatically on the
+strength of a recognised **academic institution** e-mail domain.
+
+The account is registered to **mahmoud.abbasi@ieee.org**. IEEE is a professional society rather than
+an institution, so that address may not trigger automatic endorsement; **mahmoudabbasi@usal.es**
+would. Change it under "Change User Information" on the Start page before going further, and expect
+a verification e-mail before the change takes effect. The address printed in the paper is a separate
+thing and does not have to match.
 
 ## 5. Known and deliberate
 
