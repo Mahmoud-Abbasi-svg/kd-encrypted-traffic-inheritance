@@ -1,8 +1,12 @@
-# What Does the Student Inherit?
+# Unknown-Traffic Detection, Calibration and Shortcut Reliance in Distilled Encrypted-Traffic Classifiers
 
 Code and analysis for a pre-registered study of what a distilled encrypted-traffic classifier
 inherits from its teacher besides accuracy: its detection of unknown traffic, its calibration, its
 reliance on shortcut features, and whether any of it lasts a year.
+
+> The pre-registration (`osf.io/rts6n`), the Zenodo deposit and the frozen documents under `docs/`
+> were registered under the earlier working title *What Does the Student Inherit?*. Those records are
+> frozen and still carry it; the manuscript title changed after they were filed.
 
 Dataset: [CESNET-TLS-Year22](https://doi.org/10.1038/s41597-024-03927-4) (size S, 25M flows), via
 `cesnet-datazoo`. Inputs are the first 30 packets' sizes, directions and inter-arrival times, plus 44

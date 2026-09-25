@@ -1,4 +1,4 @@
-# Project status: What Does the Student Inherit?
+# Project status: Inheritance in Distilled Encrypted-Traffic Classifiers
 
 **Last updated:** 16 Sep 2026
 

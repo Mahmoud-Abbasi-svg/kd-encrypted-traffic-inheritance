@@ -1,6 +1,7 @@
 # Study plan: What Does the Student Inherit?
 
 **Working title:** *What Does the Student Inherit? Unknown-Traffic Detection, Calibration and Shortcuts in Distilled Traffic Classifiers over Time*
+(retitled at submission to *Unknown-Traffic Detection, Calibration and Shortcut Reliance in Distilled Encrypted-Traffic Classifiers over One Year*; the pre-registration and the Zenodo deposit are frozen under the working title)
 
 **Target:** IEEE TNSM (fallback TIFS / ToN) · **Duration:** 26 weeks · **Compute:** one 24–48 GB GPU, server CPU for deployment measurements
 **Status:** plan approved 15 Sep 2026; pre-registration to be frozen at the end of week 3
